@@ -60,14 +60,35 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 |   Warehouse employees  | Employees who receive orders and items and manage them |
 |   Competitors		     | Other SWs for warehouse management |
 |   Items                | Objects stored in the warehouse and requested in orders |
-|   Web Service          | Service used to contact suppliers for issuing new orders |
+|   Mail Service          | Service used to contact suppliers for issuing new orders |
 
 # Context Diagram and interfaces
 
 ## Context Diagram
-\<Define here Context diagram using UML use case diagram>
 
-\<actors are a subset of stakeholders>
+```plantuml
+left to right direction
+skinparam actorStyle awesome
+
+actor Employee as E
+actor Adminstrator as A
+actor "Organizational unit" as OU
+actor "Quality Office" as QO
+actor "Mail Service" as W
+actor Item as I
+actor Manager as M
+
+rectangle System{
+(EzWh) as EzWH
+}
+E -- EzWH
+A --|> E
+M --|> E
+QO -- EzWH
+OU -- EzWH
+I -- EzWH
+EzWH -- W
+```
 
 ## Interfaces
 \<describe here each interface in the context diagram>
