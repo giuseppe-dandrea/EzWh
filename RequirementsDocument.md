@@ -60,7 +60,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 |   Warehouse employees  | Employees who receive orders and items and manage them |
 |   Competitors		     | Other SWs for warehouse management |
 |   Items                | Objects stored in the warehouse and requested in orders |
-|   Mail Service          | Service used to contact suppliers for issuing new orders |
+|   Mail Service         | Service used to contact suppliers for requesting new orders |
 
 # Context Diagram and interfaces
 
@@ -91,79 +91,13 @@ EzWH -- W
 ```
 
 ## Interfaces
-\<describe here each interface in the context diagram>
 
-\<GUIs will be described graphically in a separate document>
+|	     Actor   		| Logical Interface | Physical Interface  |
+| --------------------- |:---------------------------------------------:| -------------------------:|
+|  Employee - Quality Office - OU	|  GUI			            | Keyboard , Mouse, Screen , Mobile Device 	|
+|  Items			                | Function (ReadBarcode )   | Barcode reader | 
+|  Mail service 					| API - Mail Protocols		| Internet Connection | 
 
-| Actor | Logical Interface | Physical Interface  |
-| ------------- |:-------------:| -----:|
-|   Actor x..     |  |  |
-
-# Stories and personas
-\<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
-
-\<Persona is-an-instance-of actor>
-
-\<stories will be formalized later as scenarios in use cases>
-
-
-# Functional and non functional requirements
-
-## Functional Requirements
-
-# Stakeholders
-
-
-| Stakeholder name  | Description | 
-| ----------------- |:-----------:|
-|   Medium company    	 | The company interested in using the software EzWh  |
-|   Suppliers		   	 | Vendors or entities that provide items to the company |
-|   Inventory            | The physical space used to store recived items  |  
-|   Warehouse manager 	 | An Employee who manages the warehouse and supervises the availability of items |
-|   Administator         | Person who installs the application,  mantains it, defines users and assign privileges |
-|   Quality office 		 | Applied specific tests for item, and reject them if they don't pass the check |
-|   Organizational units | Other Internal company units that can make internal orders |
-|   Warehouse employees  | Employees who receive orders and items and manage them |
-|   Competitors		     | Other SWs for warehouse management |
-|   Items                | Objects stored in the warehouse and requested in orders |
-|   Mail Service          | Service used to contact suppliers for issuing new orders |
-
-# Context Diagram and interfaces
-
-## Context Diagram
-
-```plantuml
-left to right direction
-skinparam actorStyle awesome
-
-actor Employee as E
-actor Adminstrator as A
-actor "Organizational unit" as OU
-actor "Quality Office" as QO
-actor "Mail Service" as W
-actor Item as I
-actor Manager as M
-
-rectangle System{
-(EzWh) as EzWH
-}
-E -- EzWH
-A --|> E
-M --|> E
-QO -- EzWH
-OU -- EzWH
-I -- EzWH
-EzWH -- W
-```
-
-## Interfaces
-\<describe here each interface in the context diagram>
-
-\<GUIs will be described graphically in a separate document>
-
-| Actor | Logical Interface | Physical Interface  |
-| ------------- |:-------------:| -----:|
-|   Actor x..     |  |  |
 
 # Stories and personas
 \<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
