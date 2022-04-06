@@ -111,15 +111,153 @@ EzWH -- W
 
 ## Functional Requirements
 
-\<In the form DO SOMETHING, or VERB NOUN, describe high level capabilities of the system>
+# Stakeholders
 
-\<they match to high level use cases>
+
+| Stakeholder name  | Description | 
+| ----------------- |:-----------:|
+|   Medium company    	 | The company interested in using the software EzWh  |
+|   Suppliers		   	 | Vendors or entities that provide items to the company |
+|   Inventory            | The physical space used to store recived items  |  
+|   Warehouse manager 	 | An Employee who manages the warehouse and supervises the availability of items |
+|   Administator         | Person who installs the application,  mantains it, defines users and assign privileges |
+|   Quality office 		 | Applied specific tests for item, and reject them if they don't pass the check |
+|   Organizational units | Other Internal company units that can make internal orders |
+|   Warehouse employees  | Employees who receive orders and items and manage them |
+|   Competitors		     | Other SWs for warehouse management |
+|   Items                | Objects stored in the warehouse and requested in orders |
+|   Mail Service          | Service used to contact suppliers for issuing new orders |
+
+# Context Diagram and interfaces
+
+## Context Diagram
+
+```plantuml
+left to right direction
+skinparam actorStyle awesome
+
+actor Employee as E
+actor Adminstrator as A
+actor "Organizational unit" as OU
+actor "Quality Office" as QO
+actor "Mail Service" as W
+actor Item as I
+actor Manager as M
+
+rectangle System{
+(EzWh) as EzWH
+}
+E -- EzWH
+A --|> E
+M --|> E
+QO -- EzWH
+OU -- EzWH
+I -- EzWH
+EzWH -- W
+```
+
+## Interfaces
+\<describe here each interface in the context diagram>
+
+\<GUIs will be described graphically in a separate document>
+
+| Actor | Logical Interface | Physical Interface  |
+| ------------- |:-------------:| -----:|
+|   Actor x..     |  |  |
+
+# Stories and personas
+\<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
+
+\<Persona is-an-instance-of actor>
+
+\<stories will be formalized later as scenarios in use cases>
+
+
+# Functional and non functional requirements
+
+## Functional Requirements
 
 | ID        | Description  |
 | ------------- |:-------------:| 
-|  FR1     |  |
-|  FR2     |   |
-| FRx..  | | 
+| FR 1     |  Manage users and rights |
+| 	FR 1.1 	| Define new user |
+| 	FR 1.2 	| Delete a user |
+| 	FR 1.3 	| List all users   |
+| 	FR 1.4 	| Search a user   |
+| 	FR 1.4.1 	| Filtered Search for users  |
+| 	FR 1.5 	|  Manage rights. Authorize access to functions to specific actors according to access rights |
+| 	FR 1.6 	|  Modify User Information |
+|  												|  								|
+|  												|  								|
+|  												|  								|
+| 	FR 2 	| User's Authorization and functionalities |
+| 	FR 2.1 	|  Authenticate user  |
+| 	FR 2.2	|  Change Password  |
+| 	FR 2.3	|  Edit user Information  |
+|  												|  								|
+|  												|  								|
+|  												|  								|
+| FR 3	  | Manage Items |\\min max count 
+| 	FR 3.1 	| Create a new item |
+| 	FR 3.2 	| Search  item  |
+| 	FR 3.2.1 	| Filtered Search for an items  |
+| 	FR 3.1 	| Modify item properties |
+| 	FR 3.2 	| Show Item properties |
+| 	FR 3.3 	| Issue stock treshold warning for a item type|
+| 	FR 3.4 	| List all items|
+| 	FR 3.5 	| Delete Item|
+|  												|  								|
+|  												|  								|
+|  												|  								|
+| FR 4   | Manage Items Orders|
+|	FR 4.1 	| Issue an order |
+|	FR 4.1.1 	| Re-order and modifiy items and/or quantity |
+| 	FR 4.2 	| List all orders (Pending, Recieved, Checked , Completed , Rejected) |
+| 	FR 4.3 	| Search an order |
+| 	FR 4.3.1 	| Filtered search for an order |
+| 	FR 4.4 	| Show order |
+| 	FR 4.5 	| Cancel a pending order |
+| 	FR 4.6 	| Change order state to (Recieved)  |\\ change state to recieved
+| 	FR 4.7 	| Submit recieved order to quality office |
+| 	FR 4.8 	| Change order state to (Ready to be Stocked)  |
+| 	FR 4.9 	| Stock order into specific position |
+| 	FR 4.10 | Reject order and send back |
+|  												|  								|
+|  												|  								|
+|  												|  								|
+| FR 5   | Manage suppliers |
+|	FR 5.1 	| Create or modify a supplier |
+| 	FR 5.2	| Delete a supplier  |
+|	FR 5.3	| Search suppliers  |
+|	FR 5.3.1	| Filtered Search for suppliers  |
+| 	FR 5.4 	| List  all suppliers  |
+| 	FR 5.5 	| List  all supplied items for a supplier  |
+|  												|  								|
+|  												|  								|
+|  												|  								|
+| FR 6 	| Manage Inventory  |
+| 	FR 6.1 	| Show Inventrory overview  |
+| 	FR 6.2 	| Show Available spaces |
+|  												|  								|
+|  												|  								|
+|  												|  								|
+| FR 7	| Manage Internal Order  |
+| 	FR 7.1	| Notify for arriving order  |
+| 	FR 7.2	| Check items availabilty and position  |
+| 	FR 7.3	| Approve / Reject Order   |
+| 	FR 7.4	| Show all internal ordres   |
+| 	FR 7.5	| Search internal order   |
+| 	FR 7.5.1	| Filtered search internal order   |
+| 	FR 7.6	| Change order State (Pending , Ready to collect , Collected , Rejected, Cancelled)  |
+|  												|  								|
+|  												|  								|
+|  												|  								|
+| FR 8	|  Internal Orders  |
+|	FR 8.1 	| Issue an internal order |
+|	FR 8.1.1 	| Re-order and modifiy items and/or quantity |
+| 	FR 8.2	| Show items availabilty  |
+| 	FR 8.3	| Cancel an internal order   |
+
 
 ## Non Functional Requirements
 
