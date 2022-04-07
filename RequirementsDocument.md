@@ -220,7 +220,7 @@ EzWH -- W
 |  Post condition     | User authenticated and authorized || User not authenticated |
 |  Nominal Scenario     | User authention is correct, First Login, Logout |
 |  Variants     | User authentication is correct and user has to change the password |
-|  Exceptions     | User authentication is failed , User is not registered into the system |
+|  Exceptions     | User authentication is failed |
 
 ##### Scenario 1.1 
 
@@ -282,8 +282,8 @@ EzWH -- W
 | ------------- |:-------------:| 
 |  Precondition     | Administrator is authenticated |
 |  Post condition   | User informations are inserted/modified/deleted  |
-|  Nominal Scenario     | Create user, Modify user information, Delete user |
-|  Variants     | Admin modifies user info/privileges  |
+|  Nominal Scenario     | Create user, Modify user information, Delete user, Show users |
+|  Variants     | Admin modifies user info/privileges, Show user - filtered  |
 |  Exceptions     | \<exceptions, errors > |
 
 ##### Scenario 2.1 
@@ -335,9 +335,9 @@ EzWH -- W
 | ------------ |:-------------:| 
 |  Precondition     | user is authenticated && item type is not (or is) present in the system |
 |  Post condition     | Item type is info are inserted/modified/deleted |
-|  Nominal Scenario     | Insert new item type, Modify items information, Delete item |
-|  Variants     | Modify items information,  Modify items information - alarm |
-|  Exceptions     | Insert new item type with failure, Modify items information - failure, delete item - failure |
+|  Nominal Scenario     | Insert new item type, Modify items information, Delete item, Show items |
+|  Variants     |  Modify items information - alarm, Show items - filtered |
+|  Exceptions     | Insert new item type - failure, Modify items information - failure, delete item - failure |
 
 ##### Scenario 3.1
 
@@ -413,6 +413,112 @@ EzWH -- W
 |  2     | Warehouse manager try to delete the item  |
 |  3     | The system stops the operation because the item is still present in the database |
 
+### Use case 4, UC4: Manage orders to suppliers 
+| Actors Involved        | Users, item type, mail service |
+| ------------ |:-------------:| 
+|  Precondition     | user is authenticated && all item type are present in the system |
+|  Post condition     | Order is created/modified/deleted |
+|  Nominal Scenario     | Create order, Modify order status into received, delete order, show orders |
+|  Variants     |  Modify order status into checked, Modify order status into completed, show orders - filtered |
+|  Exceptions     | Modify order status into rejected |
+
+##### Scenario 4.1
+
+| Scenario 4.1 |  Create order |
+| ------------- |:-------------:| 
+|  Precondition     | WH manager is authenticated && wh manager has received a notification of low quantity for a certain item |
+|  Post condition   | A new order to the supplier is created via mail && order status is pending |
+| Step#       	    | Description  |
+|  1     |  The system show to the WH manager the list of item to be ordered and their information  |  
+|  2     |  For each item the WH manager chooses the supplier from item's list  and qauntity to be ordered | 
+|  3     | Then WH insert these information in a new order on in existing one if present |
+|  4     | When WH manager finishes the order is sent to supplier and the order state is set to pending |
+
+##### Scenario 4.2
+
+| Scenario 4.2 | Modify order status into received |
+| ------------- |:-------------:| 
+|  Precondition     | WH employee is authenticated && items have arrived in the warehouse && order status is pending |
+|  Post condition   | A notification to the QO is sent && order status is received |
+| Step#       	    | Description  |
+|  1     |  when items arrive in the warehouse, WH employee accesses the order and set its status to received  |  
+|  2     |  The system notifies the QO employee | 
+
+##### Scenario 4.3
+
+| Scenario 4.3 | Modify order status into checked |
+| ------------- |:-------------:| 
+|  Precondition     | QO employee is authenticated && QO employee has received a notification && order status is received  |
+|  Post condition   | A notification to the WH employee is sent && order status is checked |
+| Step#       	    | Description  |
+|  1     |  The QO employee decides if and which items should be tested  |  
+|  2     |  For each tested item QO employee search for the item and insert item quality |
+|  3     |  All items pass the tests, so the QO employee change order status into checked |
+|  4     |  The system sends a notification to warehouse employee |
+
+##### Scenario 4.4
+
+| Scenario 4.4 | Modify order status into rejected |
+| ------------- |:-------------:| 
+|  Precondition     | QO employee is authenticated && QO employee has received a notification && order status is received |
+|  Post condition   | A notification to the WH manager is sent && order status is rejected |
+| Step#       	    | Description  |
+|  1     |  The QO employee decides if and which items should be tested  |  
+|  2     |  For each tested item QO employee search for the item and insert item quality |
+|  3     |  Some items don't pass the tests, so the QO employee change order status into rejected |
+|  4     |  The system sends a notification to warehouse manager |
+|  5     | The warehouse manager start procedure to reject order |
+
+##### Scenario 4.5
+
+| Scenario 4.5 | Modify order status into completed |
+| ------------- |:-------------:| 
+|  Precondition     | WH employee is authenticated && WH employee has received a notification && order status is checked |
+|  Post condition   | A notification to the WH manager is sent && order status is completed |
+| Step#       	    | Description  |
+|  1     |  The WH emplyee through the mobile device reads items barcode and the system update item quantity  |  
+|  2     |  When all the items are placed in the warehouse the WH employee set order status to completed |
+|  4     |  The system sends a notification to warehouse manager |
+
+##### Scenario 4.6
+
+| Scenario 4.6 | delete order |
+| ------------- |:-------------:| 
+|  Precondition     | ?? |
+|  Post condition   | ?? |
+| Step#       	    | Description  |
+|  1     |  ??  |  
+|  2     |  ?? |
+|  4     | ??  |
+
+### Use case 5, UC5: Manage inventory 
+| Actors Involved        | Users, item type, inventory |
+| ------------ |:-------------:| 
+|  Precondition     | user is authenticated |
+|  Post condition     | ?? |
+|  Nominal Scenario     | Show inventory |
+|  Variants     |  Show inventory - filter |
+|  Exceptions     |  |
+
+##### Scenario 5.1
+
+| Scenario 5.1 |  Show inventory |
+| ------------- |:-------------:| 
+|  Precondition     | user is authenticated |
+|  Post condition   | ?? |
+| Step#       	    | Description  |
+|  1     |  The user ask to look at the inventory map  |  
+|  2     |  The system shows him/her the map with all items | 
+
+##### Scenario 5.2
+
+| Scenario 5.2 |  Show inventory -filtered |
+| ------------- |:-------------:| 
+|  Precondition     | user is authenticated |
+|  Post condition   | ?? |
+| Step#       	    | Description  |
+|  1     |  The user ask to look at the inventory map applying a filter |  
+|  2     |  The system shows him/her the map with all requested informations (Available space, sector, group of items) | 
 
 
 # Glossary
