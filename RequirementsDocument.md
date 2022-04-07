@@ -3,12 +3,12 @@
 
 Date: 22 march 2022
 
-Version: 0.0
+Version: 1.2
 
  
 | Version number | Change |
 | ----------------- |:-----------|
-| | | 
+|1.2 |adding Use Cases 1,2,3 | 
 
 
 # Contents
@@ -213,43 +213,205 @@ EzWH -- W
 
 
 \<next describe here each use case in the UCD>
-### Use case 1, UC1
-| Actors Involved        |  |
-| ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other normal executions> |
-|  Exceptions     | \<exceptions, errors > |
+### Use case 1, UC1: Authentication
+| Actors Involved        | User |
+| ------------ |:-------------:| 
+|  Precondition     | User registered (or not) && User not authenticated |
+|  Post condition     | User authenticated and authorized || User not authenticated |
+|  Nominal Scenario     | User authention is correct, First Login, Logout |
+|  Variants     | User authentication is correct and user has to change the password |
+|  Exceptions     | User authentication is failed , User is not registered into the system |
 
 ##### Scenario 1.1 
 
-\<describe here scenarios instances of UC1>
-
-\<a scenario is a sequence of steps that corresponds to a particular execution of one use case>
-
-\<a scenario is a more formal description of a story>
-
-\<only relevant scenarios should be described>
-
-| Scenario 1.1 | |
+| Scenario 1.1 | User athentication is correct |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the scenario can start> |
-|  Post condition     | \<Boolean expression, must evaluate to true after scenario is finished> |
-| Step#        | Description  |
-|  1     |  |  
-|  2     |  |
-|  ...     |  |
+|  Precondition     | User U registered && User U not authenticated |
+|  Post condition   | User U authenticated and authorized |
+| Step#       	    | Description  |
+|  1     | User U wants to access to the system |  
+|  2     | The system asks for username and password |
+|  3     | The user U insert username and password |
+|  4     | The system verifies the credential   |
+|  5     | The credentials are valid, the user is authenticated |
 
 ##### Scenario 1.2
 
-##### Scenario 1.x
+| Scenario 1.2 | User athentication is correct and user has to change the password|
+| ------------- |:-------------:| 
+|  Precondition     | User U registered && User U not authenticated |
+|  Post condition   | User U authenticated and authorized && user U has a new password |
+| Step#       	    | Description  |
+|  1     | User U wants to access to the system |  
+|  2     | The system asks for username and password |
+|  3     | The user U insert username and password |
+|  4     | The system verifies the credential   |
+|  5     | The credentials are valid, the user is authenticated |
+|  6     | The password has expired |
+|  7     | The system ask for the new password |
+|  8     | The user U insert new password |
+|  9     | The password is updated    |
 
-### Use case 2, UC2
-..
+##### Scenario 1.3
 
-### Use case x, UCx
-..
+| Scenario 1.3 | User athentication is failed |
+| ------------- |:-------------:| 
+|  Precondition     | User U registered && User U not authenticated |
+|  Post condition   | User U not authenticated |
+| Step#       	    | Description  |
+|  1     | User U wants to access to the system |  
+|  2     | The system asks for username and password |
+|  3     | The user insert username and password |
+|  4     | The system verifies the credential   |
+|  5     | The credentials are not valid, the user is not authenticated |
+
+##### Scenario 1.4
+
+| Scenario 1.4 | First Login |
+| ------------- |:-------------:| 
+|  Precondition     | User U registered && User U without password |
+|  Post condition   | User U authenticad && User with new password |
+| Step#       	    | Description  |
+|  1     | User U wants to access to the system for the first time |  
+|  2     | The system asks new password |
+|  3     | The user insert new password |
+|  5     | New ppassword is inserted in the system && the user is authenticated |
+
+### Use case 2, UC2: Manage users
+| Actors Involved        | Administrator, users |
+| ------------- |:-------------:| 
+|  Precondition     | Administrator is authenticated |
+|  Post condition   | User informations are inserted/modified/deleted  |
+|  Nominal Scenario     | Create user, Modify user information, Delete user |
+|  Variants     | Admin modifies user info/privileges  |
+|  Exceptions     | \<exceptions, errors > |
+
+##### Scenario 2.1 
+
+| Scenario 2.1 | Create user |
+| ------------- |:-------------:| 
+|  Precondition     | Administrator is authenticated && user non registered|
+|  Post condition   | New user can insert his/her new password |
+| Step#       	    | Description  |
+|  1     | The administrator create new account for the user with his/her informations and privileges |  
+|  2     | The system send an email to the user for inserting the new password  |
+
+##### Scenario 2.2
+
+| Scenario 2.2 | Administrator modify user informations and/or priviledges |
+| ------------- |:-------------:| 
+|  Precondition     | Administrator is authenticated |
+|  Post condition   | Administrator has modified user informations and/or priviledges |
+| Step#       	    | Description  |
+|  1     | Admin wants to modify user informations and/or priviledges  |  
+|  2     | The system shows user informations  |
+|  3     | The admin modify the informations that he/she chooses |
+
+##### Scenario 2.3
+
+| Scenario 2.3 | User modify its informations |
+| ------------- |:-------------:| 
+|  Precondition     | User U is authenticated |
+|  Post condition   | User U has modified his/her informations |
+| Step#       	    | Description  |
+|  1     | User U wants to modify his/her informations |  
+|  2     | The system shows user informations that he/she can modify  |
+|  3     | The user U modify the informations that he/she chooses |
+
+##### Scenario 2.4
+
+| Scenario 2.4 |  Delete user |
+| ------------- |:-------------:| 
+|  Precondition     | administrator is authenticated && user is registered into the system |
+|  Post condition   | User is deleted from the system |
+| Step#       	    | Description  |
+|  1     |  Administrator searches for user U  |  
+|  2     | Admin deletes him/her from the system  |
+|  3     | The user U modify the informations that he/she chooses |
+
+
+### Use case 3, UC3: Manage items
+| Actors Involved        | Users, item type |
+| ------------ |:-------------:| 
+|  Precondition     | user is authenticated && item type is not (or is) present in the system |
+|  Post condition     | Item type is info are inserted/modified/deleted |
+|  Nominal Scenario     | Insert new item type, Modify items information, Delete item |
+|  Variants     | Modify items information,  Modify items information - alarm |
+|  Exceptions     | Insert new item type with failure, Modify items information - failure, delete item - failure |
+
+##### Scenario 3.1
+
+| Scenario 3.1 |  Insert new item type |
+| ------------- |:-------------:| 
+|  Precondition     | user is authenticated && item type is not present in the system |
+|  Post condition   | Item type is inserted in the system |
+| Step#       	    | Description  |
+|  1     |  User insert new item type I and its information in the system  |  
+
+##### Scenario 3.2
+
+| Scenario 3.2 |  Insert new item type - failure |
+| ------------- |:-------------:| 
+|  Precondition     | user is authenticated && item type is present in the system |
+|  Post condition   | Item type is not inserted in the system |
+| Step#       	    | Description  |
+|  1     |  User insert new item type I and its information in the system  |  
+|  2     | Item type is already present in the system and the operation is aborted |
+
+
+##### Scenario 3.3 
+
+| Scenario 3.3 | Moodify item informations |
+| ------------- |:-------------:| 
+|  Precondition     | user is authenticated && Item is present in the system |
+|  Post condition   | Items informations are modified |
+| Step#       	    | Description  |
+|  1     | user accesses the item informations that he/she can modify |  
+|  2     | user modify the informations that he/she chooses  |
+|  3     | Items informations are successfully modified |
+
+##### Scenario 3.4
+
+| Scenario 3.4 | Modify items information - failure  |
+| ------------- |:-------------:| 
+|  Precondition     | user is authenticated && Item is present in the system |
+|  Post condition   | Items informations are not modified |
+| Step#       	    | Description  |
+|  1     | user accesses the item informations that he/she can modify |  
+|  2     | user modify the informations that he/she chooses  |
+|  3     | Items informations are wrong (quantity <0, NaN, ...) so the operation is aborted |
+
+##### Scenario 3.5
+
+| Scenario 3.5 | Modify items information - alarm  |
+| ------------- |:-------------:| 
+|  Precondition     | user is authenticated && Item is present in the system |
+|  Post condition   | Items informations are not modified && a notification is sent to WH manager |
+| Step#       	    | Description  |
+|  1     | user accesses the item informations that he/she can modify |  
+|  2     | user modify the informations that he/she chooses  |
+|  3     | Items informations are below the threashold so the system notifies the WH manager |
+
+##### Scenario 3.6 
+
+| Scenario 3.6 | Delete item |
+| ------------- |:-------------:| 
+|  Precondition     | Warehouse manager is authenticated && Item is not present in the warehouse |
+|  Post condition   | Item is deleted from the system |
+| Step#       	    | Description  |
+|  1     | Wareghouse manager search for the item to delete  |  
+|  2     | Warehouse manager to delete the item  |
+
+##### Scenario 3.7
+
+| Scenario 3.7 | Delete item - failure |
+| ------------- |:-------------:| 
+|  Precondition     | Warehouse manager is authenticated && Item is present in the warehouse |
+|  Post condition   | Item is not deleted from the system |
+| Step#       	    | Description  |
+|  1     | Wareghouse manager search for the item to delete  |  
+|  2     | Warehouse manager try to delete the item  |
+|  3     | The system stops the operation because the item is still present in the database |
 
 
 
