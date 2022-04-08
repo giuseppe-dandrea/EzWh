@@ -518,7 +518,86 @@ EzWH -- W
 |  Post condition   | ?? |
 | Step#       	    | Description  |
 |  1     |  The user ask to look at the inventory map applying a filter |  
-|  2     |  The system shows him/her the map with all requested informations (Available space, sector, group of items) | 
+|  2     |  The system shows him/her the map with all requested informations (Available space, sector, group of items) |
+
+### Use case 6, UC6: Internal Order 
+| Actors Involved        | OU employee, item type, WH manager, WH employee |
+| ------------ |:-------------:| 
+|  Precondition     | users are authenticated && items are present in the warehouse |
+|  Post condition     | Internal order is created/modified/deleted |
+|  Nominal Scenario     | Create internal order, (modify internal order), delete internal order, show internal orders |
+|  Variants     | Show internal orders - filtered  |
+|  Exceptions     | Create internal order - failure |
+
+##### Scenario 6.1
+
+| Scenario 6.1 |  Create internal order |
+| ------------- |:-------------:| 
+|  Precondition     | OU employee is authenticated && items are in the warehouse|
+|  Post condition   | New internal order is created with status pending && WH employee receives a notification by the system |
+| Step#       	    | Description  |
+|  1     |  OU employee wants to create a new order  |  
+|  2     |  The system shows him/her items that are in the inventory with their quantities | 
+|  3     |  The OU employee adds items to the order with quantities |
+|  4     |  The operation is terminated with success, the order is created and a notification is sent to WH employee |
+
+##### Scenario 6.2
+
+| Scenario 6.2 |  Delete internal order |
+| ------------- |:-------------:| 
+|  Precondition     | OU employee is authenticated && the order is present in the system |
+|  Post condition   | Internal order is deleted && WH employee/manager receive a notification by the system |
+| Step#       	    | Description  |
+|  1     |  OU employee wants to delete an order  |  
+|  2     |  The system shows him/her orders that are in the system | 
+|  3     |  The OU employee deletes the selected orders |
+|  4     |  The operation is terminated with success, the order is deleted and a notification is sent to WH employee/manager |
+
+##### Scenario 6.3
+
+| Scenario 6.3 |  Create internal order - failure |
+| ------------- |:-------------:| 
+|  Precondition     | OU employee is authenticated && items are in the warehouse|
+|  Post condition   | -  |
+| Step#       	    | Description  |
+|  1     |  OU employee wants to create a new order  |  
+|  2     |  The system shows him/her items that are in the inventory with their quantities | 
+|  3     |  The OU employee adds items to the order with quantities |
+|  4     |  The operation is terminated with failure (ex. invalid quantities), the order isn't created |
+
+### Use case 7, UC7: Manage Internal Order 
+| Actors Involved        | item type, WH manager, WH employee |
+| ------------ |:-------------:| 
+|  Precondition     | users are authenticated && items are present in the warehouse && order is in the system|
+|  Post condition     |  |
+|  Nominal Scenario     | Modidfy order status into (Ready to collect , Collected , Rejected, Cancelled), show internal orders |
+|  Variants     | Show internal orders - filtered  |
+|  Exceptions     |  Modidfy order status into ??  |
+
+##### Scenario 7.1
+
+| Scenario 7.1 |  Modidfy order status into Ready to collect |
+| ------------- |:-------------:| 
+|  Precondition     | WH employee is authenticated && items are in the warehouse && order status is pending|
+|  Post condition   | Order status is ready to collect && item quantities are modified && OU employee receives a notification |
+| Step#       	    | Description  |
+|  1     |  WH employee receives a notification for a new pending order  |  
+|  2     |  The system shows him/her items that are in the order with their quantities and positions | 
+|  3     |  The WH employee collect items of the order and read their barcode with mobile device |
+|  4     |  The system updates items quantities |
+|  5     |  When all items are collected and the order is prepared WH employee sends to pick up area and set order status as ready to 			  collect |
+|  6     | The system sends a notitfication to OU employee |
+
+##### Scenario 7.2
+
+| Scenario 7.2 |  Modidfy order status into collected |
+| ------------- |:-------------:| 
+|  Precondition     | OU employee E1 is authenticated && order status is ready to collect |
+|  Post condition   | Order status is collected |
+| Step#       	    | Description  |
+|  1     |  OU employee E2 receives a notification for a "ready to collect" order  |  
+|  2     |  OU employee E1 identifies E2 and OU employee E2 collect the order from the pick up area | 
+|  3     |  OU employee E1 set order status as collected |
 
 
 # Glossary
