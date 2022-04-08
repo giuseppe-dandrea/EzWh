@@ -195,14 +195,16 @@ EzWH -- W
 
 ## Non Functional Requirements
 
-\<Describe constraints on functional requirements>
-
-| ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
+| ID        | Type (efficiency, reliability, ..)  | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
-|  NFR1     |   |  | |
-|  NFR2     | |  | |
-|  NFR3     | | | |
-| NFRx .. | | | | 
+|  NFR1     |  Usability |  Users should be able to use the software with 2 hours training | All FR |
+|  NFR2     |  Efficiency  |  Software should provide response in less than 0.5s | All FR |
+|  NFR3 	|  Reliability  |  Software shouldn't have more than 4 days of downtime every year | All FR |
+|  NFR4 	|  Portability  | Software should run on Windows/Linux/MacOs | All FR |
+|  NFR5		|  Mantainability  | Software can be reinstalled in another machine with a backup | All FR |
+|  NFR6 	|  Security  |  Block login for 1 hour after 5 wrong login | FR2.1 Authenticate user |
+|  NFR7 	|  Security  |  All information should be protected against unauthorized access | All FR |
+|  NFR8 	|  Safety  |  Items should be placed in suitable space | FR4.9 Stock order into specific position |
 
 
 # Use case diagram and use cases
