@@ -21,13 +21,13 @@ Consider the EZWH  project as described in YOUR requirement document, assume tha
 ### 
 |         component name    | Estimated effort (person hours)   |             
 | ----------- | ------------------------------- | 
-|requirement document    | 100 |
-| GUI prototype | 50 |
-|design document |100|
-|code |400|
-| unit tests |150|
-| api tests |150|
-| management documents  |150|
+|requirement document    | 320 |
+| GUI prototype | 160 |
+|design document |320|
+|code |640|
+| unit tests |160|
+| api tests |160|
+| management documents  |320|
 
 
 
@@ -35,14 +35,14 @@ Consider the EZWH  project as described in YOUR requirement document, assume tha
 ### 
 |         Activity name    | Estimated effort (person hours)   |             
 | ----------- | ------------------------------- | 
-|requirement engineering | 100 |
-|GUI prototyping | 40 |
-|design | 100 |
-| coding | 400 |
-| unit testing | 150 |
-| integration testing | 100 |
-| acceptance testing | 150 |
-| management | 200 |
+|requirement engineering | 320 |
+|GUI prototyping | 160 |
+|design | 320 |
+| coding | 640 |
+| unit testing | 160 |
+| integration testing | 160 |
+| acceptance testing | 160 |
+| management | 320 |
 | git maven | 10 | 
 // modify activities if needed
 ###
@@ -55,8 +55,8 @@ Report here the results of the three estimation approaches. The  estimates may d
 |             | Estimated effort                        |   Estimated duration |          
 | ----------- | ------------------------------- | ---------------|
 | estimate by size |1.600 ph| 10 weeks |
-| estimate by product decomposition |1.100 ph| 7 weeks |
-| estimate by activity decomposition |1.250 ph| 8 weeks |
+| estimate by product decomposition |2.080 ph| 13 weeks |
+| estimate by activity decomposition |2250 ph| 14 weeks |
 
 We have assumed for duration a team of 4 people, 8 hours per day, 5 days per week
 
