@@ -609,13 +609,12 @@ EzWH -- W
 \<concepts are used consistently all over the document, ex in use cases, requirements etc>
 
 # System Design
-\<describe here system design>
 
-\<must be consistent with Context diagram>
+![Image](System%20Design.jpg "System Design")
 
 # Deployment Diagram 
 
-\<describe here deployment diagram >
+![Image](Deployment%20Diagram.jpg "Deployment Diagram")
 
 
 
