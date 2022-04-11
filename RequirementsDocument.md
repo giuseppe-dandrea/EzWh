@@ -156,10 +156,9 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 |  												|  								|
 |  												|  								|
-| 	FR 2 	| User's Authorization and functionalities |
+| 	FR 2 	| User's Authentication and functionalities -> Login |
 | 	FR 2.1 	|  Authenticate user  |
 | 	FR 2.2	|  Change Password  |
-| 	FR 2.3	|  Edit user Information  |
 |  												|  								|
 |  												|  								|
 |  												|  								|
@@ -178,14 +177,14 @@ Organizational Units can order items from the warehouse and collect them from a 
 | FR 4   | Manage Items Orders|
 |	FR 4.1 	| Issue an order |
 |	FR 4.1.1 	| Re-order and modifiy items and/or quantity |
-| 	FR 4.2 	| List all orders (Pending, Recieved, Checked , Completed , Rejected) |
+| 	FR 4.2 	| List all orders (Pending, Recieved, Checked , Completed , Rejected, Cancelled) |
 | 	FR 4.3 	| Search an order |
 | 	FR 4.3.1 	| Filtered search for an order |
-| 	FR 4.4 	| Show order |
+| 	FR 4.4 	| Show order -> ... details/informations |
 | 	FR 4.5 	| Cancel a pending order |
 | 	FR 4.6 	| Change order state to (Recieved)  |\\ change state to recieved
 | 	FR 4.7 	| Submit recieved order to quality office |
-| 	FR 4.8 	| Change order state to (Ready to be Stocked)  |
+| 	FR 4.8 	| Change order state to (Checked)  |
 | 	FR 4.9 	| Stock order into specific position |
 | 	FR 4.10 | Reject order and send back |
 |  												|  								|
@@ -218,7 +217,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 |  												|  								|
 |  												|  								|
-| FR 8	|  Internal Orders  |
+| FR 8	| Place Internal Orders  |
 |	FR 8.1 	| Issue an internal order |
 |	FR 8.1.1 	| Re-order and modifiy items and/or quantity |
 | 	FR 8.2	| Show items availabilty  |
@@ -312,13 +311,22 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  4     | The user insert new password |
 |  5     | New ppassword is inserted in the system && the user is authenticated |
 
+##### Scenario 1.5 
+| Scenario 1.5 | Logout |
+| ------------- |:-------------:| 
+|  Precondition     | User U registered && User U authenticated |
+|  Post condition   | User U not authenticated |
+| Step#       	    | Description  |
+|  1     | User U wants to access to log out from the system |
+|  2     | The system disconnect user account from the terminal |  
+
 ### Use case 2, UC2: Manage users
 | Actors Involved        | Administrator, users |
 | ------------- |:-------------:| 
 |  Precondition     | Administrator is authenticated |
 |  Post condition   | User informations are inserted/modified/deleted  |
 |  Nominal Scenario     | Create user, Modify user information, Delete user, Show users |
-|  Variants     | Admin modifies user info/privileges, Show user - filtered  |
+|  Variants     | Admin modifies user info, Admin modifies user privileges, Show user - filtered  |
 |  Exceptions     | \<exceptions, errors > |
 
 ##### Scenario 2.1 
@@ -333,12 +341,12 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 2.2
 
-| Scenario 2.2 | Administrator modify user informations and/or priviledges |
+| Scenario 2.2 | Administrator modify user informations |
 | ------------- |:-------------:| 
 |  Precondition     | Administrator is authenticated |
-|  Post condition   | Administrator has modified user informations and/or priviledges |
+|  Post condition   | Administrator has modified user informations |
 | Step#       	    | Description  |
-|  1     | Admin wants to modify user informations and/or priviledges  |  
+|  1     | Admin wants to modify user informations  |  
 |  2     | The system shows user informations  |
 |  3     | The admin modify the informations that he/she chooses |
 
@@ -362,6 +370,17 @@ Organizational Units can order items from the warehouse and collect them from a 
 | Step#       	    | Description  |
 |  1     |  Administrator searches for user U  |  
 |  2     | Admin deletes him/her from the system  |
+
+##### Scenario 2.5
+
+| Scenario 2.5 | Administrator modify user privileges |
+| ------------- |:-------------:| 
+|  Precondition     | Administrator is authenticated |
+|  Post condition   | Administrator has modified user privileges |
+| Step#       	    | Description  |
+|  1     | Admin wants to modify user privileges  |  
+|  2     | The system shows user privileges |
+|  3     | The admin modify the privileges that he/she chooses |
 
 ### Use case 3, UC3: Manage items
 | Actors Involved        | Users, item type |
@@ -452,8 +471,8 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Precondition     | user is authenticated && all item are present in the system |
 |  Post condition     | Order is created/modified/deleted |
 |  Nominal Scenario     | Create order, Modify order status into received, delete order, show orders |
-|  Variants     |  Modify order status into checked, Modify order status into completed, show orders - filtered |
-|  Exceptions     | Modify order status into rejected |
+|  Variants     |  Modify order status into checked, Modify order status into completed, show orders - filtered, Modify order status into rejected |
+|  Exceptions     |  |
 
 ##### Scenario 4.1
 
@@ -485,7 +504,6 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Post condition   | A notification to the WH employee is sent && order status is checked |
 | Step#       	    | Description  |
 |  1     |  The QO employee decides if and which items should be tested  |  
-|  2     |  For each tested item QO employee search for the item and insert item quality |
 |  3     |  All items pass the tests, so the QO employee change order status into checked |
 |  4     |  The system sends a notification to warehouse employee |
 
@@ -497,7 +515,6 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Post condition   | A notification to the WH manager is sent && order status is rejected |
 | Step#       	    | Description  |
 |  1     |  The QO employee decides if and which items should be tested  |  
-|  2     |  For each tested item QO employee search for the item and insert item quality |
 |  3     |  Some items don't pass the tests, so the QO employee change order status into rejected |
 |  4     |  The system sends a notification to warehouse manager |
 |  5     | The warehouse manager start procedure to reject order |
@@ -517,20 +534,20 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 | Scenario 4.6 | delete order |
 | ------------- |:-------------:| 
-|  Precondition     | ?? |
-|  Post condition   | ?? |
+|  Precondition     | WH manager is authN && Order status is pending |
+|  Post condition   | Email is sent to Supplier && Order status is cancelled |
 | Step#       	    | Description  |
-|  1     |  ??  |  
-|  2     |  ?? |
-|  4     | ??  |
+|  1     |  WH M access order info  |  
+|  2     |  WH M delete order |
+|  3     | Sys sends an email to supplier and it set order status as cancelled |
 
 ### Use case 5, UC5: Manage inventory 
 | Actors Involved        | Users, item type, inventory |
 | ------------ |:-------------:| 
 |  Precondition     | user is authenticated |
-|  Post condition     | ?? |
+|  Post condition     | -  |
 |  Nominal Scenario     | Show inventory |
-|  Variants     |  Show inventory - filter |
+|  Variants     |  Show inventory - filtered |
 |  Exceptions     |  |
 
 ##### Scenario 5.1
@@ -538,7 +555,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | Scenario 5.1 |  Show inventory |
 | ------------- |:-------------:| 
 |  Precondition     | user is authenticated |
-|  Post condition   | ?? |
+|  Post condition   | - |
 | Step#       	    | Description  |
 |  1     |  The user ask to look at the inventory map  |  
 |  2     |  The system shows him/her the map with all items | 
@@ -548,19 +565,19 @@ Organizational Units can order items from the warehouse and collect them from a 
 | Scenario 5.2 |  Show inventory -filtered |
 | ------------- |:-------------:| 
 |  Precondition     | user is authenticated |
-|  Post condition   | ?? |
+|  Post condition   | - |
 | Step#       	    | Description  |
 |  1     |  The user ask to look at the inventory map applying a filter |  
-|  2     |  The system shows him/her the map with all requested informations (Available space, sector, group of items) |
+|  2     |  The system shows him/her the map with all requested informations (Available space, sector, group of items, etc...) |
 
 ### Use case 6, UC6: Internal Order 
 | Actors Involved        | OU employee, item type, WH manager, WH employee |
 | ------------ |:-------------:| 
 |  Precondition     | users are authenticated && items are present in the warehouse |
 |  Post condition     | Internal order is created/modified/deleted |
-|  Nominal Scenario     | Create internal order, (modify internal order), delete internal order, show internal orders |
+|  Nominal Scenario     | Create internal order,  delete internal order, show internal orders |
 |  Variants     | Show internal orders - filtered  |
-|  Exceptions     | Create internal order - failure |
+|  Exceptions     | |
 
 ##### Scenario 6.1
 
@@ -586,30 +603,18 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  3     |  The OU employee deletes the selected orders |
 |  4     |  The operation is terminated with success, the order is deleted and a notification is sent to WH employee/manager |
 
-##### Scenario 6.3
-
-| Scenario 6.3 |  Create internal order - failure |
-| ------------- |:-------------:| 
-|  Precondition     | OU employee is authenticated && items are in the warehouse|
-|  Post condition   | -  |
-| Step#       	    | Description  |
-|  1     |  OU employee wants to create a new order  |  
-|  2     |  The system shows him/her items that are in the inventory with their quantities | 
-|  3     |  The OU employee adds items to the order with quantities |
-|  4     |  The operation is terminated with failure (ex. invalid quantities), the order isn't created |
-
 ### Use case 7, UC7: Manage Internal Order 
 | Actors Involved        | item type, WH manager, WH employee |
 | ------------ |:-------------:| 
 |  Precondition     | users are authenticated && items are present in the warehouse && order is in the system|
 |  Post condition     |  |
-|  Nominal Scenario     | Modidfy order status into (Ready to collect , Collected , Rejected, Cancelled), show internal orders |
+|  Nominal Scenario     | Modify order status into (Ready to collect , Collected , Rejected, Cancelled), show internal orders |
 |  Variants     | Show internal orders - filtered  |
-|  Exceptions     |  Modidfy order status into ??  |
+|  Exceptions     |    |
 
 ##### Scenario 7.1
 
-| Scenario 7.1 |  Modidfy order status into Ready to collect |
+| Scenario 7.1 |  Modify order status into Ready to collect |
 | ------------- |:-------------:| 
 |  Precondition     | WH employee is authenticated && items are in the warehouse && order status is pending|
 |  Post condition   | Order status is ready to collect && item quantities are modified && OU employee receives a notification |
@@ -631,6 +636,77 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  1     |  OU employee E2 receives a notification for a "ready to collect" order  |  
 |  2     |  OU employee E1 identifies E2 and OU employee E2 collect the order from the pick up area | 
 |  3     |  OU employee E1 set order status as collected |
+
+##### Scenario 7.3
+
+| Scenario 7.3 |  Modidfy order status into rejected |
+| ------------- |:-------------:| 
+|  Precondition     | WH manager is authenticated && internal order is in the system |
+|  Post condition   | Order status is rejected |
+| Step#       	    | Description  |
+|  1     |  An error occur during internal order processing (e.g item quantity isn't present in the warehouse)  |  
+|  2     |  WH manager set internal order status into rejected | 
+|  3     |  The system sends notifications to WH employee and OU employee |
+
+##### Scenario 7.4
+
+| Scenario 7.4 |  Modidfy order status into cancelled |
+| ------------- |:-------------:| 
+|  Precondition     | OU employee E1 is authenticated && internal order is in the system |
+|  Post condition   | Order status is cancelled |
+| Step#       	    | Description  |
+|  1     |  OU employee E1 doesn't need anymore the order  |  
+|  2     |  OU employee E1 set order status to cancelled | 
+|  3     |  The system sends notifications to WH employee and WH manager |
+
+### Use case 8, UC8: Manage suppliers
+| Actors Involved        | Administrator |
+| ------------- |:-------------:| 
+|  Precondition     | Administrator is authenticated |
+|  Post condition   | Suppliers informations are inserted/modified/deleted  |
+|  Nominal Scenario     | Create supplier, Modify supplier information, Delete supplier, Show suppliers |
+|  Variants     |  Show suppliers - filtered, Show suppliers per item  |
+|  Exceptions     | \<exceptions, errors > |
+
+##### Scenario 8.1 
+
+| Scenario 8.1 | Create supplier |
+| ------------- |:-------------:| 
+|  Precondition     | Administrator is authenticated && supplier non registered|
+|  Post condition   | Supplier inserted in the system |
+| Step#       	    | Description  |
+|  1     | The administrator insert new supplier in the system with his/her informations |  
+
+##### Scenario 8.2
+
+| Scenario 8.2 | Administrator modify supplier informations |
+| ------------- |:-------------:| 
+|  Precondition     | Administrator is authenticated |
+|  Post condition   | Administrator has modified supplier informations |
+| Step#       	    | Description  |
+|  1     | Admin wants to modify supplier informations  |  
+|  2     | The system shows supplier informations  |
+|  3     | The admin modify the informations that he/she chooses |
+
+##### Scenario 8.3
+
+| Scenario 8.3 |  Delete supplier |
+| ------------- |:-------------:| 
+|  Precondition     | administrator is authenticated && supplier is present into the system |
+|  Post condition   | Supplier is deleted from the system |
+| Step#       	    | Description  |
+|  1     |  Administrator searches for supplier S  |  
+|  2     | Admin deletes S from the system  |
+
+##### Scenario 8.4  <- Item
+
+| Scenario 8.4 |  Show suppliers per item |
+| ------------- |:-------------:| 
+|  Precondition     | administrator is authenticated && item is present into the system |
+|  Post condition   | -- |
+| Step#       	    | Description  |
+|  1     |  Administrator searches for item I  |  
+|  2     | 	The system shows item information with list of all suppliers of the item  |
 
 
 # Glossary
