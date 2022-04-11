@@ -1,14 +1,19 @@
+# Requirements Document 
 
- #Requirements Document 
+Date: 22 March 2022
 
-Date: 22 march 2022
-
-Version: 1.2
+Version: 1.7
 
  
 | Version number | Change |
 | ----------------- |:-----------|
-|1.2 |adding Use Cases 1,2,3 | 
+| 1.1 | Added Stakeholders |
+| 1.2 | Added Context Diagram |
+| 1.3 | Added Functional Requirments |
+| 1.4 | Added Interfaces |
+| 1.5 | Added Use Cases | 
+| 1.6 | Added Non Functional Requirments |
+| 1.7 | Added System Design and Deployment Diagram |
 
 
 # Contents
@@ -94,17 +99,44 @@ EzWH -- W
 
 |	     Actor   		| Logical Interface | Physical Interface  |
 | --------------------- |:---------------------------------------------:| -------------------------:|
-|  Employee - Quality Office - OU	|  GUI			            | Keyboard , Mouse, Screen , Mobile Device 	|
-|  Items			                | Function (ReadBarcode )   | Barcode reader | 
+|  Employee - Quality Office - Organizational Unit - Administrator - Manager	|  GUI	| Keyboard , Mouse, Screen , Mobile Device 	|
+|  Items			                | Function (ReadBarcode )   | Barcode reader, Mobile Device | 
 |  Mail service 					| API - Mail Protocols		| Internet Connection | 
 
 
 # Stories and personas
-\<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
 
-\<Persona is-an-instance-of actor>
+## Persona 1 - Administrator
+Administrator, 38yo, degree in IT field, some years of experience in medium companies and high technical skills.
 
-\<stories will be formalized later as scenarios in use cases>
+His job in the company is to keep the servers up and running, keep them updated and resolve problems as soon as they presents. He can manage users and privileges in the system.
+
+## Persona 2 - Warehouse manager
+Warehouse manager, 45yo, married, works for the company from 7 years.
+
+The warehouse manager every morning arrives in the office and has to check for low stock items to order from supplier. During the day he receive notifications about low stock products in the inventory.
+
+He can also receive items from quality office that didn't pass quality checks. He has to issue the return to the supplier and assign the items to warehouse employees to prepare them for the shipment.
+
+## Persona 3 - Quality office employee
+Quality office employee, 40yo, female, mother of 2, never missed a day of work.
+
+Quality office employee should make sure that the items received pass some quality checks before storing them in the warehouse.
+Upon receiving an order quality office employee has to perform some checks on the item and submit the results.
+
+If the items pass the quality check, she notifies warehouse employee to store them in the warehouse; otherwise warehouse manager is notified to issue a return to the supplier.
+
+## Persona 4 - Warehouse employee
+Warehouse employee, 30yo, male, doesn't have problems with physical work.
+
+Warehouse employees have to store items that passed quality checks. When a positive quality check result is received from quality office, warehouse employee have to store the items in the warehouse and submit their position.
+
+They can also receive orders from other OUs. Upon receiving the order they have to collect the items in the warehouse and have them delivered to a pick-up area.
+
+## Persona 5 - Organizational Unit
+Organizational Unit employee, 32yo, female, her work let her spend a lot of time on the phone, high social skills.
+
+Organizational Units can order items from the warehouse and collect them from a pick-up area.
 
 
 # Functional and non functional requirements
@@ -274,9 +306,10 @@ EzWH -- W
 |  Precondition     | User U registered && User U without password |
 |  Post condition   | User U authenticad && User with new password |
 | Step#       	    | Description  |
-|  1     | User U wants to access to the system for the first time |  
-|  2     | The system asks new password |
-|  3     | The user insert new password |
+|  1     | User U wants to access to the system for the first time |
+|  2     | User U click on the link in the mail the he/she received from the system |  
+|  3     | The system asks new password |
+|  4     | The user insert new password |
 |  5     | New ppassword is inserted in the system && the user is authenticated |
 
 ### Use case 2, UC2: Manage users
@@ -329,35 +362,33 @@ EzWH -- W
 | Step#       	    | Description  |
 |  1     |  Administrator searches for user U  |  
 |  2     | Admin deletes him/her from the system  |
-|  3     | The user U modify the informations that he/she chooses |
-
 
 ### Use case 3, UC3: Manage items
 | Actors Involved        | Users, item type |
 | ------------ |:-------------:| 
-|  Precondition     | user is authenticated && item type is not (or is) present in the system |
-|  Post condition     | Item type is info are inserted/modified/deleted |
-|  Nominal Scenario     | Insert new item type, Modify items information, Delete item, Show items |
+|  Precondition     | user is authenticated && item is not (or is) present in the system |
+|  Post condition     | Item's informations are inserted/modified/deleted |
+|  Nominal Scenario     | Insert new item, Modify items information, Delete item, Show items |
 |  Variants     |  Modify items information - alarm, Show items - filtered |
-|  Exceptions     | Insert new item type - failure, Modify items information - failure, delete item - failure |
+|  Exceptions     | Insert new item - failure, Modify items information - failure, delete item - failure |
 
 ##### Scenario 3.1
 
-| Scenario 3.1 |  Insert new item type |
+| Scenario 3.1 |  Insert new item |
 | ------------- |:-------------:| 
-|  Precondition     | user is authenticated && item type is not present in the system |
-|  Post condition   | Item type is inserted in the system |
+|  Precondition     | user is authenticated && item is not present in the system |
+|  Post condition   | Item is inserted in the system |
 | Step#       	    | Description  |
-|  1     |  User insert new item type I and its information in the system  |  
+|  1     |  User insert new item I and its information in the system  |  
 
 ##### Scenario 3.2
 
-| Scenario 3.2 |  Insert new item type - failure |
+| Scenario 3.2 |  Insert new item - failure |
 | ------------- |:-------------:| 
 |  Precondition     | user is authenticated && item type is present in the system |
 |  Post condition   | Item type is not inserted in the system |
 | Step#       	    | Description  |
-|  1     |  User insert new item type I and its information in the system  |  
+|  1     |  User insert new item I and its information in the system  |  
 |  2     | Item type is already present in the system and the operation is aborted |
 
 
@@ -381,7 +412,7 @@ EzWH -- W
 | Step#       	    | Description  |
 |  1     | user accesses the item informations that he/she can modify |  
 |  2     | user modify the informations that he/she chooses  |
-|  3     | Items informations are wrong (quantity <0, NaN, ...) so the operation is aborted |
+|  3     | Items informations are wrong (quantity < 0, NaN, ...) so the operation is aborted |
 
 ##### Scenario 3.5
 
@@ -398,7 +429,7 @@ EzWH -- W
 
 | Scenario 3.6 | Delete item |
 | ------------- |:-------------:| 
-|  Precondition     | Warehouse manager is authenticated && Item is not present in the warehouse |
+|  Precondition     | Warehouse manager is authenticated && Item is not present in the inventory |
 |  Post condition   | Item is deleted from the system |
 | Step#       	    | Description  |
 |  1     | Wareghouse manager search for the item to delete  |  
@@ -408,17 +439,17 @@ EzWH -- W
 
 | Scenario 3.7 | Delete item - failure |
 | ------------- |:-------------:| 
-|  Precondition     | Warehouse manager is authenticated && Item is present in the warehouse |
+|  Precondition     | Warehouse manager is authenticated && Item is present in the inventory |
 |  Post condition   | Item is not deleted from the system |
 | Step#       	    | Description  |
 |  1     | Wareghouse manager search for the item to delete  |  
 |  2     | Warehouse manager try to delete the item  |
-|  3     | The system stops the operation because the item is still present in the database |
+|  3     | The system stops the operation because the item is still present in the inventory |
 
 ### Use case 4, UC4: Manage orders to suppliers 
-| Actors Involved        | Users, item type, mail service |
+| Actors Involved        | Users, item, mail service |
 | ------------ |:-------------:| 
-|  Precondition     | user is authenticated && all item type are present in the system |
+|  Precondition     | user is authenticated && all item are present in the system |
 |  Post condition     | Order is created/modified/deleted |
 |  Nominal Scenario     | Create order, Modify order status into received, delete order, show orders |
 |  Variants     |  Modify order status into checked, Modify order status into completed, show orders - filtered |
@@ -428,13 +459,13 @@ EzWH -- W
 
 | Scenario 4.1 |  Create order |
 | ------------- |:-------------:| 
-|  Precondition     | WH manager is authenticated && wh manager has received a notification of low quantity for a certain item |
+|  Precondition     | WH manager is authenticated && WH manager has received a notification of low quantity for a certain item |
 |  Post condition   | A new order to the supplier is created via mail && order status is pending |
 | Step#       	    | Description  |
 |  1     |  The system show to the WH manager the list of item to be ordered and their information  |  
-|  2     |  For each item the WH manager chooses the supplier from item's list  and qauntity to be ordered | 
-|  3     | Then WH insert these information in a new order on in existing one if present |
-|  4     | When WH manager finishes the order is sent to supplier and the order state is set to pending |
+|  2     |  For each item the WH manager chooses the supplier from item's list  and quantity to be ordered | 
+|  3     | Then WH manager insert these information in a new order or in an existing one if present |
+|  4     | When WH manager finishes, the order is sent to supplier and the order state is set to pending |
 
 ##### Scenario 4.2
 

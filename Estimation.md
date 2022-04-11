@@ -12,7 +12,7 @@ Consider the EZWH  project as described in YOUR requirement document, assume tha
 | ----------- | ------------------------------- |  
 | NC =  Estimated number of classes to be developed   |              20               |             
 |  A = Estimated average size per class, in LOC       |              800             | 
-| S = Estimated size of project, in LOC (= NC * A) | |                16.000  
+| S = Estimated size of project, in LOC (= NC * A) | 16.000 |           
 | E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)  |         1.600                          |   
 | C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | 48.000 | 
 | Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |  10     |               
