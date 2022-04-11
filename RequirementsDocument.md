@@ -635,9 +635,8 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 # Glossary
 
-\<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships> 
+![Image](Glossary.png "Glossary")
 
-\<concepts are used consistently all over the document, ex in use cases, requirements etc>
 
 # System Design
 
