@@ -174,19 +174,18 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 |  												|  								|
 |  												|  								|
-| FR 4   | Manage Items Orders|<!-- **Change name to "Manage External orders" for clarity (as opposed to internal)** -->
+| FR 4   | Manage External Orders|
 |	FR 4.1 	| Issue an order |
 |	FR 4.1.1 	| Re-order and modifiy items and/or quantity |
 | 	FR 4.2 	| List all orders (Pending, Recieved, Checked , Completed , Rejected, Cancelled) |
 | 	FR 4.3 	| Search an order |
 | 	FR 4.3.1 	| Filtered search for an order |
-| 	FR 4.4 	| Show order -> ... details/information |
+| 	FR 4.4 	| Show order details |
 | 	FR 4.5 	| Cancel a pending order (Cancelled) |
 | 	FR 4.6 	| Change order state to (Recieved)  |
-| 	FR 4.7 	| Submit recieved order to quality office |<!-- **Remove, automatically sent to QO after received - based on Scenario 4.2** -->
-| 	FR 4.8 	| Change order state to (Checked)  |
-| 	FR 4.9 	| Stock order into specific position (Completed) |
-| 	FR 4.10 | Reject order and send back (Rejected) |
+| 	FR 4.7 	| Change order state to (Checked)  |
+| 	FR 4.8 	| Stock order into specific position (Completed) |
+| 	FR 4.9 | Reject order and send back (Rejected) |
 |  												|  								|
 |  												|  								|
 |  												|  								|
@@ -200,9 +199,10 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 |  												|  								|
 |  												|  								|
-| FR 6 	| Manage Inventory  |<!-- needs func to set inventory total space for the first time and change later -->
+| FR 6 	| Manage Inventory  |
 | 	FR 6.1 	| Show Inventrory overview  |
-| 	FR 6.2 	| Show Available spaces |
+| 	FR 6.2 	| Edit Inventrory total space  |
+| 	FR 6.3 	| Show Available spaces |
 |  												|  								|
 |  												|  								|
 |  												|  								|
@@ -231,11 +231,11 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  NFR1     |  Usability |  Users should be able to use the software with 2 hours training | All FR |
 |  NFR2     |  Efficiency  |  Software should provide response in less than 0.5s | All FR |
 |  NFR3 	|  Reliability  |  Software should not have more than 4 days of downtime every year | All FR |
-|  NFR4 	|  Portability  | Software should run on Windows/Linux/MacOs | All FR |<!-- replace with should run on diff browsers -->
-|  NFR5		|  Mantainability  | Software can be reinstalled in another machine with a backup | All FR |<!-- It's a web app! Remove -->
+|  NFR4 	|  Portability  | Backend software should run on Windows/Linux | All FR |
+|  NFR5		|  Mantainability  | Software can be reinstalled in another machine with a backup | All FR |
 |  NFR6 	|  Security  |  Block login for 1 hour after 5 wrong login | FR2.1 Authenticate user |
-|  NFR7 	|  Security  |  All information should be protected against unauthorized access | All FR |<!-- **only authorized users can access system functions and information - more clear** -->
-|  NFR8 	|  Safety  |  Items should be placed in suitable space | FR4.9 Stock order into specific position |<!-- **not measurable - also FR 4.9 is not clear, Change or remove** -->
+|  NFR7 	|  Security  |  Only authorized users can access system functions and information | All FR |
+|  NFR8 	|  Safety  |  Items should have the correct weight and volume | FR4.9 Stock order into specific position |
 
 
 # Use case diagram and use cases
@@ -531,7 +531,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 4.6
 
-| Scenario 4.6 | Modify order status into cancelled | <!-- remove - orders should not be deleted. should be cancelled. If deleted causes loss of information -->
+| Scenario 4.6 | Modify order status into cancelled |
 | ------------- |:-------------:| 
 |  Precondition     | WH manager is authenticated && Order status is pending |
 |  Post condition   | Email is sent to Supplier && Order status is cancelled |
@@ -592,17 +592,17 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 6.2
 
-| Scenario 6.2 |  Delete internal order |<!-- remove - orders should not be deleted. should be cancelled -->
+| Scenario 6.2 |  Cancel internal order |
 | ------------- |:-------------:| 
 |  Precondition     | OU employee is authenticated && the order is present in the system |
-|  Post condition   | Internal order is deleted && WH employee/manager receive a notification by the system |
+|  Post condition   | Internal order is cancelled && WH employee/manager receive a notification by the system |
 | Step#       	    | Description  |
-|  1     |  OU employee wants to delete an order  |  
+|  1     |  OU employee wants to cancel an order  |  
 |  2     |  System shows him/her orders that are in the system | 
-|  3     |  OU employee deletes the selected orders |
-|  4     |  Operation is completed successfully, the order is deleted and a notification is sent to WH employee/manager |
+|  3     |  OU employee cancels the selected orders |
+|  4     |  Operation is completed successfully, the order is cancelled and a notification is sent to WH employee/manager |
 
-### Use case 7, UC7: Manage Internal Order 
+### Use case 7, UC7: Manage Internal Order
 | Actors Involved        | item, WH manager, WH employee, OU employee |
 | ------------ |:-------------:| 
 |  Precondition     | users are authenticated && items are present in the warehouse && order is in the system|
@@ -648,7 +648,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  2     |  WH manager sets internal order status as rejected | 
 |  3     |  System sends notifications to WH employee and OU employee |
 
-##### Scenario 7.4  <- to delete?
+##### Scenario 7.4
 
 | Scenario 7.4 |  Modidfy order status into cancelled |
 | ------------- |:-------------:| 
@@ -698,7 +698,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  1     | Administrator searches for supplier S  |  
 |  2     | Administrator deletes S from the system  |
 
-##### Scenario 8.4  <- Item
+##### Scenario 8.4  <!-- remove or move to  -->
 
 | Scenario 8.4 |  Show suppliers per item |
 | ------------- |:-------------:| 
