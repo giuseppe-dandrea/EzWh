@@ -150,9 +150,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | 	FR 1.2 	| Delete a user |
 | 	FR 1.3 	| List all users   |
 | 	FR 1.4 	| Search a user   |
-| 	FR 1.4.1 	| Filtered Search for users  |
-| 	FR 1.5 	|  Manage rights. Authorize access to functions to specific actors according to access rights |
-| 	FR 1.6 	|  Modify User Information |
+| 	FR 1.5	| Modify User Information |
 |  												|  								|
 |  												|  								|
 |  												|  								|
@@ -162,12 +160,11 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 |  												|  								|
 |  												|  								|
-| FR 3	  | Manage Items |\\min max count 
+| FR 3	  | Manage Items |
 | 	FR 3.1 	| Create a new item |
-| 	FR 3.2 	| Search  item  |
-| 	FR 3.2.1 	| Filtered Search for an items  |
+| 	FR 3.2 	| Search item  |
 | 	FR 3.1 	| Modify item properties |
-| 	FR 3.2 	| Show Item properties |
+| 	FR 3.2 	| Show Item Information |
 | 	FR 3.3 	| Issue stock threshold warning for a item type|
 | 	FR 3.4 	| List all items|
 | 	FR 3.5 	| Delete Item|
@@ -176,16 +173,14 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 | FR 4   | Manage External Orders|
 |	FR 4.1 	| Issue an order |
-|	FR 4.1.1 	| Re-order and modifiy items and/or quantity |
 | 	FR 4.2 	| List all orders (Pending, Recieved, Checked , Completed , Rejected, Cancelled) |
 | 	FR 4.3 	| Search an order |
-| 	FR 4.3.1 	| Filtered search for an order |
 | 	FR 4.4 	| Show order details |
 | 	FR 4.5 	| Cancel a pending order (Cancelled) |
 | 	FR 4.6 	| Change order state to (Recieved)  |
 | 	FR 4.7 	| Change order state to (Checked)  |
 | 	FR 4.8 	| Stock order into specific position (Completed) |
-| 	FR 4.9 | Reject order and send back (Rejected) |
+| 	FR 4.9  | Reject order and send back (Rejected) |
 |  												|  								|
 |  												|  								|
 |  												|  								|
@@ -193,7 +188,6 @@ Organizational Units can order items from the warehouse and collect them from a 
 |	FR 5.1 	| Create or modify a supplier |
 | 	FR 5.2	| Delete a supplier  |
 |	FR 5.3	| Search suppliers  |
-|	FR 5.3.1	| Filtered Search for suppliers  |
 | 	FR 5.4 	| List  all suppliers  |
 | 	FR 5.5 	| List  all supplied items for a supplier  |
 |  												|  								|
@@ -209,17 +203,15 @@ Organizational Units can order items from the warehouse and collect them from a 
 | FR 7	| Manage Internal Order  |
 | 	FR 7.1	| Notify for arriving order  |
 | 	FR 7.2	| Check items availabilty and position  |
-| 	FR 7.3	| Approve / Reject Order   |
+| 	FR 7.3	| Accept / Reject Order   |
 | 	FR 7.4	| Show all internal ordres   |
 | 	FR 7.5	| Search internal order   |
-| 	FR 7.5.1	| Filtered search internal order   |
 | 	FR 7.6	| Change order State (Pending , Ready to collect , Collected , Rejected, Cancelled)  |
 |  												|  								|
 |  												|  								|
 |  												|  								|
 | FR 8	| Place Internal Orders  |
 |	FR 8.1 	| Issue an internal order |
-|	FR 8.1.1 	| Re-order and modifiy items and/or quantity |
 | 	FR 8.2	| Show items availabilty  |
 | 	FR 8.3	| Cancel an internal order   |
 
