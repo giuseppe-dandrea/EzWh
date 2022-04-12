@@ -242,10 +242,9 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 
 ## Use case diagram
-\<define here UML Use case diagram UCD summarizing all use cases, and their relationships>
 
+![Image](UseCaseDiagram.jpg "Use Case Diagram")
 
-\<next describe here each use case in the UCD>
 ### Use case 1, UC1: Authentication
 | Actors Involved        | User |
 | ------------ |:-------------:| 
@@ -395,19 +394,19 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 | Scenario 3.1 |  Insert new item |
 | ------------- |:-------------:| 
-|  Precondition     | user is authenticated && item is not present in the system |
+|  Precondition     | WH manager is authenticated && item is not present in the system |
 |  Post condition   | Item is inserted in the system |
 | Step#       	    | Description  |
-|  1     |  User insert new item I and its information in the system  |  
+|  1     |  WH manager insert new item I and its information in the system  |  
 
 ##### Scenario 3.2
 
 | Scenario 3.2 |  Insert new item - failure |
 | ------------- |:-------------:| 
-|  Precondition     | user is authenticated && item type is present in the system |
+|  Precondition     | WH manager is authenticated && item type is present in the system |
 |  Post condition   | Item type is not inserted in the system |
 | Step#       	    | Description  |
-|  1     |  User insert new item I and its information in the system  |  
+|  1     |  WH manager insert new item I and its information in the system  |  
 |  2     | Item type is already present in the system and the operation is aborted |
 
 
@@ -570,11 +569,11 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  1     |  The user ask to look at the inventory map applying a filter |  
 |  2     |  The system shows him/her the map with all requested informations (Available space, sector, group of items, etc...) |
 
-### Use case 6, UC6: Internal Order 
+### Use case 6, UC6: Issue Internal Order 
 | Actors Involved        | OU employee, item type, WH manager, WH employee |
 | ------------ |:-------------:| 
 |  Precondition     | users are authenticated && items are present in the warehouse |
-|  Post condition     | Internal order is created/modified/deleted |
+|  Post condition     | Internal order is created/deleted/shown |
 |  Nominal Scenario     | Create internal order,  delete internal order, show internal orders |
 |  Variants     | Show internal orders - filtered  |
 |  Exceptions     | |
