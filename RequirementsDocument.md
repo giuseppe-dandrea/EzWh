@@ -156,7 +156,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 |  												|  								|
 |  												|  								|
-| 	FR 2 	| User's Authentication and functionalities -> Login |
+| 	FR 2 	| User's Authentication and functionalities |
 | 	FR 2.1 	|  Authenticate user  |
 | 	FR 2.2	|  Change Password  |
 |  												|  								|
@@ -168,7 +168,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | 	FR 3.2.1 	| Filtered Search for an items  |
 | 	FR 3.1 	| Modify item properties |
 | 	FR 3.2 	| Show Item properties |
-| 	FR 3.3 	| Issue stock treshold warning for a item type|
+| 	FR 3.3 	| Issue stock threshold warning for a item type|
 | 	FR 3.4 	| List all items|
 | 	FR 3.5 	| Delete Item|
 |  												|  								|
@@ -302,7 +302,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | Scenario 1.4 | First Login |
 | ------------- |:-------------:| 
 |  Precondition     | User U registered && User U without password |
-|  Post condition   | User U authenticad && User with new password |
+|  Post condition   | User U authenticated && User with new password |
 | Step#       	    | Description  |
 |  1     | User U wants to access to the system for the first time |
 |  2     | User U receives an email, clicks on the link |  
@@ -325,7 +325,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Precondition     | Administrator is authenticated |
 |  Post condition   | User information are inserted/modified/deleted  |
 |  Nominal Scenario     | Create user, Modify user information, Delete user, Show users |
-|  Variants     | Admin modifies user info, Admin modifies user privileges, Show user - filtered  |
+|  Variants     | Administrator modifies user info, Administrator modifies user privileges, Show user - filtered  |
 |  Exceptions     | \<exceptions, errors > |
 
 ##### Scenario 2.1 
@@ -336,7 +336,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Post condition   | New user can insert his/her new password |
 | Step#       	    | Description  |
 |  1     | Administrator creates new account for the user with information and privileges |  
-|  2     | System sends an email to the user for inserting the new password  |
+|  2     | The system sends an email to the user for inserting the new password  |
 
 ##### Scenario 2.2
 
@@ -345,9 +345,9 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Precondition     | Administrator is authenticated |
 |  Post condition   | Administrator has modified user information |
 | Step#       	    | Description  |
-|  1     | Admin wants to modify user information  |  
-|  2     | System shows user information  |
-|  3     | Admin modifies some/all of the information |
+|  1     | Administrator wants to modify user information  |  
+|  2     | The system shows user information  |
+|  3     | Administrator modifies some/all of the information |
 
 ##### Scenario 2.3
 
@@ -357,7 +357,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Post condition   | User U has modified his/her information |
 | Step#       	    | Description  |
 |  1     | User U wants to modify his/her information |  
-|  2     | System shows information that can be modified  |
+|  2     | The system shows information that can be modified  |
 |  3     | User U modifies some/all of the information |
 
 ##### Scenario 2.4
@@ -377,9 +377,9 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Precondition     | Administrator is authenticated |
 |  Post condition   | Administrator has modified user privileges |
 | Step#       	    | Description  |
-|  1     | Admin wants to modify user privileges  |  
-|  2     | System shows user privileges for User U |
-|  3     | Admin modifies some/all of the privileges |
+|  1     | Administrator wants to modify user privileges  |  
+|  2     | The system shows user privileges for User U |
+|  3     | Administrator modifies some/all of the privileges |
 
 ### Use case 3, UC3: Manage items
 | Actors Involved        | Users, item type |
@@ -403,8 +403,8 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 | Scenario 3.2 |  Insert new item - failure |
 | ------------- |:-------------:| 
-|  Precondition     | WH manager is authenticated && item type is present in the system |
-|  Post condition   | Item type is not inserted in the system |
+|  Precondition     | WH manager is authenticated && item is present in the system |
+|  Post condition   | Item is not inserted in the system |
 | Step#       	    | Description  |
 |  1     | WH manager inserts new item I and its information in the system  |  
 |  2     | Item type is already present in the system and the operation is aborted |
@@ -441,13 +441,13 @@ Organizational Units can order items from the warehouse and collect them from a 
 | Step#       	    | Description  |
 |  1     | User accesses the item information that can be modified |  
 |  2     | User modifies the some/all of item information  |
-|  3     | Item information is below the threashold so the system notifies the WH manager |
+|  3     | Item information is below the threshold so the system notifies the WH manager |
 
 ##### Scenario 3.6 
 
 | Scenario 3.6 | Delete item |
 | ------------- |:-------------:| 
-|  Precondition     | Warehouse manager is authenticated && Item is not present in the inventory |
+|  Precondition     | WH manager is authenticated && Item is not present in the inventory |
 |  Post condition   | Item is deleted from the system |
 | Step#       	    | Description  |
 |  1     | WH manager searches for the item to delete  |  
@@ -457,7 +457,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 | Scenario 3.7 | Delete item - failure |
 | ------------- |:-------------:| 
-|  Precondition     | Warehouse manager is authenticated && Item is present in the inventory |
+|  Precondition     | WH manager is authenticated && Item is present in the inventory |
 |  Post condition   | Item is not deleted from the system |
 | Step#       	    | Description  |
 |  1     | WH manager searches for the item to delete  |  
@@ -469,7 +469,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | ------------ |:-------------:| 
 |  Precondition     | user is authenticated && all item are present in the system |
 |  Post condition     | Order is created/modified/deleted |
-|  Nominal Scenario     | Create order, Modify order status into received, delete order, show orders |
+|  Nominal Scenario     | Create order, Modify order status into received, Modify order status into cancelled, show orders |
 |  Variants     |  Modify order status into checked, Modify order status into completed, show orders - filtered, Modify order status into rejected |
 |  Exceptions     |  |
 
@@ -504,7 +504,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | Step#       	    | Description  |
 |  1     |  QO employee decides if and which items should be tested  |  
 |  3     |  All items pass the tests, so the QO employee change order status into checked |
-|  4     |  System sends a notification to warehouse employee |
+|  4     |  System sends a notification to WH employee |
 
 ##### Scenario 4.4
 
@@ -531,7 +531,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 4.6
 
-| Scenario 4.6 | delete order | <!-- remove - orders should not be deleted. should be cancelled. If deleted causes loss of information -->
+| Scenario 4.6 | Modify order status into cancelled | <!-- remove - orders should not be deleted. should be cancelled. If deleted causes loss of information -->
 | ------------- |:-------------:| 
 |  Precondition     | WH manager is authN && Order status is pending |
 |  Post condition   | Email is sent to Supplier && Order status is cancelled |
@@ -683,9 +683,9 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Precondition     | Administrator is authenticated |
 |  Post condition   | Administrator has modified supplier information |
 | Step#       	    | Description  |
-|  1     | Admin wants to modify supplier information  |  
+|  1     | Administrator wants to modify supplier information  |  
 |  2     | System shows supplier information  |
-|  3     | Admin modifies the information that he/she chooses |
+|  3     | Administrator modifies the information that he/she chooses |
 
 ##### Scenario 8.3
 
