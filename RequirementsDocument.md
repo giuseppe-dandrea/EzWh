@@ -232,10 +232,11 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  NFR2     |  Efficiency  |  Software should provide response in less than 0.5s | All FR |
 |  NFR3 	|  Reliability  |  Software should not have more than 4 days of downtime every year | All FR |
 |  NFR4 	|  Portability  | Backend software should run on Windows/Linux | All FR |
-|  NFR5		|  Mantainability  | Software can be reinstalled in another machine with a backup | All FR |
-|  NFR6 	|  Security  |  Block login for 1 hour after 5 wrong login | FR2.1 Authenticate user |
-|  NFR7 	|  Security  |  Only authorized users can access system functions and information | All FR |
-|  NFR8 	|  Safety  |  Items should have the correct weight and volume | FR4.9 Stock order into specific position |
+|  NFR5		|  Portability  | Frontend should run on Chrome, Firefox, Edge and Safari | All FR |
+|  NFR6		|  Mantainability  | Software can be reinstalled in another machine with a backup | All FR |
+|  NFR7 	|  Security  |  Block login for 1 hour after 5 wrong login | FR2.1 Authenticate user |
+|  NFR8 	|  Security  |  Only authorized users can access system functions and information | All FR |
+|  NFR9 	|  Safety  |  Items should have the correct weight and volume for the space assigned | FR4.9 Stock order into specific position |
 
 
 # Use case diagram and use cases
