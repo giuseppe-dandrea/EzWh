@@ -9,10 +9,10 @@ Version: 1.7
 | ----------------- |:-----------|
 | 1.1 | Added Stakeholders |
 | 1.2 | Added Context Diagram |
-| 1.3 | Added Functional Requirments |
+| 1.3 | Added Functional Requirements |
 | 1.4 | Added Interfaces |
 | 1.5 | Added Use Cases | 
-| 1.6 | Added Non Functional Requirments |
+| 1.6 | Added Non Functional Requirements |
 | 1.7 | Added System Design and Deployment Diagram |
 
 
@@ -57,9 +57,9 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | ----------------- |:-----------:|
 |   Medium company    	 | The company interested in using the software EzWh  |
 |   Suppliers		   	 | Vendors or entities that provide items to the company |
-|   Inventory            | The physical space used to store recived items  |  
+|   Inventory            | The physical space used to store received items  |  
 |   Warehouse manager 	 | An Employee who manages the warehouse and supervises the availability of items |
-|   Administator         | Person who installs the application,  mantains it, defines users and assign privileges |
+|   Administrator         | Person who installs the application,  maintains it, defines users and assign privileges |
 |   Quality office 		 | Employees that applied specific tests for item, and reject them if they don't pass the check |
 |   Organizational units | Other Internal company employees that can make internal orders |
 |   Warehouse employees  | Employees who receive orders and items and manage them |
@@ -76,7 +76,7 @@ left to right direction
 skinparam actorStyle awesome
 
 actor Employee as E
-actor Adminstrator as A
+actor Administrator as A
 actor "Organizational unit" as OU
 actor "Quality Office" as QO
 actor "Mail Service" as W
@@ -163,7 +163,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | FR 3	  | Manage Items |
 | 	FR 3.1 	| Create a new item |
 | 	FR 3.2 	| Search item  |
-| 	FR 3.3 	| Modify item informations |
+| 	FR 3.3 	| Modify item information |
 | 	FR 3.4 	| Show Item Information |
 | 	FR 3.5 	| Issue stock threshold warning for a item type|
 | 	FR 3.6 	| List all items|
@@ -173,11 +173,11 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 | FR 4   | Manage External Orders|
 |	FR 4.1 	| Issue an order |
-| 	FR 4.2 	| List all orders (Pending, Recieved, Checked , Completed , Rejected, Cancelled) |
+| 	FR 4.2 	| List all orders (Pending, Received, Checked , Completed , Rejected, Cancelled) |
 | 	FR 4.3 	| Search an order |
 | 	FR 4.4 	| Show order details |
 | 	FR 4.5 	| Cancel a pending order (Cancelled) |
-| 	FR 4.6 	| Change order state to (Recieved)  |
+| 	FR 4.6 	| Change order state to (Received)  |
 | 	FR 4.7 	| Change order state to (Checked)  |
 | 	FR 4.8 	| Stock order into specific position (Completed) |
 | 	FR 4.9  | Reject order and send back (Rejected) |
@@ -194,17 +194,17 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 |  												|  								|
 | FR 6 	| Manage Inventory  |
-| 	FR 6.1 	| Show Inventrory overview  |
-| 	FR 6.2 	| Edit Inventrory total space  |
+| 	FR 6.1 	| Show Inventory overview  |
+| 	FR 6.2 	| Edit Inventory total space  |
 | 	FR 6.3 	| Show Available spaces |
 |  												|  								|
 |  												|  								|
 |  												|  								|
 | FR 7	| Manage Internal Order  |
 | 	FR 7.1	| Notify for arriving order  |
-| 	FR 7.2	| Check items availabilty and position  |
+| 	FR 7.2	| Check items availability and position  |
 | 	FR 7.3	| Accept / Reject Order   |
-| 	FR 7.4	| Show all internal ordres   |
+| 	FR 7.4	| Show all internal orders   |
 | 	FR 7.5	| Search internal order   |
 | 	FR 7.6	| Change order State (Pending , Ready to collect , Collected , Rejected, Cancelled)  |
 |  												|  								|
@@ -212,7 +212,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 | FR 8	| Place Internal Orders  |
 |	FR 8.1 	| Issue an internal order |
-| 	FR 8.2	| Show items availabilty  |
+| 	FR 8.2	| Show items availability  |
 | 	FR 8.3	| Cancel an internal order   |
 
 ### Access right, actor vs function
@@ -277,7 +277,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  NFR3 	|  Reliability  |  Software should not have more than 4 days of downtime every year | All FR |
 |  NFR4 	|  Portability  | Backend software should run on Windows/Linux | All FR |
 |  NFR5		|  Portability  | Frontend should run on Chrome, Firefox, Edge and Safari | All FR |
-|  NFR6		|  Mantainability  | Software can be reinstalled in another machine with a backup | All FR |
+|  NFR6		|  Maintainability  | Software can be reinstalled in another machine with a backup | All FR |
 |  NFR7 	|  Security  |  Block login for 1 hour after 5 wrong login | FR2.1 Authenticate user |
 |  NFR8 	|  Security  |  Only authorized users can access system functions and information | All FR |
 |  NFR9 	|  Safety  |  Items should have the correct weight and volume for the space assigned | FR4.9 Stock order into specific position |
@@ -295,13 +295,13 @@ Organizational Units can order items from the warehouse and collect them from a 
 | ------------ |:-------------:| 
 |  Precondition     | User registered (or not) && User not authenticated |
 |  Post condition     | User authenticated and authorized || User not authenticated |
-|  Nominal Scenario     | User authention is correct, First Login, Logout |
+|  Nominal Scenario     | User authentication is correct, First Login, Logout |
 |  Variants     | User authentication is correct and user has to change the password |
 |  Exceptions     | User authentication failed |
 
 ##### Scenario 1.1 
 
-| Scenario 1.1 | User athentication is correct |
+| Scenario 1.1 | User authentication is correct |
 | ------------- |:-------------:| 
 |  Precondition     | User U registered && User U not authenticated |
 |  Post condition   | User U authenticated and authorized |
@@ -314,7 +314,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 1.2
 
-| Scenario 1.2 | User athentication is correct and user has to change the password|
+| Scenario 1.2 | User authentication is correct and user has to change the password|
 | ------------- |:-------------:| 
 |  Precondition     | User U registered && User U not authenticated |
 |  Post condition   | User U authenticated and authorized && user U has a new password |
@@ -331,7 +331,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 1.3
 
-| Scenario 1.3 | User athentication is failed |
+| Scenario 1.3 | User authentication is failed |
 | ------------- |:-------------:| 
 |  Precondition     | User U registered && User U not authenticated |
 |  Post condition   | User U not authenticated |
@@ -510,10 +510,10 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Post condition   | Item quantity is modified |
 | Step#       	    | Description  |
 |  1     | WH employee select if items are in an internal order or in external order  |
-|  2     | For each item in the order, WH empoloyee reads item barcode using the barcode reader  |  
+|  2     | For each item in the order, WH employee reads item barcode using the barcode reader  |  
 |  3     | The system searches for item descriptor and increase or decrease quantity by one unit for each barcode read|
 
-### Use case 4, UC4: Manage external oreder 
+### Use case 4, UC4: Manage external order 
 | Actors Involved        | User, item , mail service |
 | ------------ |:-------------:| 
 |  Precondition     | user is authenticated && all item are present in the system |
@@ -530,7 +530,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Post condition   | A new order to the supplier is created via mail && order status is pending |
 | Step#       	    | Description  |
 |  1     | System shows the list of item to be ordered and their information to the WH manager |  
-|  2     | For each item descriptor the WH manager chooses the supplier from item descriptor's list and quantity to be ordered | 
+|  2     | For each item descriptor the WH manager chooses the supplier from item descriptors list and quantity to be ordered | 
 |  3     | WH manager inserts these information in a new order |
 |  4     | The order is sent by email to supplier and the order state is set to pending |
 
@@ -574,7 +574,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Precondition     | WH employee is authenticated && WH employee has received a notification && order status is checked |
 |  Post condition   | A notification to the WH manager is sent && order status is completed && item quantity is updated |
 | Step#       	    | Description  |
-|  1     |  WH emplyee through the mobile device reads item barcode and the system updates quantity in item descriptor |  
+|  1     |  WH employee through the mobile device reads item barcode and the system updates quantity in item descriptor |  
 |  2     |  When all the items are placed in the warehouse, the WH employee set order status to completed |
 |  4     |  System sends a notification to warehouse manager |
 
@@ -664,11 +664,11 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  4     |  System updates items quantities |
 |  5     |  When all items are collected and the order is prepared, WH employee sends items to pick up area|
 |  6     |  WH employee set order status as ready to collect |
-|  7     |  System sends a notitfication to OU employee |
+|  7     |  System sends a notification to OU employee |
 
 ##### Scenario 7.2
 
-| Scenario 7.2 |  Modidfy internal order status into collected |
+| Scenario 7.2 |  Modify internal order status into collected |
 | ------------- |:-------------:| 
 |  Precondition     | OU employees E1 and E2 are authenticated && order status is ready to collect |
 |  Post condition   | Order status is collected |
@@ -679,7 +679,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 7.3
 
-| Scenario 7.3 |  Modidfy internal order status into rejected |
+| Scenario 7.3 |  Modify internal order status into rejected |
 | ------------- |:-------------:| 
 |  Precondition     | WH manager is authenticated && internal order is in the system |
 |  Post condition   | Order status is rejected |
@@ -690,10 +690,10 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 7.4
 
-| Scenario 7.4 |  Modidfy internal order status into pending |
+| Scenario 7.4 |  Modify internal order status into pending |
 | ------------- |:-------------:| 
 |  Precondition     | WH manager is authenticated && new internal order is in the system |
-|  Post condition   | A notification is sent to Wh employee && order status is pending |
+|  Post condition   | A notification is sent to WH employee && order status is pending |
 | Step#       	    | Description  |
 |  1     |  WH manager receives a notification for a new internal order  |  
 |  2     |  WH manager accept the order && order status is set to pending | 
