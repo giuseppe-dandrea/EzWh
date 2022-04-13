@@ -79,7 +79,7 @@ Version:    1.0
 
 # Gantt Chart
 ###
-[Link to Gantt Chart PDF](GanttChart.pdf)
+[Link to Gantt Chart PDF](GanttChart1033.pdf)
 
 # Summary
 ### 
