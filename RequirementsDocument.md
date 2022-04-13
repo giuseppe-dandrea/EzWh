@@ -2,7 +2,7 @@
 
 Date: 22 March 2022
 
-Version: 1.7
+Version: 2.0
 
  
 | Version number | Change |
@@ -14,7 +14,9 @@ Version: 1.7
 | 1.5 | Added Use Cases | 
 | 1.6 | Added Non Functional Requirements |
 | 1.7 | Added System Design and Deployment Diagram |
-
+| 1.8 | Added Glossary |
+| 1.9 | Added Use Case Diagram |
+| 2.0 | Fixed |
 
 # Contents
 
