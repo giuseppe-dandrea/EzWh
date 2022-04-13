@@ -78,7 +78,7 @@ Version:    1.0
 | Software release      | 30/05 |
 
 ###
-![pdf](GanttChart.pdf "Gantt Chart")
+[Gantt Chart](GanttChart.pdf)
 
 # Summary
 ### 
