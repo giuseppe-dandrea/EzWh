@@ -171,7 +171,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | 	FR 3.5 	| Issue stock threshold warning for a item type|
 | 	FR 3.6 	| List all items|
 | 	FR 3.7 	| Delete Item|
-|   FR 3.8  | Retrieve item information using the barcode reader | <!-- ?? -->
+|   FR 3.8  | Retrieve item information using the barcode reader | 
 |  												|  								|
 |  												|  								|
 |  												|  								|
@@ -610,7 +610,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  Post condition   | Inventory total space is updated |
 | Step#       	    | Description  |
 |  1     |  WH manager wants to edit inventory total space  |  
-|  2     |  WH inserts total spece available in the warehouse | 
+|  2     |  WH inserts total space available in the warehouse | 
 
 
 ### Use case 6, UC6: Issue Internal Order 
