@@ -500,12 +500,11 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 | Scenario 3.8 | Read item barcode|
 | ------------- |:-------------:| 
-|  Precondition     | WH employee is authenticated && Items are present in the inventory |
-|  Post condition   | Item quantity is modified |
+|  Precondition     | User is authenticated && Items are present in the inventory |
+|  Post condition   |  |
 | Step#       	    | Description  |
-|  1     | WH employee select if items are in an internal order or in external order  |
-|  2     | For each item in the order, WH employee reads item barcode using the barcode reader  |  
-|  3     | The system searches for item descriptor and increase or decrease quantity by one unit for each barcode read|
+|  1     | User reads item barcode using the barcode reader  |  
+|  2     | The system searches for item descriptor and shows its informations |
 
 ### Use case 4, UC4: Manage external order 
 | Actors Involved        | User, item , mail service |
