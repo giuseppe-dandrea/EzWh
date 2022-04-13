@@ -163,11 +163,11 @@ Organizational Units can order items from the warehouse and collect them from a 
 | FR 3	  | Manage Items |
 | 	FR 3.1 	| Create a new item |
 | 	FR 3.2 	| Search item  |
-| 	FR 3.1 	| Modify item properties |
-| 	FR 3.2 	| Show Item Information |
-| 	FR 3.3 	| Issue stock threshold warning for a item type|
-| 	FR 3.4 	| List all items|
-| 	FR 3.5 	| Delete Item|
+| 	FR 3.3 	| Modify item informations |
+| 	FR 3.4 	| Show Item Information |
+| 	FR 3.5 	| Issue stock threshold warning for a item type|
+| 	FR 3.6 	| List all items|
+| 	FR 3.7 	| Delete Item|
 |  												|  								|
 |  												|  								|
 |  												|  								|
@@ -214,6 +214,58 @@ Organizational Units can order items from the warehouse and collect them from a 
 |	FR 8.1 	| Issue an internal order |
 | 	FR 8.2	| Show items availabilty  |
 | 	FR 8.3	| Cancel an internal order   |
+
+### Access right, actor vs function
+
+| Function | WH employee | WH manager | Administrator | Organizational Unit | Quality office |  
+| ------------- |:-------------|--|--|
+| FR1.1 | no  | no | yes | no | no |
+| FR1.2 | no  | no | yes | no | no |
+| FR1.3 | no  | yes | yes | no | no |
+| FR1.4 | no  | yes | yes | no | no |
+| FR1.5 | only user X for user X | only user X for user X | yes | only user X for user X | only user X for user X |
+
+| FR2.1 |  <!-- to do -->
+| FR2.2 |  <!-- to do -->
+
+| FR3.1 |  no  | yes | yes | no | no |
+| FR3.2 | yes  | yes | yes | yes | yes |
+| FR3.3 | yes  | yes | yes | no | no |
+| FR3.4 | yes  | yes | yes | yes | yes |
+| FR3.5 |  <!-- to do -->
+| FR3.6 |  <!-- to do -->
+| FR3.7 | no   | yes | yes | no | no |
+
+| FR4.1 | no  | yes | no | no | no |
+| FR4.2 | <!-- to do -->
+| FR4.3 | <!-- to do --> 
+| FR4.4 | yes  | yes | yes| no | yes | 
+| FR4.5 | no  | yes | no | no | no |
+| FR4.6 | yes  | yes | no | no | no |
+| FR4.7 | no  | no | no | no | yes |
+| FR4.8 | yes  | yes | no | no | no | 
+| FR4.9 | no  | yes | no | no | no |
+
+| FR5.1 |  no  | no | yes | no | no |
+| FR5.2 |  no  | no | yes | no | no |
+| FR5.3 | no  | yes | yes | no | no |
+| FR5.4 | no  | yes | yes | no | no |
+| FR5.5 | no  | yes | yes | no | no |
+
+| FR6.1 | yes  | yes | yes | no | no |
+| FR6.2 | yes  | yes | yes | no | no |
+| FR6.3 | yes  | yes | yes | no | no |
+
+| FR7.1 |  <!-- to do --> 
+| FR7.2 | yes  | yes | yes | no | no | 
+| FR7.3 | no  | yes | no | no | no |
+| FR7.4 | yes | yes | yes | only user X for user X | no |
+| FR7.4 | yes | yes | yes | only user X for user X | no |
+| FR7.6 | yes | yes | no | only user X for user X | no |
+
+| FR8.1 | no | no | no | yes | no |
+| FR8.2 | no | no | no | yes | no | <!-- to do --> 
+| FR8.3 | no | no | no | only user X for user X | no | <!-- to do --> 
 
 
 ## Non Functional Requirements
