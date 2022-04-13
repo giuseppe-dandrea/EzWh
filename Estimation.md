@@ -77,8 +77,9 @@ Version:    1.0
 | Design document       | 02/05 |
 | Software release      | 30/05 |
 
+# Gantt Chart
 ###
-[Gantt Chart](GanttChart.pdf)
+[Link to Gantt Chart PDF](GanttChart.pdf)
 
 # Summary
 ### 
