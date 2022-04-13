@@ -158,7 +158,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  												|  								|
 | 	FR 2 	| User's Authentication and functionalities |
 | 	FR 2.1 	|  Authenticate user  |
-| 	FR 2.2	|  Change Password  |
+| 	FR 2.2	|  User Change His Password  |
 |  												|  								|
 |  												|  								|
 |  												|  								|
@@ -208,7 +208,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | 	FR 7.3	| Accept / Reject Order   |
 | 	FR 7.4	| Show all internal orders   |
 | 	FR 7.5	| Search internal order   |
-| 	FR 7.6	| Change order State (Pending , Ready to collect , Collected , Rejected, Cancelled)  |
+| 	FR 7.6	| Change order State (Ready to collect , Collected)  |
 |  												|  								|
 |  												|  								|
 |  												|  								|
