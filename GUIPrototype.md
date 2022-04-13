@@ -1,10 +1,36 @@
 # Graphical User Interface Prototype  
 
-Authors:
+Authors: Abdelrahman SAYED AHMED , Giuseppe D'Andrea , 
 
-Date:
+Date: 13/04/2022
 
-Version:
+Version: 1.3
 
-\<Report here the GUI that you propose. You are free to organize it as you prefer. A suggested presentation matches the Use cases and scenarios defined in the Requirement document. The GUI can be shown as a sequence of graphical files (jpg, png)  >
+# Description
+In the file we proposse separately the intefaces introduced for each type of user , depending on their roles already specified by the adminstrator .
 
+## Access Pages
+
+The GUIs for all users' access , either for registration or for successive logins .
+
+![Image](GUIFrames/Access.jpg "Access")
+
+## Admin Interface
+
+![Image](GUIFrames/AdminGUI.jpg "Admin GUI")
+
+## Manager Interface
+
+![Image](GUIFrames/ManagerGUI.jpg "Manager GUI")
+
+## Organizational Unit Interface
+
+![Image](GUIFrames/OuGUI.jpg "OU GUI")
+
+## Quality Office Interface
+
+![Image](GUIFrames/QualityOfficeGUI.jpg "Quality Office GUI")
+
+## WH Employee Interface
+
+![Image](GUIFrames/EmployeeGUI.jpg "Employee GUI")
