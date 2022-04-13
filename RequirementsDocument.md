@@ -369,7 +369,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 | ------------ |:-------------:| 
 |  Precondition     | user is authenticated && item is not (or is) present in the system |
 |  Post condition     | Item descriptor is inserted/modified/deleted |
-|  Nominal Scenario     | Insert new item descriptor, Modify item descriptor, Delete item descriptor, Show item descriptor |
+|  Nominal Scenario     | Insert new item descriptor, Modify item descriptor, Delete item descriptor, Show item descriptor, Read item barcode |
 |  Variants     |  Modify item descriptor - alarm |
 |  Exceptions     | Insert new item descriptor - failure, Modify item descriptor - failure, delete item descriptor - failure |
 
@@ -395,7 +395,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 3.3 
 
-| Scenario 3.3 | Moodify item descriptor |
+| Scenario 3.3 | Modify item descriptor |
 | ------------- |:-------------:| 
 |  Precondition     | user is authenticated && Item descriptor is present in the system |
 |  Post condition   | Item descriptor is modified |
@@ -449,6 +449,17 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  1     | WH manager searches for the item descriptor to delete  |  
 |  2     | WH manager tries to delete the item descriptor |
 |  3     | System stops the operation because the items are still present in the inventory |
+
+##### Scenario 3.8
+
+| Scenario 3.8 | Read item barcode|
+| ------------- |:-------------:| 
+|  Precondition     | WH employee is authenticated && Items are present in the inventory |
+|  Post condition   | Item quantity is modified |
+| Step#       	    | Description  |
+|  1     | WH employee select if items are in an internal order or in external order  |
+|  2     | For each item in the order, WH empoloyee reads item barcode using the barcode reader  |  
+|  3     | The system searches for item descriptor and increase or decrease quantity by one unit for each barcode read|
 
 ### Use case 4, UC4: Manage external oreder 
 | Actors Involved        | User, item , mail service |
