@@ -220,44 +220,43 @@ Organizational Units can order items from the warehouse and collect them from a 
 ### Access right, actor vs function
 
 | Function | WH employee | WH manager | Administrator | Organizational Unit | Quality office |
-| ------------- |:-------------|--|--|
+| ------------- |:-------------|--|--|--|--|
 | FR1.1 | no  | no | yes | no | no |
 | FR1.2 | no  | no | yes | no | no |
-| FR1.3 | no  | yes | yes | no | no |
-| FR1.4 | no  | yes | yes | no | no |
-| FR1.5 | only user X for user X | only user X for user X | yes | only user X for user X | only user X for user X |
-| FR2.1 |  
-| FR2.2 |  
+| FR1.3 | no  | no | yes | no | no |
+| FR1.4 | no  | no | yes | no | no |
+| FR1.5 |no | no | yes | no | no |
+| FR2.1 |yes|yes|yes|yes|yes|  
+| FR2.2 |yes|yes|yes|yes|yes| 
+| FR2.3 |only user X for user X|only user X for user X|no|only user X for user X|only user X for user X| 
 | FR3.1 |  no  | yes | yes | no | no |
 | FR3.2 | yes  | yes | yes | yes | yes |
 | FR3.3 | yes  | yes | yes | no | no |
 | FR3.4 | yes  | yes | yes | yes | yes |
-| FR3.5 |  
-| FR3.6 |  
+| FR3.6 | yes  | yes | yes | yes | yes |  
 | FR3.7 | no   | yes | yes | no | no |
 | FR4.1 | no  | yes | no | no | no |
-| FR4.2 | 
-| FR4.3 | 
-| FR4.4 | yes  | yes | yes| no | yes |
+| FR4.2 | yes  | yes | no | no | no | 
+| FR4.3 |  yes  | yes | no | no | no |
+| FR4.4 | yes  | yes | no| no | yes |
 | FR4.5 | no  | yes | no | no | no |
-| FR4.6 | yes  | yes | no | no | no |
+| FR4.6 | no  | yes | no | no | no |
 | FR4.7 | no  | no | no | no | yes |
 | FR4.8 | yes  | yes | no | no | no |
-| FR4.9 | no  | yes | no | no | no |
-| FR5.1 |  no  | no | yes | no | no |
-| FR5.2 |  no  | no | yes | no | no |
+| FR4.9 | no  | yes | no | no | yes |
+| FR5.1 |  no  | yes | yes | no | no |
+| FR5.2 |  no  | yes| yes | no | no |
 | FR5.3 | no  | yes | yes | no | no |
 | FR5.4 | no  | yes | yes | no | no |
 | FR5.5 | no  | yes | yes | no | no |
-| FR6.1 | yes  | yes | yes | no | no |
-| FR6.2 | yes  | yes | yes | no | no |
-| FR6.3 | yes  | yes | yes | no | no |
-| FR7.1 |  
-| FR7.2 | yes  | yes | yes | no | no |
-| FR7.3 | no  | yes | no | no | no |
-| FR7.4 | yes | yes | yes | only user X for user X | no |
-| FR7.4 | yes | yes | yes | only user X for user X | no |
-| FR7.6 | yes | yes | no | only user X for user X | no |
+| FR6.1 | yes  | yes | no | no | no |
+| FR6.2 | no  | yes | no | no | no |
+| FR6.3 | yes  | yes | no | no | no |
+| FR7.1 | yes  | yes | no | no | no |
+| FR7.2 | no  | yes | no | no | no |
+| FR7.3 | yes | yes | no | only user X for user X | no |
+| FR7.4 | yes | yes | no | only user X for user X | no |
+| FR7.5 | yes | yes | no | only user X for user X | no |
 | FR8.1 | no | no | no | yes | no |
 | FR8.2 | no | no | no | yes | no | 
 | FR8.3 | no | no | no | only user X for user X | no |
