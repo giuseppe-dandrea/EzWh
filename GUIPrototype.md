@@ -17,7 +17,7 @@ Version: 2
 
 
 # Description
-In the file we proposse separately the intefaces introduced for each type of user , depending on their roles already specified by the adminstrator .
+In the file we propose separately the interfaces introduced for each type of user , depending on their roles already specified by the adminstrator .
 
 ## Access Pages
 
