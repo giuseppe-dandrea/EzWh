@@ -364,65 +364,68 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  2     | Administrator deletes user U from the system  |
 
 
-### Use case 3, UC3: Manage items
+### Use case 3, UC3: Manage item descriptors
 | Actors Involved        | User, item |
 | ------------ |:-------------:| 
 |  Precondition     | user is authenticated && item is not (or is) present in the system |
-|  Post condition     | Item information is inserted/modified/deleted |
-|  Nominal Scenario     | Insert new item, Modify item information, Delete item, Show items |
-|  Variants     |  Modify item information - alarm |
-|  Exceptions     | Insert new item - failure, Modify item information - failure, delete item - failure |
+|  Post condition     | Item descriptor is inserted/modified/deleted |
+|  Nominal Scenario     | Insert new item descriptor, Modify item descriptor, Delete item descriptor, Show item descriptor |
+|  Variants     |  Modify item descriptor - alarm |
+|  Exceptions     | Insert new item descriptor - failure, Modify item descriptor - failure, delete item descriptor - failure |
 
 ##### Scenario 3.1
 
-| Scenario 3.1 |  Insert new item |
+| Scenario 3.1 |  Insert new item descriptor |
 | ------------- |:-------------:| 
-|  Precondition     | WH manager is authenticated && item is not present in the system |
-|  Post condition   | Item is inserted in the system |
+|  Precondition     | WH manager is authenticated && item descriptor is not present in the system |
+|  Post condition   | Item descriptor is inserted in the system |
 | Step#       	    | Description  |
-|  1     |  WH manager inserts new item I and its information in the system  |  
+|  1     |  WH manager inserts new item descriptor I and its information in the system  |  
 
 ##### Scenario 3.2
 
-| Scenario 3.2 |  Insert new item - failure |
+| Scenario 3.2 |  Insert new item descriptor - failure |
 | ------------- |:-------------:| 
-|  Precondition     | WH manager is authenticated && item is present in the system |
-|  Post condition   | Item is not inserted in the system |
+|  Precondition     | WH manager is authenticated && item descriptor is present in the system |
+|  Post condition   | Item descriptor is not inserted in the system |
 | Step#       	    | Description  |
-|  1     | WH manager inserts new item I and its information in the system  |  
-|  2     | Item type is already present in the system and the operation is aborted |
+|  1     | WH manager inserts new item descriptor I and its information in the system  |  
+|  2     | Item descriptor is already present in the system and the operation is aborted |
 
 
 ##### Scenario 3.3 
 
-| Scenario 3.3 | Moodify item information |
+| Scenario 3.3 | Moodify item descriptor |
 | ------------- |:-------------:| 
-|  Precondition     | user is authenticated && Item is present in the system |
-|  Post condition   | Items information are modified |
+|  Precondition     | user is authenticated && Item descriptor is present in the system |
+|  Post condition   | Item descriptor is modified |
 | Step#       	    | Description  |
-|  1     | User accesses the item information that can be modified |  
+|  1     | User accesses the item descriptor that wants to modified |
+|  2     | System shows to user the information that he/she can modify |
 |  2     | User modifies some/all of the information  |
-|  3     | Item information is successfully modified |
+|  3     | Item descriptor is successfully modified |
 
 ##### Scenario 3.4
 
-| Scenario 3.4 | Modify item information - failure  |
+| Scenario 3.4 | Modify item descriptor - failure  |
 | ------------- |:-------------:| 
-|  Precondition     | user is authenticated && Item is present in the system |
-|  Post condition   | Items information are not modified |
+|  Precondition     | user is authenticated && Item descriptor is present in the system |
+|  Post condition   | Items descriptor is not modified |
 | Step#       	    | Description  |
-|  1     | User accesses the item information that can be modified |  
+|  1     | User accesses the item descriptor that wants to modified |
+|  2     | System shows to user the information that he/she can modify | 
 |  2     | User modifies some/all of item information  |
 |  3     | Item information is wrong (quantity < 0, NaN, ...) so the operation is aborted |
 
 ##### Scenario 3.5
 
-| Scenario 3.5 | Modify item information - alarm  |
+| Scenario 3.5 | Modify item descriptor - alarm  |
 | ------------- |:-------------:| 
-|  Precondition     | user is authenticated && Item is present in the system |
-|  Post condition   | Items information are not modified && a notification is sent to WH manager |
+|  Precondition     | user is authenticated && Item descriptor is present in the system |
+|  Post condition   | Items descriptor is not modified && a notification is sent to WH manager |
 | Step#       	    | Description  |
-|  1     | User accesses the item information that can be modified |  
+|  1     | User accesses the item descriptor that wants to modified |
+|  2     | System shows to user the information that he/she can modify | 
 |  2     | User modifies the some/all of item information  |
 |  3     | Item information is below the threshold so the system notifies the WH manager |
 
@@ -430,28 +433,28 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 | Scenario 3.6 | Delete item |
 | ------------- |:-------------:| 
-|  Precondition     | WH manager is authenticated && Item is not present in the inventory |
-|  Post condition   | Item is deleted from the system |
+|  Precondition     | WH manager is authenticated && Item descriptor is not present in the inventory |
+|  Post condition   | Item descriptor is deleted from the system |
 | Step#       	    | Description  |
-|  1     | WH manager searches for the item to delete  |  
-|  2     | Item is deleted  |
+|  1     | WH manager searches for the item descriptor to delete  |  
+|  2     | Item descriptor is deleted  |
 
 ##### Scenario 3.7
 
-| Scenario 3.7 | Delete item - failure |
+| Scenario 3.7 | Delete item descriptor - failure |
 | ------------- |:-------------:| 
-|  Precondition     | WH manager is authenticated && Item is present in the inventory |
-|  Post condition   | Item is not deleted from the system |
+|  Precondition     | WH manager is authenticated && Items are present in the inventory |
+|  Post condition   | Item descriptor is not deleted from the system |
 | Step#       	    | Description  |
-|  1     | WH manager searches for the item to delete  |  
-|  2     | WH manager tries to delete the item  |
-|  3     | System stops the operation because the item is still present in the inventory |
+|  1     | WH manager searches for the item descriptor to delete  |  
+|  2     | WH manager tries to delete the item descriptor |
+|  3     | System stops the operation because the items are still present in the inventory |
 
 ### Use case 4, UC4: Manage external oreder 
 | Actors Involved        | User, item, mail service |
 | ------------ |:-------------:| 
 |  Precondition     | user is authenticated && all item are present in the system |
-|  Post condition     | Order is created/modified/deleted |
+|  Post condition     | External Order is created/modified/deleted |
 |  Nominal Scenario     | Create order, Modify order status into received, Modify order status into cancelled, show orders |
 |  Variants     |  Modify order status into checked, Modify order status into completed, Modify order status into rejected |
 |  Exceptions     |  |
