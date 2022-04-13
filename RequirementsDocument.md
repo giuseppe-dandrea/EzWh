@@ -364,7 +364,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  2     | Administrator deletes user U from the system  |
 
 
-### Use case 3, UC3: Manage item descriptors
+### Use case 3, UC3: Manage item
 | Actors Involved        | User, item |
 | ------------ |:-------------:| 
 |  Precondition     | user is authenticated && item is not (or is) present in the system |
@@ -431,7 +431,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 3.6 
 
-| Scenario 3.6 | Delete item |
+| Scenario 3.6 | Delete item descriptor |
 | ------------- |:-------------:| 
 |  Precondition     | WH manager is authenticated && Item descriptor is not present in the inventory |
 |  Post condition   | Item descriptor is deleted from the system |
@@ -451,29 +451,29 @@ Organizational Units can order items from the warehouse and collect them from a 
 |  3     | System stops the operation because the items are still present in the inventory |
 
 ### Use case 4, UC4: Manage external oreder 
-| Actors Involved        | User, item, mail service |
+| Actors Involved        | User, item , mail service |
 | ------------ |:-------------:| 
 |  Precondition     | user is authenticated && all item are present in the system |
 |  Post condition     | External Order is created/modified/deleted |
-|  Nominal Scenario     | Create order, Modify order status into received, Modify order status into cancelled, show orders |
-|  Variants     |  Modify order status into checked, Modify order status into completed, Modify order status into rejected |
+|  Nominal Scenario     | Create external order, Modify external order status into received, Modify external order status into cancelled, show external orders |
+|  Variants     |  Modify external order status into checked, Modify external order status into completed, Modify external order status into rejected |
 |  Exceptions     |  |
 
 ##### Scenario 4.1
 
-| Scenario 4.1 |  Create order |
+| Scenario 4.1 |  Create external order |
 | ------------- |:-------------:| 
 |  Precondition     | WH manager is authenticated && WH manager has received a notification of low quantity for a certain item |
 |  Post condition   | A new order to the supplier is created via mail && order status is pending |
 | Step#       	    | Description  |
 |  1     | System shows the list of item to be ordered and their information to the WH manager |  
-|  2     | For each item the WH manager chooses the supplier from item's list and quantity to be ordered | 
+|  2     | For each item descriptor the WH manager chooses the supplier from item descriptor's list and quantity to be ordered | 
 |  3     | WH manager inserts these information in a new order |
-|  4     | When WH manager finishes, the order is sent by email to supplier and the order state is set to pending |
+|  4     | The order is sent by email to supplier and the order state is set to pending |
 
 ##### Scenario 4.2
 
-| Scenario 4.2 | Modify order status into received |
+| Scenario 4.2 | Modify external order status into received |
 | ------------- |:-------------:| 
 |  Precondition     | WH employee is authenticated && items have arrived in the warehouse && order status is pending |
 |  Post condition   | A notification to the QO is sent && order status is received |
@@ -483,7 +483,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 4.3
 
-| Scenario 4.3 | Modify order status into checked | 
+| Scenario 4.3 | Modify external order status into checked | 
 | ------------- |:-------------:| 
 |  Precondition     | QO employee is authenticated && QO employee has received a notification && order status is received  |
 |  Post condition   | A notification to the WH employee is sent && order status is checked |
@@ -494,7 +494,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 4.4
 
-| Scenario 4.4 | Modify order status into rejected |
+| Scenario 4.4 | Modify external order status into rejected |
 | ------------- |:-------------:| 
 |  Precondition     | QO employee is authenticated && QO employee has received a notification && order status is received |
 |  Post condition   | A notification to the WH manager is sent && order status is rejected |
@@ -506,18 +506,18 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 4.5
 
-| Scenario 4.5 | Modify order status into completed |
+| Scenario 4.5 | Modify external order status into completed |
 | ------------- |:-------------:| 
 |  Precondition     | WH employee is authenticated && WH employee has received a notification && order status is checked |
 |  Post condition   | A notification to the WH manager is sent && order status is completed && item quantity is updated |
 | Step#       	    | Description  |
-|  1     |  WH emplyee through the mobile device reads item barcode and the system updates item quantity  |  
+|  1     |  WH emplyee through the mobile device reads item barcode and the system updates quantity in item descriptor |  
 |  2     |  When all the items are placed in the warehouse, the WH employee set order status to completed |
 |  4     |  System sends a notification to warehouse manager |
 
 ##### Scenario 4.6
 
-| Scenario 4.6 | Modify order status into cancelled |
+| Scenario 4.6 | Modify external order status into cancelled |
 | ------------- |:-------------:| 
 |  Precondition     | WH manager is authenticated && Order status is pending |
 |  Post condition   | Email is sent to Supplier && Order status is cancelled |
@@ -583,14 +583,14 @@ Organizational Units can order items from the warehouse and collect them from a 
 | Actors Involved        | item, WH manager, WH employee, OU employee |
 | ------------ |:-------------:| 
 |  Precondition     | users are authenticated && items are present in the warehouse && order is in the system|
-|  Post condition     | Order status is modified (or not) |
-|  Nominal Scenario     | Accept order, Modify order status into (Pending, Ready to collect , Collected , Rejected, Cancelled), show internal orders |
+|  Post condition     | Internal order status is modified (or not) |
+|  Nominal Scenario     | Modify internal order status into (Pending, Ready to collect , Collected , Rejected, Cancelled), show internal orders |
 |  Variants     |   |
 |  Exceptions     |    |
 
 ##### Scenario 7.1
 
-| Scenario 7.1 |  Modify order status into Ready to collect |
+| Scenario 7.1 |  Modify internal order status into Ready to collect |
 | ------------- |:-------------:| 
 |  Precondition     | WH employee is authenticated && items are in the warehouse && order status is pending|
 |  Post condition   | Order status is ready to collect && item quantities are modified && OU employee receives a notification |
@@ -605,7 +605,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 7.2
 
-| Scenario 7.2 |  Modidfy order status into collected |
+| Scenario 7.2 |  Modidfy internal order status into collected |
 | ------------- |:-------------:| 
 |  Precondition     | OU employees E1 and E2 are authenticated && order status is ready to collect |
 |  Post condition   | Order status is collected |
@@ -616,7 +616,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 7.3
 
-| Scenario 7.3 |  Modidfy order status into rejected |
+| Scenario 7.3 |  Modidfy internal order status into rejected |
 | ------------- |:-------------:| 
 |  Precondition     | WH manager is authenticated && internal order is in the system |
 |  Post condition   | Order status is rejected |
@@ -627,13 +627,13 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 7.4
 
-| Scenario 7.4 |  Accept order |
+| Scenario 7.4 |  Modidfy internal order status into pending |
 | ------------- |:-------------:| 
 |  Precondition     | WH manager is authenticated && new internal order is in the system |
-|  Post condition   | A notification is sent to Wh employee |
+|  Post condition   | A notification is sent to Wh employee && order status is pending |
 | Step#       	    | Description  |
 |  1     |  WH manager receives a notification for a new internal order  |  
-|  2     |  WH manager accept the order | 
+|  2     |  WH manager accept the order && order status is set to pending | 
 |  3     |  System sends notifications to WH employee |
 
 ### Use case 8, UC8: Manage suppliers
@@ -677,12 +677,12 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ##### Scenario 8.4 
 
-| Scenario 8.4 |  Show suppliers per item |
+| Scenario 8.4 |  Show suppliers per item descriptor |
 | ------------- |:-------------:| 
-|  Precondition     | administrator is authenticated && item is present into the system |
+|  Precondition     | WH manager is authenticated && item descriptor is present into the system |
 |  Post condition   | -- |
 | Step#       	    | Description  |
-|  1     |  Administrator searches for item I  |  
+|  1     |  WH manager searches for item descriptor I  |  
 |  2     | 	The system shows item information with list of all suppliers of the item  |
 
 
