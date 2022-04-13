@@ -283,7 +283,7 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 ## Use case diagram
 
-![Image](UseCaseDiagram.jpg "Use Case Diagram")
+![Image](Diagrams/UseCaseDiagram.jpg "Use Case Diagram")
 
 ### Use case 1, UC1: Authentication
 | Actors Involved        | User |
@@ -755,16 +755,16 @@ Organizational Units can order items from the warehouse and collect them from a 
 
 # Glossary
 
-![Image](Glossary.png "Glossary")
+![Image](Diagrams/Glossary.png "Glossary")
 
 
 # System Design
 
-![Image](System%20Design.jpg "System Design")
+![Image](Diagrams/System%20Design.jpg "System Design")
 
 # Deployment Diagram 
 
-![Image](Deployment%20Diagram.jpg "Deployment Diagram")
+![Image](Diagrams/Deployment%20Diagram.jpg "Deployment Diagram")
 
 
 
