@@ -59,6 +59,7 @@ class EzWh {
 	+ modifyPosition(positionId : String, newAisleId : String, newRow : String, newCol : String, newMaxWeight : Double, newMaxVolume : Double, newOccupiedWeight : Double, newOccupiedVolume : Double) : void
 	+ modifyPositionId(positionId : String, newPositionId: String) : void
 	+ deletePositionId(positionId : String) : void
+	~ getPositionById(positionId : String) : Position
 	..
 	{method} listAllTestDescriptors(): Array<TestDescriptor>
 	{method} getTestDescriptorByID(ID: integer): TestDescriptor
@@ -91,6 +92,8 @@ class SKU {
 	- availableQuantity : Integer
 	- testDescriptors : List<TestDescriptor>
 	__
+	+ SKU(id : String, description : String, weight : Double, volume : Double, notes : string, price : Double, availableQuantity : Integer) : SKU
+	..
 	+ getId() : String
 	+ getDescription() : String
 	+ getWeight() : Double
@@ -123,6 +126,7 @@ class SKUItem {
 	- dateOfStock : String
 	- testResults : List<TestResult>
 	__
+	+ SKUItem(rfid : String, SKUid : String, dateOfStock : String) : SKUItem
 	+ getRfid() : String
 	+ getSKU() : SKU
 	+ getAvailable() : Bool
@@ -150,6 +154,8 @@ class Position {
 	- occupiedVolume : Double
 	- sku : SKU
 	__
+	+ Position(positionId : String, aisleId : String, row : String, col : String, maxWeight : Double, maxVolume : Double) : Position
+	..
 	+ getPositionId() : String
 	+ getAisleId() : String
 	+ getRow() : String
@@ -258,3 +264,98 @@ TestDescriptor -- "*" TestResult
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
+## Scenario 1-1
+```plantuml
+actor Manager
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant SKU
+
+Manager -> EzWh: Selects description D, weight W, volume V,\nnotes N, price P, availableQuantity Q
+EzWh -> Facade: createSKU(D, W, V, N, P, Q)
+activate Facade
+Facade -> Facade: id = len(SKUs)
+Facade -> SKU: new SKU(id, D, W, V, N, P, Q)
+activate SKU
+SKU --> Facade: SKU
+deactivate SKU
+deactivate Facade
+```
+
+## Scenario 1-3
+```plantuml
+actor Manager
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant SKU
+
+
+Manager -> EzWh: Selects SKU S, description D, newWeight W, newVolume V,\nnotes N, price, P, availableQuantity Q
+EzWh -> Facade: modifySKU(S, D, W, V, N, P, Q)
+activate Facade
+Facade -> Facade: SKU = getSKUById(S)
+Facade -> SKU: SKU.setDescription(D)
+activate SKU
+SKU --> Facade: Done
+deactivate SKU
+Facade -> SKU: SKU.setWeight(W)
+activate SKU
+SKU --> Facade: Done
+deactivate SKU
+Facade -> SKU: SKU.setVolume(V)
+activate SKU
+SKU --> Facade: Done
+deactivate SKU
+Facade -> SKU: SKU.setNotes(N)
+activate SKU
+SKU --> Facade: Done
+deactivate SKU
+Facade -> SKU: SKU.setPrice(P)
+activate SKU
+SKU --> Facade: Done
+deactivate SKU
+Facade -> SKU: SKU.setAvailableQuantity(Q)
+activate SKU
+SKU --> Facade: Done
+deactivate SKU
+deactivate Facade
+```
+
+## Scenario 2-1
+```plantuml
+actor Manager
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant Position
+
+Manager -> EzWh: Selects positionId P, aisleId A, row R,\ncol C, maxWeight W, maxVolume V
+EzWh -> Facade: createPosition(P, A, R, C, W, V)
+activate Facade
+Facade -> Position: new Position(P, A, R, C, W, V)
+activate Position
+Position --> Facade: Position
+deactivate Position
+deactivate Facade
+```
+
+## Scenario 2-2
+```plantuml
+actor Manager
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant Position
+
+Manager -> EzWh: Selects positionId P and newPositionId N
+EzWh -> Facade: modifyPositionId(P, N)
+activate Facade
+Facade -> Facade: pos = getPositionById(P)
+Facade -> Position: pos.setPositionId(N)
+activate Position
+Position --> Facade: Done
+deactivate Position
+deactivate Facade
+```
