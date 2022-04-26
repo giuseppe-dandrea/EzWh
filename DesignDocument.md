@@ -91,7 +91,7 @@ class EzWh {
 	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : void
 	+ modifyRestockOrder(id : Integer, state : RestockOrderState)
 	+ addSkuItemsToRestockOrder(id : Integer, skuItems : List<SKUItem>) : void
-	+ addTransportNoteToRestockOrder(transportNote : JSON) : void
+	+ addTransportNoteToRestockOrder(transportNote : TransportNote) : void
 	+ deleteRestockOrder(id : Integer) : void
 	..
 	+ getReturnOrders() : List<ReturnOrder>
@@ -372,7 +372,7 @@ class RestockOrder {
 	- state : RestockOrderState
 	- products : Map<Item, Integer>
 	- supplierId : Integer
-	- transportNote : JSON
+	- transportNote : TransportNote
 	- skuItems : List<SKUItem>
 	--
 	+ RestockOrder(id: Integer, issueDate : String, state : RestockOrderState, products : List <SKU>, supplierId : Integer, transportNote : TransportNote) : void
@@ -383,7 +383,7 @@ class RestockOrder {
 	+ getState() : RestockOrderState
 	+ getProducts() : Map<Item, Integer>
 	+ getSupplierId() : Integer
-	+ getTransportNote() : ???
+	+ getTransportNote() : TransportNote
 	+ getSkuItems() : List<SKUItem>
 	..
 	+ setId(id : Integer) : void
@@ -391,8 +391,18 @@ class RestockOrder {
 	+ setState(state : RestockOrderState) : void
 	+ setProducts(products : Map<Item, Integer>) : void
 	+ setSupplierId(supplierId : Integer) : void
-	+ setTransportNote(transportNote : JSON) : void
+	+ setTransportNote(transportNote : TransportNote) : void
 	+ setSkuItems(skuItems : List<SKUItem>) : void
+}
+
+class TransportNote {
+	- shipmentDate : String
+	__
+	+ TransportNote(shipmentDate : String)
+	..
+	+ getShipmentDate() : String
+	..
+	+ setShipmentDate(shipmentDate : String) : void
 }
 
 EzWh -- SKU : Inventory
@@ -408,6 +418,7 @@ EzWh -- Position : Warehouse
 UserType -- User
 InternalOrderState -- InternalOrder
 RestockOrderState -- RestockOrder
+RestockOrder -- TransportNote
 ```
 
 # Verification traceability matrix
