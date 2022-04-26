@@ -1,12 +1,10 @@
-# Design Document 
+# Design Document
 
-
-Authors: 
+Authors:
 
 Date:
 
 Version:
-
 
 # Contents
 
@@ -19,15 +17,10 @@ Version:
 
 The design must satisfy the Official Requirements document, notably functional and non functional requirements, and be consistent with the APIs
 
-# High level design 
+# High level design
 
 <discuss architectural styles used, if any>
 <report package diagram, if needed>
-
-
-
-
-
 
 # Low level design
 
@@ -79,6 +72,13 @@ class EzWh {
 	{method} logout(ID: integer): void
 	{method} modifyUserRights(email: string, oldType: string, newType: string): void
 	{method} deleteUser(email: string, type: string): void
+
+	 ..
+	+ getItems (): List<Item>
+	+ getItemById (id) : Item
+	+ addNewItem( description: string, price : double, SKUId : string, supplierId : string): Item
+	+ modifyItem(id: string, newDescription: string, newPrice: double ): void
+	+ deleteItem(id:string) : void
 }
 
 class SKU {
@@ -241,30 +241,42 @@ class User {
 	{method} new(ID: integer, name: string, surname: string, email: string, type: string, password: string): User
 }
 
+class Item{
+	- Id:String
+	- description : string
+	- price : double
+	- SKUId : string
+	- supplierId : string
+	__
+	+ getId() : string
+	+ getDescription() : string
+	+ getPrice() : double
+	+ getSKUId() : string
+	+ getSupplierId() : string
+	..
+	+ setId(string) : void
+	+ getDescription(string) : void
+	+ getPrice(string) : void
+	+ getSKUId(string) : void
+	+ getSupplierId(string) : void
+}
+
 EzWh -- "*" SKU
 SKU -- "*" SKUItem
 SKUItem -- "*" TestResult
-TestDescriptor -- "*" TestResult 
+TestDescriptor -- "*" TestResult
 ```
 
 # Verification traceability matrix
 
 \<for each functional requirement from the requirement document, list which classes concur to implement it>
 
+# Verification sequence diagrams
 
-
-
-
-
-
-
-
-
-
-# Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
 ## Scenario 1-1
+
 ```plantuml
 actor Manager
 participant EzWh
@@ -284,6 +296,7 @@ deactivate Facade
 ```
 
 ## Scenario 1-3
+
 ```plantuml
 actor Manager
 participant EzWh
@@ -324,6 +337,7 @@ deactivate Facade
 ```
 
 ## Scenario 2-1
+
 ```plantuml
 actor Manager
 participant EzWh
@@ -342,6 +356,7 @@ deactivate Facade
 ```
 
 ## Scenario 2-2
+
 ```plantuml
 actor Manager
 participant EzWh
