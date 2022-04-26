@@ -269,7 +269,16 @@ TestDescriptor -- "*" TestResult
 
 # Verification traceability matrix
 
-\<for each functional requirement from the requirement document, list which classes concur to implement it>
+| FR  | EzWh | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder |
+| --- | :--: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: |
+| FR1 |  x   |      |     |         |                |            |          |      |              |               |             |
+| FR2 |  x   |      |     |         |                |            |          |      |              |               |             |
+| FR3 |  x   |      |     |         |                |            |          |      |              |               |             |
+| FR4 |  x   |      |     |         |                |            |          |      |              |               |             |
+| FR5 |  x   |      |     |         |                |            |          |      |              |               |             |
+| FR6 |  x   |      |     |         |                |            |          |      |              |               |             |
+| FR7 |  x   |      |     |         |                |            |          |      |              |               |             |
+| FR8 |  x   |  x   |  x  |         |                |            |          |  x   |              |               |             |
 
 # Verification sequence diagrams
 
