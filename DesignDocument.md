@@ -29,11 +29,11 @@ class EzWh {
 	+ SKUs : List<SKU>
 	+ SKUItems : List<SKUItem>
 	+ positions : List<Position>
-	testDescriptors: Array<TestDescriptor>
-	users: Array<User>
-	+restockOrderList : List<RestockOrder>
-	+returnOrderList : List<ReturnOrder>
-	+internalOrderList : List<InternalOrder>
+	+ testDescriptors: List<TestDescriptor>
+	+ users: List<User>
+	+ restockOrders : List<RestockOrder>
+	+ returnOrders : List<ReturnOrder>
+	+ internalOrders : List<InternalOrder>
 	__
 	+ getSKUs() : List<SKU>
 	+ getSKUById(id : String) : SKU
@@ -57,54 +57,55 @@ class EzWh {
 	+ deletePositionId(positionId : String) : void
 	~ getPositionById(positionId : String) : Position
 	..
-	{method} listAllTestDescriptors(): Array<TestDescriptor>
-	{method} getTestDescriptorByID(ID: integer): TestDescriptor
-	{method} addTestDescriptor(name: string, procedureDescription: string, idSKU: integer): void
-	{method} modifyTestDescriptor(ID: integer, newName: string, newProcedureDescription: string, newIdSKU: integer): void
-	{method} deleteTestDescriptor(ID: integer): void
-	{method} listAllTestResultsByRFID(RFID: string): Array<TestResult>
-	{method} getTestResultByIDAndRFID(RFID: string, ID: integer): TestResult
-	{method} addTestResult(RFID: string, idTestDescriptor: integer, date: string, result: boolean): void
-	{method} modifyTestResult(RFID: string, ID: integer, newIdTestDescriptor: integer, newDate: string, newResult: boolean): void
-	{method} deleteTestResult(RFID: string, ID: integer): void
-	{method} getUserInfo(ID: integer): User
-	{method} listAllSuppliers(): Array<User>
-	{method} listAllUsers(): Array<User>
-	{method} addUser(email: string, name: string, surname: string, password: string, type: string): void
-	{method} login(email: string, password: string, type: string): User
-	{method} logout(ID: integer): void
-	{method} modifyUserRights(email: string, oldType: string, newType: string): void
-	{method} deleteUser(email: string, type: string): void
-
-	 ..
+	+ listAllTestDescriptors(): List<TestDescriptor>
+	+ getTestDescriptorByID(ID: integer): TestDescriptor
+	+ addTestDescriptor(name: string, procedureDescription: string, idSKU: integer): void
+	+ modifyTestDescriptor(ID: integer, newName: string, newProcedureDescription: string, newIdSKU: integer): void
+	+ deleteTestDescriptor(ID: integer): void
+	..
+	+ listAllTestResultsByRFID(RFID: string): List<TestResult>
+	+ getTestResultByIDAndRFID(RFID: string, ID: integer): TestResult
+	+ addTestResult(RFID: string, idTestDescriptor: integer, date: string, result: boolean): void
+	+ modifyTestResult(RFID: string, ID: integer, newIdTestDescriptor: integer, newDate: string, newResult: boolean): void
+	+ deleteTestResult(RFID: string, ID: integer): void
+	..
+	+ getUserInfo(ID: integer): User
+	+ listAllSuppliers(): List<User>
+	+ listAllUsers(): List<User>
+	+ addUser(email: string, name: string, surname: string, password: string, type: string): void
+	+ login(email: string, password: string, type: string): User
+	+ logout(id : Integer): void
+	+ modifyUserRights(email: string, oldType: string, newType: string): void
+	+ deleteUser(email: string, type: string): void
+	..
 	+ getItems (): List<Item>
 	+ getItemById (id: string) : Item
 	+ addNewItem( description: string, price : double, SKUId : string, supplierId : string): Item
 	+ modifyItem(id: string, newDescription: string, newPrice: double ): void
 	+ deleteItem(id:string) : void
 	..
-	+getRestockOrders() : List<RestockOrder>
-	+getRestockOrdersIssued() : List<RestockOrder>
-	+getRestockOrderById(id : Integer) : RestockOrder
-	+getRestockOrderReturnItems(id : Integer) : List<SKUItem>
-	+createRestockOrder(issueDate : String, products : List <SKU>, supplierId : Integer) : void
-	+modifyRestockOrder(id : Integer, state : String)
-	+addSkuItemsToRestockOrder(id : Integer, skuItems : List<skuItems>) : void
-	+addTransportNoteToRestockOrder(transportNote : JSON) : void
-	+deleteRestockOrder(id : Integer) : void
+	+ getRestockOrders() : List<RestockOrder>
+	+ getRestockOrdersIssued() : List<RestockOrder>
+	+ getRestockOrderById(id : Integer) : RestockOrder
+	+ getRestockOrderReturnItems(id : Integer) : List<SKUItem>
+	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : void
+	+ modifyRestockOrder(id : Integer, state : String)
+	+ addSkuItemsToRestockOrder(id : Integer, skuItems : List<SKUItem>) : void
+	+ addTransportNoteToRestockOrder(transportNote : JSON) : void
+	+ deleteRestockOrder(id : Integer) : void
 	..
-	+getReturnOrders() : List<ReturnOrder>
-	+getReturnOrderById(id : Integer) : ReturnOrder
-	+createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : void
-	+deleteReturnOrder(id : Integer) : void
+	+ getReturnOrders() : List<ReturnOrder>
+	+ getReturnOrderById(id : Integer) : ReturnOrder
+	+ createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : void
+	+ deleteReturnOrder(id : Integer) : void
 	..
-	+getInternalOrders() : List<InternalOrder>
-	+getInternalOrdersIssued() : List<InternalOrder>
-	+getInternalOrdersAccepted() : List<InternalOrder>
-	+getInternalOrderById(id : Integer) : InternalOrder
-	+createInternalOrder(issueDate : String, state : String, products : List<SkuItem>) : void
-	+ModifyInternalOrderState(state : String, RFIDs : List<JSON>)
-	+deleteInternalOrder(id : Integer) : void
+	+ getInternalOrders() : List<InternalOrder>
+	+ getInternalOrdersIssued() : List<InternalOrder>
+	+ getInternalOrdersAccepted() : List<InternalOrder>
+	+ getInternalOrderById(id : Integer) : InternalOrder
+	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : void
+	+ modifyInternalOrderState(state : String, RFIDs : List<JSON>)
+	+ deleteInternalOrder(id : Integer) : void
 }
 
 class SKU {
@@ -145,30 +146,6 @@ class SKU {
 
 }
 
-class SKUItem {
-	- rfid : String
-	- sku : SKU
-	- available : Bool
-	- dateOfStock : String
-	- testResults : List<TestResult>
-	__
-	+ SKUItem(rfid : String, SKUid : String, dateOfStock : String) : SKUItem
-	+ getRfid() : String
-	+ getSKU() : SKU
-	+ getAvailable() : Bool
-	+ getDateOfStock() : String
-	+ getTestResults() : List<TestResult>
-	..
-	+ setRfid(rfid : String) : void
-	+ setSKU(sku : SKU) : void
-	+ setAvailable(available : Bool) : void
-	+ setDateOfStock(dateOfStock : String) : void
-	+ setTestResults(testResults : List<TestResult>) : void
-	..
-	+ initTestResults() : void
-	+ addTestResult(testResult : TestResult) : void
-}
-
 class Position {
 	- positionId : String
 	- aisleId : String
@@ -203,77 +180,108 @@ class Position {
 	+ setSku(sku : SKU) : void
 }
 
-class TestDescriptor {
-	ID: integer
-	name: string
-	procedureDescription: string
-	idSKU: integer
-	{method} getID(): integer
-	{method} setID(ID: integer): void
-	{method} getName(): string
-	{method} setName(name: string): void
-	{method} getProcedureDescription(): string
-	{method} setProcedureDescription(procedureDescription: string): void
-	{method} getIdSKU(): integer
-	{method} setIdSKU(idSKU: integer): void
-	{method} new(ID: integer, name: string, procedureDescription: string, idSKU: integer): TestDescriptor
-}
-
-
-class TestResult {
-	ID: integer
-	idTestDescriptor: integer
-	date: string
-	result: boolean
-	{method} getID(): integer
-	{method} setID(ID: integer): void
-	{method} getIdTestDescriptor(): integer
-	{method} setIdTestDescriptor(idTestDescriptor: integer): void
-	{method} getDate(): string
-	{method} setDate(date: string): void
-	{method} getResult(): boolean
-	{method} setResult(result: boolean): void
-	{method} new(ID: integer, idTestDescriptor: integer, date: string, result: boolean): TestResult
-}
+together {
 
 class SKUItem {
-	RFID: string
-	testResults: Array<TestResult>
-	{method} getTestResults(): Array<TestResult>
-	{method} addTestResult(ID: integer, idTestDescriptor: integer, date: string, result: boolean): void
-	{method} modifyTestResult(ID: integer, newIdTestDescriptor: integer, newDate: string, newResult: boolean): void
-	{method} deleteTestResult(ID: integer): void
+	- rfid : String
+	- sku : SKU
+	- available : Bool
+	- dateOfStock : String
+	- testResults : List<TestResult>
+	__
+	+ SKUItem(rfid : String, SKUid : String, dateOfStock : String) : SKUItem
+	+ getRfid() : String
+	+ getSKU() : SKU
+	+ getAvailable() : Bool
+	+ getDateOfStock() : String
+	+ getTestResults() : List<TestResult>
+	..
+	+ setRfid(rfid : String) : void
+	+ setSKU(sku : SKU) : void
+	+ setAvailable(available : Bool) : void
+	+ setDateOfStock(dateOfStock : String) : void
+	+ setTestResults(testResults : List<TestResult>) : void
+	..
+	+ initTestResults() : void
+	+ addTestResult(testResult : TestResult) : void
+	+ modifyTestResult(ID: integer, newIdTestDescriptor: integer, newDate: string, newResult: boolean): void
+	+ deleteTestResult(ID: integer): void
+}
+
+class TestDescriptor {
+	- ID: integer
+	- name: string
+	- procedureDescription: string
+	- idSKU: integer
+	__
+	+ TestDescriptor(ID: integer, name: string, procedureDescription: string, idSKU: integer): TestDescriptor
+	..
+	+ getID(): integer
+	+ getName(): string
+	+ getProcedureDescription(): string
+	+ getIdSKU(): integer
+	..
+	+ setID(ID: integer): void
+	+ setName(name: string): void
+	+ setProcedureDescription(procedureDescription: string): void
+	+ setIdSKU(idSKU: integer): void
+}
+
+class TestResult {
+	- ID: integer
+	- idTestDescriptor: integer
+	- date: string
+	- result: boolean
+	__
+	+ TestResult(ID: integer, idTestDescriptor: integer, date: string, result: boolean): TestResult
+	..
+	+ getID(): integer
+	+ getIdTestDescriptor(): integer
+	+ getDate(): string
+	+ getResult(): boolean
+	..
+	+ setID(ID: integer): void
+	+ setIdTestDescriptor(idTestDescriptor: integer): void
+	+ setDate(date: string): void
+	+ setResult(result: boolean): void
+}
+
 }
 
 class User {
-	ID: integer
-	name: string
-	surname: string
-	email: string
-	type: string
-	password: string
-	{method} getID(): integer
-	{method} setID(ID: integer): void
-	{method} getName(): string
-	{method} setName(name: string): void
-	{method} getSurname(): string
-	{method} setSurname(surname: string): void
-	{method} getEmail(): string
-	{method} setEmail(email: string): void
-	{method} getType(): string
-	{method} setType(): string
-	{method} getPassword(): string
-	{method} setPassword(password: string): void
-	{method} new(ID: integer, name: string, surname: string, email: string, type: string, password: string): User
+	- ID: integer
+	- name: string
+	- surname: string
+	- email: string
+	- type: string
+	- password: string
+	__
+	+ User(ID: integer, name: string, surname: string, email: string, type: string, password: string): User
+	..
+	+ getID(): integer
+	+ getName(): string
+	+ getSurname(): string
+	+ getEmail(): string
+	+ getType(): string
+	+ getPassword(): string
+	..
+	+ setID(ID: integer): void
+	+ setName(name: string): void
+	+ setSurname(surname: string): void
+	+ setEmail(email: string): void
+	+ setType(): string
+	+ setPassword(password: string): void
 }
 
-class Item{
+class Item {
 	- Id:String
 	- description : string
 	- price : double
 	- SKUId : string
 	- supplierId : string
 	__
+	+ Item(id : String, description: string, price : double, SKUId : string, supplierId : string)
+	..
 	+ getId() : string
 	+ getDescription() : string
 	+ getPrice() : double
@@ -286,73 +294,90 @@ class Item{
 	+ setSKUId(SKUId :string) : void
 	+ setSupplierId(supplierId : string) : void
 }
-class InternalOrder{
-	-id : Integer
-	-issueDate : String
-	-state : String
-	-products : List<SkuItems>
-	-customerId : Integer
+
+class InternalOrder {
+	- id : Integer
+	- issueDate : String
+	- state : String
+	- products : Map<SKU, Integer>
+	- customerId : Integer
+	- skuItems : List<SKUItem>
 	--
-	+getId() : Integer
-	+getIssueDate() : String
-	+getState() : String
-	+getProducts() : List<SkuItem>
-	+getCustomerId() : Integer
+	+ InternalOrder(id: Integer, issueDate : String, state : String, products : List<SkuItem>, customerId : Integer) : void
 	..
-	+setId(id : Integer) : void
-	+setIssueDate(issueDate : String) : void
-	+setState(state : String) : void
-	+setProducts(products : List<SkuItem>) : void
-	+setCustomerId(customerId : Integer) : void
+	+ getId() : Integer
+	+ getIssueDate() : String
+	+ getState() : String
+	+ getProducts() : Map<SKU, Integer>
+	+ getCustomerId() : Integer
+	+ getSkuItems() : List<SKUItem>
+	..
+	+ setId(id : Integer) : void
+	+ setIssueDate(issueDate : String) : void
+	+ setState(state : String) : void
+	+ setProducts(products : Map<SKU, Integer>) : void
+	+ setCustomerId(customerId : Integer) : void
+	+ setSkuItems(skuItems : List<SKUItem>) : void
 }
 
-class ReturnOrder{
-	-id : Integer
-	-returnDate : String
-	-products : List<SkuItem>
-	-restockOrderId : Integer
+class ReturnOrder {
+	- id : Integer
+	- returnDate : String
+	- products : List<SkuItem>
+	- restockOrderId : Integer
 	--
-	+getId() : Integer
-	+getReturnDate() : String
-	+getProducts() : List<SkuItem>
-	+getRestockOrderId() : Integer
+	+ ReturnOrder(id: Integer, returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : void
 	..
-	+setId(id : Integer) : void
-	+setReturnDate(returnDate : String) : void
-	+setProducts(products : List<SkuItem>) : void
-	+setRestockOrderId(restockOrderId : Integer) : void
+	+ getId() : Integer
+	+ getReturnDate() : String
+	+ getProducts() : List<SkuItem>
+	+ getRestockOrderId() : Integer
+	..
+	+ setId(id : Integer) : void
+	+ setReturnDate(returnDate : String) : void
+	+ setProducts(products : List<SkuItem>) : void
+	+ setRestockOrderId(restockOrderId : Integer) : void
 }
 
-class RestockOrder{
-	-id : Integer
-	-issueDate : String
-	-state : String
-	-products : List<SKU>
-	-supplierId : Integer
-	-transportNote : JSON
-	-skuItems : List<SKUItem>
+class RestockOrder {
+	- id : Integer
+	- issueDate : String
+	- state : String
+	- products : Map<Item, Integer>
+	- supplierId : Integer
+	- transportNote : JSON
+	- skuItems : List<SKUItem>
 	--
-	+getId() : Integer
-	+getIssueDate() : String
-	+getState() : String
-	+getProducts() : List<SKU>
-	+getSupplierId() : Integer
-	+getTransportNote() : ???
-	+getSkuItems() : List<SKUItem>
+	+ RestockOrder(id: Integer, issueDate : String, state : String, products : List <SKU>, supplierId : Integer, transportNote : TransportNote) : void
+	+ RestockOrder(id: Integer, issueDate : String, state : String, products : List <SKU>, supplierId : Integer, transportNote : TransportNote, skuItems : List<SKUItem>) : void
 	..
-	+setId(id : Integer) : void
-	+setIssueDate(issueDate : String) : void
-	+setState(state : String) : void
-	+setProducts(products : List<SKU>) : void
-	+setSupplierId(supplierId : Integer) : void
-	+setTransportNote(transportNote : JSON) : void
-	+setSkuItems(skuItems : List<SKUItem>) : void
+	+ getId() : Integer
+	+ getIssueDate() : String
+	+ getState() : String
+	+ getProducts() : Map<Item, Integer>
+	+ getSupplierId() : Integer
+	+ getTransportNote() : ???
+	+ getSkuItems() : List<SKUItem>
+	..
+	+ setId(id : Integer) : void
+	+ setIssueDate(issueDate : String) : void
+	+ setState(state : String) : void
+	+ setProducts(products : Map<Item, Integer>) : void
+	+ setSupplierId(supplierId : Integer) : void
+	+ setTransportNote(transportNote : JSON) : void
+	+ setSkuItems(skuItems : List<SKUItem>) : void
 }
 
-EzWh -- "*" SKU
-SKU -- "*" SKUItem
-SKUItem -- "*" TestResult
-TestDescriptor -- "*" TestResult
+EzWh -- SKU : Inventory
+SKU --  SKUItem : Describe
+SKUItem -- TestResult
+TestResult -u- TestDescriptor: Describe
+EzWh -- RestockOrder
+EzWh -- ReturnOrder
+EzWh -- InternalOrder
+RestockOrder -- Item
+EzWh -- User
+EzWh -- Position : Warehouse
 ```
 
 # Verification traceability matrix
