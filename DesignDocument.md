@@ -89,7 +89,7 @@ class EzWh {
 	+ getRestockOrderById(id : Integer) : RestockOrder
 	+ getRestockOrderReturnItems(id : Integer) : List<SKUItem>
 	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : void
-	+ modifyRestockOrder(id : Integer, state : String)
+	+ modifyRestockOrder(id : Integer, state : RestockOrderState)
 	+ addSkuItemsToRestockOrder(id : Integer, skuItems : List<SKUItem>) : void
 	+ addTransportNoteToRestockOrder(transportNote : JSON) : void
 	+ deleteRestockOrder(id : Integer) : void
@@ -104,7 +104,7 @@ class EzWh {
 	+ getInternalOrdersAccepted() : List<InternalOrder>
 	+ getInternalOrderById(id : Integer) : InternalOrder
 	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : void
-	+ modifyInternalOrderState(state : String, RFIDs : List<JSON>)
+	+ modifyInternalOrderState(state : InternalOrderState, RFIDs : List<JSON>)
 	+ deleteInternalOrder(id : Integer) : void
 }
 
@@ -248,12 +248,22 @@ class TestResult {
 
 }
 
+enum UserType {
+	ADMINISTRATOR
+	MANAGER
+	CLERK
+	DELIVERYEMLPOYEE
+	QUALITYCHECKEMPLOYEE
+	INTERNALCUSTOMER
+	SUPPLIER
+}
+
 class User {
 	- ID: integer
 	- name: string
 	- surname: string
 	- email: string
-	- type: string
+	- type: UserType
 	- password: string
 	__
 	+ User(ID: integer, name: string, surname: string, email: string, type: string, password: string): User
@@ -262,14 +272,14 @@ class User {
 	+ getName(): string
 	+ getSurname(): string
 	+ getEmail(): string
-	+ getType(): string
+	+ getType(): UserType
 	+ getPassword(): string
 	..
 	+ setID(ID: integer): void
 	+ setName(name: string): void
 	+ setSurname(surname: string): void
 	+ setEmail(email: string): void
-	+ setType(): string
+	+ setType(type : UserType): string
 	+ setPassword(password: string): void
 }
 
@@ -295,26 +305,34 @@ class Item {
 	+ setSupplierId(supplierId : string) : void
 }
 
+enum InternalOrderState {
+	ISSUED
+	ACCEPTED
+	REFUSED
+	CANCELED
+	COMPLETED
+}
+
 class InternalOrder {
 	- id : Integer
 	- issueDate : String
-	- state : String
+	- state : InternalOrderState
 	- products : Map<SKU, Integer>
 	- customerId : Integer
 	- skuItems : List<SKUItem>
 	--
-	+ InternalOrder(id: Integer, issueDate : String, state : String, products : List<SkuItem>, customerId : Integer) : void
+	+ InternalOrder(id: Integer, issueDate : String, state : InternalOrderState, products : List<SkuItem>, customerId : Integer) : void
 	..
 	+ getId() : Integer
 	+ getIssueDate() : String
-	+ getState() : String
+	+ getState() : InternalOrderState
 	+ getProducts() : Map<SKU, Integer>
 	+ getCustomerId() : Integer
 	+ getSkuItems() : List<SKUItem>
 	..
 	+ setId(id : Integer) : void
 	+ setIssueDate(issueDate : String) : void
-	+ setState(state : String) : void
+	+ setState(state : InternalOrderState) : void
 	+ setProducts(products : Map<SKU, Integer>) : void
 	+ setCustomerId(customerId : Integer) : void
 	+ setSkuItems(skuItems : List<SKUItem>) : void
@@ -339,21 +357,30 @@ class ReturnOrder {
 	+ setRestockOrderId(restockOrderId : Integer) : void
 }
 
+enum RestockOrderState {
+	ISSUED
+	DELIVERY
+	DELIVERED
+	TESTED
+	COMPLETEDRETURN
+	COMPLETED
+}
+
 class RestockOrder {
 	- id : Integer
 	- issueDate : String
-	- state : String
+	- state : RestockOrderState
 	- products : Map<Item, Integer>
 	- supplierId : Integer
 	- transportNote : JSON
 	- skuItems : List<SKUItem>
 	--
-	+ RestockOrder(id: Integer, issueDate : String, state : String, products : List <SKU>, supplierId : Integer, transportNote : TransportNote) : void
-	+ RestockOrder(id: Integer, issueDate : String, state : String, products : List <SKU>, supplierId : Integer, transportNote : TransportNote, skuItems : List<SKUItem>) : void
+	+ RestockOrder(id: Integer, issueDate : String, state : RestockOrderState, products : List <SKU>, supplierId : Integer, transportNote : TransportNote) : void
+	+ RestockOrder(id: Integer, issueDate : String, state : RestockOrderState, products : List <SKU>, supplierId : Integer, transportNote : TransportNote, skuItems : List<SKUItem>) : void
 	..
 	+ getId() : Integer
 	+ getIssueDate() : String
-	+ getState() : String
+	+ getState() : RestockOrderState
 	+ getProducts() : Map<Item, Integer>
 	+ getSupplierId() : Integer
 	+ getTransportNote() : ???
@@ -361,7 +388,7 @@ class RestockOrder {
 	..
 	+ setId(id : Integer) : void
 	+ setIssueDate(issueDate : String) : void
-	+ setState(state : String) : void
+	+ setState(state : RestockOrderState) : void
 	+ setProducts(products : Map<Item, Integer>) : void
 	+ setSupplierId(supplierId : Integer) : void
 	+ setTransportNote(transportNote : JSON) : void
@@ -378,6 +405,9 @@ EzWh -- InternalOrder
 RestockOrder -- Item
 EzWh -- User
 EzWh -- Position : Warehouse
+UserType -- User
+InternalOrderState -- InternalOrder
+RestockOrderState -- RestockOrder
 ```
 
 # Verification traceability matrix
