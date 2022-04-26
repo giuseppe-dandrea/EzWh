@@ -77,6 +77,7 @@ class EzWh {
 	+ logout(id : Integer): void
 	+ modifyUserRights(email: String, oldType: String, newType: String): void
 	+ deleteUser(email: String, type: String): void
+	~ getUserByEmail(email: String): User
 	..
 	+ getItems (): List<Item>
 	+ getItemById (id: String) : Item
@@ -536,4 +537,94 @@ activate Position
 Position --> Facade: Done
 deactivate Position
 deactivate Facade
+```
+
+## Scenario 4-1 <!-- Manager -->
+```plantuml
+actor Administrator
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant User
+
+Administrator -> EzWh: Selects email EM, name N, surname S, password P, type T
+EzWh -> Facade: addUser(EM, N, S, P, T)
+activate Facade
+Facade -> Facade: id = len(users)
+Facade -> User: new User(id, N, S, EM, T, P)
+activate User
+User -> Facade: User
+deactivate User
+Facade --> EzWh: Done
+deactivate Facade
+EzWh --> Administrator: Done
+```
+
+## Scenario 4-2 <!--Manager--> 
+```plantuml
+actor Administrator
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant User
+
+Administrator -> EzWh: Selects email EM, oldType OT, newType NT
+EzWh -> Facade: modifyUserRights(EM, OT, NT)
+activate Facade
+Facade -> Facade: u = getUserByEmail(EM)
+Facade -> User: u.setType(NT)
+activate User
+User --> Facade: Done
+deactivate User
+Facade --> EzWh: Done
+deactivate Facade
+EzWh --> Administrator: Done
+```
+
+## Scenario 12-1
+```plantuml
+actor Manager
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant TestDescriptor
+participant SKU
+
+Manager -> EzWh: Selects name N, procedureDescription PD, idSKU IS
+EzWh -> Facade: addTestDescriptor(N, PD, IS)
+activate Facade
+Facade -> Facade: id = len(testDescriptors)
+Facade -> TestDescriptor: td = new TestDescriptor(id, N, PD, IS)
+activate TestDescriptor
+TestDescriptor --> Facade: Done
+deactivate TestDescriptor
+Facade -> Facade: s = getSKUByID(IS)
+Facade -> SKU: s.addTestDescriptor(t)
+activate SKU
+SKU --> Facade: Done
+deactivate SKU 
+Facade --> EzWh: Done
+deactivate Facade
+EzWh --> Manager: Done
+```
+
+## Scenario 12-2
+```plantuml
+actor Manager
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant TestDescriptor
+
+Manager -> EzWh: Selects ID, newProcedureDescription NPD, name N, idSKU IS
+EzWh -> Facade: modifyTestDescriptor(ID, N, NPD, IS)
+activate Facade
+Facade -> Facade: td = getTestDescriptorByID(ID)
+Facade -> TestDescriptor: td.setProcedureDescription(NPD)
+activate TestDescriptor
+TestDescriptor --> Facade: Done
+deactivate TestDescriptor 
+Facade --> EzWh: Done
+deactivate Facade
+EzWh --> Manager: Done
 ```
