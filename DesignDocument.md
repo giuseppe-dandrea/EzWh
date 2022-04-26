@@ -38,8 +38,8 @@ class EzWh {
 	+ getSKUs() : List<SKU>
 	+ getSKUById(id : String) : SKU
 	+ getSKUByDescription(description : String) : List<SKU>
-	+ createSKU(description : String, weight : Double, volume : Double, notes : string, price : Double, availableQuantity : Integer) : SKU
-	+ modifySKU(id : String, newDescription : String, newWeight : Double, newVolume : Double, newNotes : string, newPrice : Double, newAvailableQuantity : Integer) : void
+	+ createSKU(description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : SKU
+	+ modifySKU(id : String, newDescription : String, newWeight : Double, newVolume : Double, newNotes : String, newPrice : Double, newAvailableQuantity : Integer) : void
 	+ addSKUPosition(id : String, position : Position) : void
 	+ deleteSKU(id : String) : void
 	..
@@ -58,31 +58,31 @@ class EzWh {
 	~ getPositionById(positionId : String) : Position
 	..
 	+ listAllTestDescriptors(): List<TestDescriptor>
-	+ getTestDescriptorByID(ID: integer): TestDescriptor
-	+ addTestDescriptor(name: string, procedureDescription: string, idSKU: integer): void
-	+ modifyTestDescriptor(ID: integer, newName: string, newProcedureDescription: string, newIdSKU: integer): void
-	+ deleteTestDescriptor(ID: integer): void
+	+ getTestDescriptorByID(id: Integer): TestDescriptor
+	+ addTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): void
+	+ modifyTestDescriptor(id: Integer, newName: String, newProcedureDescription: String, newIdSKU: Integer): void
+	+ deleteTestDescriptor(id: Integer): void
 	..
-	+ listAllTestResultsByRFID(RFID: string): List<TestResult>
-	+ getTestResultByIDAndRFID(RFID: string, ID: integer): TestResult
-	+ addTestResult(RFID: string, idTestDescriptor: integer, date: string, result: boolean): void
-	+ modifyTestResult(RFID: string, ID: integer, newIdTestDescriptor: integer, newDate: string, newResult: boolean): void
-	+ deleteTestResult(RFID: string, ID: integer): void
+	+ listAllTestResultsByRFID(RFID: String): List<TestResult>
+	+ getTestResultByIDAndRFID(RFID: String, id: Integer): TestResult
+	+ addTestResult(RFID: String, idTestDescriptor: Integer, date: String, result: boolean): void
+	+ modifyTestResult(RFID: String, id: Integer, newIdTestDescriptor: Integer, newDate: String, newResult: boolean): void
+	+ deleteTestResult(RFID: String, id: Integer): void
 	..
-	+ getUserInfo(ID: integer): User
+	+ getUserInfo(id: Integer): User
 	+ listAllSuppliers(): List<User>
 	+ listAllUsers(): List<User>
-	+ addUser(email: string, name: string, surname: string, password: string, type: string): void
-	+ login(email: string, password: string, type: string): User
+	+ addUser(email: String, name: String, surname: String, password: String, type: String): void
+	+ login(email: String, password: String, type: String): User
 	+ logout(id : Integer): void
-	+ modifyUserRights(email: string, oldType: string, newType: string): void
-	+ deleteUser(email: string, type: string): void
+	+ modifyUserRights(email: String, oldType: String, newType: String): void
+	+ deleteUser(email: String, type: String): void
 	..
 	+ getItems (): List<Item>
-	+ getItemById (id: string) : Item
-	+ addNewItem( description: string, price : double, SKUId : string, supplierId : string): Item
-	+ modifyItem(id: string, newDescription: string, newPrice: double ): void
-	+ deleteItem(id:string) : void
+	+ getItemById (id: String) : Item
+	+ addNewItem( description: String, price : double, SKUId : String, supplierId : String): Item
+	+ modifyItem(id: String, newDescription: String, newPrice: double ): void
+	+ deleteItem(id:String) : void
 	..
 	+ getRestockOrders() : List<RestockOrder>
 	+ getRestockOrdersIssued() : List<RestockOrder>
@@ -119,7 +119,7 @@ class SKU {
 	- availableQuantity : Integer
 	- testDescriptors : List<TestDescriptor>
 	__
-	+ SKU(id : String, description : String, weight : Double, volume : Double, notes : string, price : Double, availableQuantity : Integer) : SKU
+	+ SKU(id : String, description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : SKU
 	..
 	+ getId() : String
 	+ getDescription() : String
@@ -204,45 +204,45 @@ class SKUItem {
 	..
 	+ initTestResults() : void
 	+ addTestResult(testResult : TestResult) : void
-	+ modifyTestResult(ID: integer, newIdTestDescriptor: integer, newDate: string, newResult: boolean): void
-	+ deleteTestResult(ID: integer): void
+	+ modifyTestResult(id: Integer, newIdTestDescriptor: Integer, newDate: String, newResult: boolean): void
+	+ deleteTestResult(id: Integer): void
 }
 
 class TestDescriptor {
-	- ID: integer
-	- name: string
-	- procedureDescription: string
-	- idSKU: integer
+	- id: Integer
+	- name: String
+	- procedureDescription: String
+	- idSKU: Integer
 	__
-	+ TestDescriptor(ID: integer, name: string, procedureDescription: string, idSKU: integer): TestDescriptor
+	+ TestDescriptor(id: Integer, name: String, procedureDescription: String, idSKU: Integer): TestDescriptor
 	..
-	+ getID(): integer
-	+ getName(): string
-	+ getProcedureDescription(): string
-	+ getIdSKU(): integer
+	+ getID(): Integer
+	+ getName(): String
+	+ getProcedureDescription(): String
+	+ getIdSKU(): Integer
 	..
-	+ setID(ID: integer): void
-	+ setName(name: string): void
-	+ setProcedureDescription(procedureDescription: string): void
-	+ setIdSKU(idSKU: integer): void
+	+ setID(id: Integer): void
+	+ setName(name: String): void
+	+ setProcedureDescription(procedureDescription: String): void
+	+ setIdSKU(idSKU: Integer): void
 }
 
 class TestResult {
-	- ID: integer
-	- idTestDescriptor: integer
-	- date: string
+	- id: Integer
+	- idTestDescriptor: Integer
+	- date: String
 	- result: boolean
 	__
-	+ TestResult(ID: integer, idTestDescriptor: integer, date: string, result: boolean): TestResult
+	+ TestResult(id: Integer, idTestDescriptor: Integer, date: String, result: boolean): TestResult
 	..
-	+ getID(): integer
-	+ getIdTestDescriptor(): integer
-	+ getDate(): string
+	+ getID(): Integer
+	+ getIdTestDescriptor(): Integer
+	+ getDate(): String
 	+ getResult(): boolean
 	..
-	+ setID(ID: integer): void
-	+ setIdTestDescriptor(idTestDescriptor: integer): void
-	+ setDate(date: string): void
+	+ setID(id: Integer): void
+	+ setIdTestDescriptor(idTestDescriptor: Integer): void
+	+ setDate(date: String): void
 	+ setResult(result: boolean): void
 }
 
@@ -259,50 +259,50 @@ enum UserType {
 }
 
 class User {
-	- ID: integer
-	- name: string
-	- surname: string
-	- email: string
+	- id: Integer
+	- name: String
+	- surname: String
+	- email: String
 	- type: UserType
-	- password: string
+	- password: String
 	__
-	+ User(ID: integer, name: string, surname: string, email: string, type: string, password: string): User
+	+ User(id: Integer, name: String, surname: String, email: String, type: String, password: String): User
 	..
-	+ getID(): integer
-	+ getName(): string
-	+ getSurname(): string
-	+ getEmail(): string
+	+ getID(): Integer
+	+ getName(): String
+	+ getSurname(): String
+	+ getEmail(): String
 	+ getType(): UserType
-	+ getPassword(): string
+	+ getPassword(): String
 	..
-	+ setID(ID: integer): void
-	+ setName(name: string): void
-	+ setSurname(surname: string): void
-	+ setEmail(email: string): void
-	+ setType(type : UserType): string
-	+ setPassword(password: string): void
+	+ setID(id: Integer): void
+	+ setName(name: String): void
+	+ setSurname(surname: String): void
+	+ setEmail(email: String): void
+	+ setType(type : UserType): String
+	+ setPassword(password: String): void
 }
 
 class Item {
-	- Id:String
-	- description : string
+	- id:String
+	- description : String
 	- price : double
-	- SKUId : string
-	- supplierId : string
+	- SKUId : String
+	- supplierId : String
 	__
-	+ Item(id : String, description: string, price : double, SKUId : string, supplierId : string)
+	+ Item(id : String, description: String, price : double, SKUId : String, supplierId : String)
 	..
-	+ getId() : string
-	+ getDescription() : string
+	+ getId() : String
+	+ getDescription() : String
 	+ getPrice() : double
-	+ getSKUId() : string
-	+ getSupplierId() : string
+	+ getSKUId() : String
+	+ getSupplierId() : String
 	..
-	+ setId(Id:String) : void
-	+ setDescription(description : string) : void
+	+ setId(id:String) : void
+	+ setDescription(description : String) : void
 	+ setPrice(price : double) : void
-	+ setSKUId(SKUId :string) : void
-	+ setSupplierId(supplierId : string) : void
+	+ setSKUId(SKUId :String) : void
+	+ setSupplierId(supplierId : String) : void
 }
 
 enum InternalOrderState {
