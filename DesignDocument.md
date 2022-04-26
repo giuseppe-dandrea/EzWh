@@ -31,6 +31,9 @@ class EzWh {
 	+ positions : List<Position>
 	testDescriptors: Array<TestDescriptor>
 	users: Array<User>
+	+restockOrderList : List<RestockOrder>
+	+returnOrderList : List<ReturnOrder>
+	+internalOrderList : List<InternalOrder>
 	__
 	+ getSKUs() : List<SKU>
 	+ getSKUById(id : String) : SKU
@@ -79,6 +82,29 @@ class EzWh {
 	+ addNewItem( description: string, price : double, SKUId : string, supplierId : string): Item
 	+ modifyItem(id: string, newDescription: string, newPrice: double ): void
 	+ deleteItem(id:string) : void
+	..
+	+getRestockOrders() : List<RestockOrder>
+	+getRestockOrdersIssued() : List<RestockOrder>
+	+getRestockOrderById(id : Integer) : RestockOrder
+	+getRestockOrderReturnItems(id : Integer) : List<SKUItem>
+	+createRestockOrder(issueDate : String, products : List <SKU>, supplierId : Integer) : void
+	+modifyRestockOrder(id : Integer, state : String)
+	+addSkuItemsToRestockOrder(id : Integer, skuItems : List<skuItems>) : void
+	+addTransportNoteToRestockOrder(transportNote : JSON) : void
+	+deleteRestockOrder(id : Integer) : void
+	..
+	+getReturnOrders() : List<ReturnOrder>
+	+getReturnOrderById(id : Integer) : ReturnOrder
+	+createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : void
+	+deleteReturnOrder(id : Integer) : void
+	..
+	+getInternalOrders() : List<InternalOrder>
+	+getInternalOrdersIssued() : List<InternalOrder>
+	+getInternalOrdersAccepted() : List<InternalOrder>
+	+getInternalOrderById(id : Integer) : InternalOrder
+	+createInternalOrder(issueDate : String, state : String, products : List<SkuItem>) : void
+	+ModifyInternalOrderState(state : String, RFIDs : List<JSON>)
+	+deleteInternalOrder(id : Integer) : void
 }
 
 class SKU {
@@ -259,6 +285,68 @@ class Item{
 	+ setPrice(price : double) : void
 	+ setSKUId(SKUId :string) : void
 	+ setSupplierId(supplierId : string) : void
+}
+class InternalOrder{
+	-id : Integer
+	-issueDate : String
+	-state : String
+	-products : List<SkuItems>
+	-customerId : Integer
+	--
+	+getId() : Integer
+	+getIssueDate() : String
+	+getState() : String
+	+getProducts() : List<SkuItem>
+	+getCustomerId() : Integer
+	..
+	+setId(id : Integer) : void
+	+setIssueDate(issueDate : String) : void
+	+setState(state : String) : void
+	+setProducts(products : List<SkuItem>) : void
+	+setCustomerId(customerId : Integer) : void
+}
+
+class ReturnOrder{
+	-id : Integer
+	-returnDate : String
+	-products : List<SkuItem>
+	-restockOrderId : Integer
+	--
+	+getId() : Integer
+	+getReturnDate() : String
+	+getProducts() : List<SkuItem>
+	+getRestockOrderId() : Integer
+	..
+	+setId(id : Integer) : void
+	+setReturnDate(returnDate : String) : void
+	+setProducts(products : List<SkuItem>) : void
+	+setRestockOrderId(restockOrderId : Integer) : void
+}
+
+class RestockOrder{
+	-id : Integer
+	-issueDate : String
+	-state : String
+	-products : List<SKU>
+	-supplierId : Integer
+	-transportNote : JSON
+	-skuItems : List<SKUItem>
+	--
+	+getId() : Integer
+	+getIssueDate() : String
+	+getState() : String
+	+getProducts() : List<SKU>
+	+getSupplierId() : Integer
+	+getTransportNote() : ???
+	+getSkuItems() : List<SKUItem>
+	..
+	+setId(id : Integer) : void
+	+setIssueDate(issueDate : String) : void
+	+setState(state : String) : void
+	+setProducts(products : List<SKU>) : void
+	+setSupplierId(supplierId : Integer) : void
+	+setTransportNote(transportNote : JSON) : void
+	+setSkuItems(skuItems : List<SKUItem>) : void
 }
 
 EzWh -- "*" SKU
