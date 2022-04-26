@@ -1,8 +1,8 @@
 # Design Document
 
-Authors:
+Authors: Abdelrahman SAYED AHMED , Giuseppe D'Andrea , Shayan Taghinezhad Roudbaraki , Giacomo Bruno
 
-Date:
+Date: 26/04/2022
 
 Version:
 
@@ -75,7 +75,7 @@ class EzWh {
 
 	 ..
 	+ getItems (): List<Item>
-	+ getItemById (id) : Item
+	+ getItemById (id: string) : Item
 	+ addNewItem( description: string, price : double, SKUId : string, supplierId : string): Item
 	+ modifyItem(id: string, newDescription: string, newPrice: double ): void
 	+ deleteItem(id:string) : void
@@ -254,11 +254,11 @@ class Item{
 	+ getSKUId() : string
 	+ getSupplierId() : string
 	..
-	+ setId(string) : void
-	+ getDescription(string) : void
-	+ getPrice(string) : void
-	+ getSKUId(string) : void
-	+ getSupplierId(string) : void
+	+ setId(Id:String) : void
+	+ setDescription(description : string) : void
+	+ setPrice(price : double) : void
+	+ setSKUId(SKUId :string) : void
+	+ setSupplierId(supplierId : string) : void
 }
 
 EzWh -- "*" SKU
