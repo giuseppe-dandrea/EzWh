@@ -654,45 +654,29 @@ deactivate RestockOrder
 deactivate Facade
 ```
 
-## Scenario 4-1 <!-- Manager -->
+## Scenario 4-1 
 
 ```plantuml
 actor Administrator
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
 participant Facade
+participant DbHelper
+note over DbHelper: id is generated\nby database
 participant User
 
 Administrator -> EzWh: Selects email EM, name N, surname S, password P, type T
 EzWh -> Facade: addUser(EM, N, S, P, T)
 activate Facade
-Facade -> Facade: id = len(users)
-Facade -> User: new User(id, N, S, EM, T, P)
+Facade -> DbHelper: addUser(EM, N, S, P, T)
+activate DbHelper
+DbHelper -> DbHelper: id is generated
+DbHelper -> User: new User(id, N, S, EM, T, P)
 activate User
-User -> Facade: User
+User -> DbHelper: User
 deactivate User
-Facade --> EzWh: Done
-deactivate Facade
-EzWh --> Administrator: Done
-```
-
-## Scenario 4-2 <!--Manager-->
-
-```plantuml
-actor Administrator
-participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
-participant User
-
-Administrator -> EzWh: Selects email EM, oldType OT, newType NT
-EzWh -> Facade: modifyUserRights(EM, OT, NT)
-activate Facade
-Facade -> Facade: u = getUserByEmail(EM)
-Facade -> User: u.setType(NT)
-activate User
-User --> Facade: Done
-deactivate User
+DbHelper -> Facade: User
+deactivate DbHelper
 Facade --> EzWh: Done
 deactivate Facade
 EzWh --> Administrator: Done
@@ -846,44 +830,29 @@ actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
 participant Facade
+participant DbHelper
+note over DbHelper: id is generated\nby database
 participant TestDescriptor
 participant SKU
 
 Manager -> EzWh: Selects name N, procedureDescription PD, idSKU IS
 EzWh -> Facade: addTestDescriptor(N, PD, IS)
 activate Facade
-Facade -> Facade: id = len(testDescriptors)
-Facade -> TestDescriptor: td = new TestDescriptor(id, N, PD, IS)
+Facade -> DbHelper: addTestDescriptor(N, PD, IS)
+activate DbHelper
+DbHelper -> DbHelper : id is generated
+DbHelper -> TestDescriptor: new TestDescriptor(id, N, PD, IS)
 activate TestDescriptor
-TestDescriptor --> Facade: Done
+TestDescriptor -> DbHelper: TestDescriptor td
 deactivate TestDescriptor
-Facade -> Facade: s = getSKUByID(IS)
-Facade -> SKU: s.addTestDescriptor(t)
+DbHelper -> DbHelper: s = getSKUByID(IS)
+DbHelper -> SKU: s.addTestDescriptor(td)
 activate SKU
-SKU --> Facade: Done
+SKU --> DbHelper: Done
 deactivate SKU
-Facade --> EzWh: Done
-deactivate Facade
-EzWh --> Manager: Done
-```
-
-## Scenario 12-2
-
-```plantuml
-actor Manager
-participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
-participant TestDescriptor
-
-Manager -> EzWh: Selects ID, newProcedureDescription NPD, name N, idSKU IS
-EzWh -> Facade: modifyTestDescriptor(ID, N, NPD, IS)
-activate Facade
-Facade -> Facade: td = getTestDescriptorByID(ID)
-Facade -> TestDescriptor: td.setProcedureDescription(NPD)
-activate TestDescriptor
-TestDescriptor --> Facade: Done
-deactivate TestDescriptor
+DbHelper -> DbHelper: modifySKU(s)
+DbHelper -> Facade: TestDescriptor td
+deactivate DbHelper
 Facade --> EzWh: Done
 deactivate Facade
 EzWh --> Manager: Done
