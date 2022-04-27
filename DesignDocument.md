@@ -4,7 +4,7 @@ Authors: Abdelrahman SAYED AHMED , Giuseppe D'Andrea , Shayan Taghinezhad Roudba
 
 Date: 26/04/2022
 
-Version:
+Version: 2.0
 
 # Contents
 
@@ -42,6 +42,9 @@ Architectural pattern: MVC
 
 # Low level design
 
+![Low level design diagram](./Diagrams/low_level_design_diagram.svg)
+
+<!--
 ```plantuml
 class EzWhFacade {
 	+ db : DbHelper
@@ -70,7 +73,7 @@ class EzWhFacade {
 	..
 	+ getTestDescriptors(): List<TestDescriptor>
 	+ getTestDescriptorByID(id: Integer): TestDescriptor
-	+ addTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): void
+	+ createTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): void
 	+ modifyTestDescriptor(id: Integer, newName: String, newProcedureDescription: String, newIdSKU: Integer): void
 	+ deleteTestDescriptor(id: Integer): void
 	..
@@ -83,7 +86,7 @@ class EzWhFacade {
 	+ getUserInfo(id: Integer): User
 	+ getSuppliers(): List<User>
 	+ getUsers(): List<User>
-	+ addUser(email: String, name: String, surname: String, password: String, type: String): void
+	+ createUser(email: String, name: String, surname: String, password: String, type: String): void
 	+ login(email: String, password: String, type: String): User
 	+ logout(id : Integer): void
 	+ modifyUserRights(email: String, oldType: String, newType: String): void
@@ -92,7 +95,7 @@ class EzWhFacade {
 	..
 	+ getItems (): List<Item>
 	+ getItemById (id: String) : Item
-	+ addNewItem( description: String, price : double, SKUId : String, supplierId : String): void
+	+ createItem( description: String, price : double, SKUId : String, supplierId : String): void
 	+ modifyItem(id: String, newDescription: String, newPrice: double ): void
 	+ deleteItem(id:String) : void
 	..
@@ -154,7 +157,7 @@ class DbHelper {
 	+ getPositionById(positionId : String) : Position
 	..
 	+ getTestDescriptors(): List<TestDescriptor>
-	+ addTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): TestDescriptor
+	+ createTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): TestDescriptor
 	+ modifyTestDescriptor(testDescriptor : TestDescriptor): void
 	+ deleteTestDescriptor(id: Integer): void
 	..
@@ -167,14 +170,14 @@ class DbHelper {
 	+ getUserInfo(id: Integer): User
 	+ getSuppliers(): List<User>
 	+ getUsers(): List<User>
-	+ addUser(email: String, name: String, surname: String, password: String, type: String): User
+	+ createUser(email: String, name: String, surname: String, password: String, type: String): User
 	+ modifyUserRights(email: String, oldType: String, newType: String): void
 	+ deleteUser(email: String, type: String): void
 	+ getUserByEmail(email: String): User
 	..
 	+ getItems (): List<Item>
 	+ getItemById (id: String) : Item
-	+ addNewItem( description: String, price : double, SKUId : String, supplierId : String): Item
+	+ createItem( description: String, price : double, SKUId : String, supplierId : String): Item
 	+ modifyItem(item : Item): void
 	+ deleteItem(id:String) : void
 	..
@@ -514,6 +517,7 @@ InternalOrderState -- InternalOrder
 RestockOrderState -- RestockOrder
 RestockOrder -- TransportNote
 ```
+-->
 
 This design is based on the Facade pattern, in this way the API can communicate only with the Facade class that works as an interface between all the other classes.
 DbHelper is the interface for the database and is used to obtain persistance.
@@ -538,26 +542,26 @@ DbHelper is the interface for the database and is used to obtain persistance.
 ```plantuml
 actor Manager
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
+note over EzWh: Includes Frontend and API
+participant EzWhFacade
 participant DbHelper
 note over DbHelper: id is generated\nby database
 participant SKU
 
 Manager -> EzWh: Selects description D, weight W, volume V,\nnotes N, price P, availableQuantity Q
-EzWh -> Facade: createSKU(D, W, V, N, P, Q)
-activate Facade
-Facade -> DbHelper: createSKU(D, W, V, N, P, Q)
+EzWh -> EzWhFacade: createSKU(D, W, V, N, P, Q)
+activate EzWhFacade
+EzWhFacade -> DbHelper: createSKU(D, W, V, N, P, Q)
 activate DbHelper
 DbHelper -> DbHelper : id is generated
 DbHelper -> SKU: new SKU(id, D, W, V, N, P, Q)
 activate SKU
 SKU -> DbHelper: SKU
 deactivate SKU
-DbHelper -> Facade : SKU
+DbHelper -> EzWhFacade : SKU
 deactivate DbHelper
-Facade --> EzWh : Done
-deactivate Facade
+EzWhFacade --> EzWh : Done
+deactivate EzWhFacade
 EzWh --> Manager : Done
 ```
 
@@ -566,43 +570,43 @@ EzWh --> Manager : Done
 ```plantuml
 actor Manager
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
+note over EzWh: Includes Frontend and API
+participant EzWhFacade
 participant DbHelper
 participant SKU
 
 Manager -> EzWh: Selects SKU S, description D, newWeight W, newVolume V,\nnotes N, price, P, availableQuantity Q
-EzWh -> Facade: modifySKU(S, D, W, V, N, P, Q)
-Facade -> DbHelper : sku = getSKUById(S)
+EzWh -> EzWhFacade: modifySKU(S, D, W, V, N, P, Q)
+EzWhFacade -> DbHelper : sku = getSKUById(S)
 activate DbHelper
-DbHelper -> Facade : SKU
+DbHelper -> EzWhFacade : SKU
 deactivate DbHelper
-Facade -> SKU: sku.setDescription(D)
+EzWhFacade -> SKU: sku.setDescription(D)
 activate SKU
-SKU --> Facade: Done
+SKU --> EzWhFacade: Done
 deactivate SKU
-Facade -> SKU: sku.setWeight(W)
+EzWhFacade -> SKU: sku.setWeight(W)
 activate SKU
-SKU --> Facade: Done
+SKU --> EzWhFacade: Done
 deactivate SKU
-Facade -> SKU: sku.setVolume(V)
+EzWhFacade -> SKU: sku.setVolume(V)
 activate SKU
-SKU --> Facade: Done
+SKU --> EzWhFacade: Done
 deactivate SKU
-Facade -> SKU: sku.setNotes(N)
+EzWhFacade -> SKU: sku.setNotes(N)
 activate SKU
-SKU --> Facade: Done
+SKU --> EzWhFacade: Done
 deactivate SKU
-Facade -> SKU: sku.setPrice(P)
+EzWhFacade -> SKU: sku.setPrice(P)
 activate SKU
-SKU --> Facade: Done
+SKU --> EzWhFacade: Done
 deactivate SKU
-Facade -> SKU: sku.setAvailableQuantity(Q)
-Facade -> DbHelper : modifySKU(sku)
+EzWhFacade -> SKU: sku.setAvailableQuantity(Q)
+EzWhFacade -> DbHelper : modifySKU(sku)
 activate DbHelper
-DbHelper --> Facade : Done
+DbHelper --> EzWhFacade : Done
 deactivate DbHelper
-Facade --> EzWh : Done
+EzWhFacade --> EzWh : Done
 EzWh --> Manager : Done
 ```
 
@@ -611,24 +615,24 @@ EzWh --> Manager : Done
 ```plantuml
 actor Manager
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
+note over EzWh: Includes Frontend and API
+participant EzWhFacade
 participant DbHelper
 participant Position
 
 Manager -> EzWh: Selects positionId P, aisleId A, row R,\ncol C, maxWeight W, maxVolume V
-EzWh -> Facade: createPosition(P, A, R, C, W, V)
-activate Facade
-Facade -> DbHelper: createPosition(P, A, R, C, W, V)
+EzWh -> EzWhFacade: createPosition(P, A, R, C, W, V)
+activate EzWhFacade
+EzWhFacade -> DbHelper: createPosition(P, A, R, C, W, V)
 activate DbHelper
 DbHelper-> Position: new Position(P, A, R, C, W, V)
 activate Position
 Position -> DbHelper: Position
 deactivate Position
-DbHelper->Facade: Position
+DbHelper->EzWhFacade: Position
 deactivate DbHelper
-Facade --> EzWh: Done
-deactivate Facade
+EzWhFacade --> EzWh: Done
+deactivate EzWhFacade
 EzWh --> Manager : Done
 ```
 
@@ -637,19 +641,19 @@ EzWh --> Manager : Done
 ```plantuml
 actor Manager
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
+note over EzWh: Includes Frontend and API
+participant EzWhFacade
 participant DbHelper
 
 Manager -> EzWh: Selects positionId P and newPositionId N
-EzWh -> Facade: modifyPositionId(P, N)
-activate Facade
-Facade -> DbHelper : modifyPositionId(P, N)
+EzWh -> EzWhFacade: modifyPositionId(P, N)
+activate EzWhFacade
+EzWhFacade -> DbHelper : modifyPositionId(P, N)
 activate DbHelper
-DbHelper --> Facade : Done
+DbHelper --> EzWhFacade : Done
 deactivate DbHelper
-Facade --> EzWh : Done
-deactivate Facade
+EzWhFacade --> EzWh : Done
+deactivate EzWhFacade
 EzWh --> Manager : Done
 ```
 
@@ -658,25 +662,25 @@ EzWh --> Manager : Done
 ```plantuml
 actor Manager
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
+note over EzWh: Includes Frontend and API
+participant EzWhFacade
 participant DBHelper
 note over DBHelper: id is generated\nby database
 participant RestockOrder
 
 Manager -> EzWh: Creates Restock Order, inserts issueDate D,\nItem I, quantity Q and Supplier SP
-EzWh -> Facade: CreateRestockOrder(D, Map<I, Q>, SP)
-activate Facade
-Facade -> DBHelper: restockOrder = CreateRestockOrder (D, Map<I, Q>, SP)
+EzWh -> EzWhFacade: CreateRestockOrder(D, Map<I, Q>, SP)
+activate EzWhFacade
+EzWhFacade -> DBHelper: restockOrder = CreateRestockOrder (D, Map<I, Q>, SP)
 activate DBHelper
 DBHelper -> RestockOrder: new RestockOrder(id, D, Map<I, Q>, SP)
 activate RestockOrder
 RestockOrder --> DBHelper: RestockOrder
 Deactivate RestockOrder
-DBHelper --> Facade: RestockOrder
+DBHelper --> EzWhFacade: RestockOrder
 deactivate DBHelper
-Facade --> EzWh: Done
-deactivate Facade
+EzWhFacade --> EzWh: Done
+deactivate EzWhFacade
 EzWh --> Manager: Done
 ```
 
@@ -685,26 +689,26 @@ EzWh --> Manager: Done
 ```plantuml
 actor Administrator
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
+note over EzWh: Includes Frontend and API
+participant EzWhFacade
 participant DbHelper
 note over DbHelper: id is generated\nby database
 participant User
 
 Administrator -> EzWh: Selects email EM, name N, surname S, password P, type T
-EzWh -> Facade: addUser(EM, N, S, P, T)
-activate Facade
-Facade -> DbHelper: addUser(EM, N, S, P, T)
+EzWh -> EzWhFacade: createUser(EM, N, S, P, T)
+activate EzWhFacade
+EzWhFacade -> DbHelper: createUser(EM, N, S, P, T)
 activate DbHelper
 DbHelper -> DbHelper: id is generated
 DbHelper -> User: new User(id, N, S, EM, T, P)
 activate User
 User -> DbHelper: User
 deactivate User
-DbHelper -> Facade: User
+DbHelper -> EzWhFacade: User
 deactivate DbHelper
-Facade --> EzWh: Done
-deactivate Facade
+EzWhFacade --> EzWh: Done
+deactivate EzWhFacade
 EzWh --> Administrator: Done
 ```
 
@@ -715,7 +719,7 @@ Return order of SKU items that failed quality test
 ```plantuml
 actor Manager
 participant EzWh
-participant Facade
+participant EzWhFacade
 participant DBHelper
 note over DBHelper: id is generated\nby database
 participant RestockOrder
@@ -724,45 +728,45 @@ participant ReturnOrder
 
 
 Manager -> EzWh: System provide RFID of SKU items\nthat not passed quality tests
-EzWh -> Facade: getRestockOrderById()
-activate Facade
-Facade -> DBHelper: restockOrder = getRestockOrderById(id)
+EzWh -> EzWhFacade: getRestockOrderById()
+activate EzWhFacade
+EzWhFacade -> DBHelper: restockOrder = getRestockOrderById(id)
 activate DBHelper
 DBHelper -> RestockOrder: new RestockOrder(id, issueDate, state,\nproducts, supplierId, transportNote, skuItems)
 activate RestockOrder
 RestockOrder --> DBHelper: RestockOrder
 Deactivate RestockOrder
-DBHelper --> Facade: RestockOrder
+DBHelper --> EzWhFacade: RestockOrder
 deactivate DBHelper
-Facade -> SkuItem: skuItems = restockOrder.getSkuItems()
+EzWhFacade -> SkuItem: skuItems = restockOrder.getSkuItems()
 activate SkuItem
-SkuItem --> Facade: List<SkuItem>
+SkuItem --> EzWhFacade: List<SkuItem>
 deactivate SkuItem
-Facade --> EzWh: List<SkuItem>
-deactivate Facade
+EzWhFacade --> EzWh: List<SkuItem>
+deactivate EzWhFacade
 EzWh --> Manager: List<SkuItem>
 
 Manager -> EzWh: Create Return Order and\ninsert SKU Items to be returned
-EzWh -> Facade: createReturnOrder(date, products, restockorderid)
-activate Facade
-Facade -> DBHelper: returnOrder = createReturnOrder(date, products, restockorderid)
+EzWh -> EzWhFacade: createReturnOrder(date, products, restockorderid)
+activate EzWhFacade
+EzWhFacade -> DBHelper: returnOrder = createReturnOrder(date, products, restockorderid)
 activate DBHelper
 DBHelper -> ReturnOrder: new ReturnOrder(id, date, products, restockOrderId)
 activate ReturnOrder
 ReturnOrder --> DBHelper: ReturnOrder
 Deactivate ReturnOrder
-DBHelper --> Facade: ReturnOrder
+DBHelper --> EzWhFacade: ReturnOrder
 deactivate DBHelper
-Facade -> SkuItem: Foreach skuItem in products\n  skuItem.setAvailable(False)
+EzWhFacade -> SkuItem: Foreach skuItem in products\n  skuItem.setAvailable(False)
 activate SkuItem
-SkuItem --> Facade: Done
+SkuItem --> EzWhFacade: Done
 Deactivate SkuItem
-Facade -> DBHelper: Foreach skuItem in products\n  modifySkuItem(skuItem)
+EzWhFacade -> DBHelper: Foreach skuItem in products\n  modifySkuItem(skuItem)
 activate DBHelper
-DBHelper --> Facade: Done
+DBHelper --> EzWhFacade: Done
 Deactivate DBHelper
-deactivate Facade
-Facade --> EzWh: Done
+deactivate EzWhFacade
+EzWhFacade --> EzWh: Done
 EzWh --> Manager: Done
 ```
 
@@ -772,9 +776,9 @@ EzWh --> Manager: Done
 actor Customer
 actor Manager
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
+note over EzWh: Includes Frontend and API
 note over DbHelper: id is generated\nby database
-participant Facade
+participant EzWhFacade
 participant DbHelper
 participant InternalOrder
 
@@ -782,36 +786,36 @@ participant InternalOrder
 Customer -> EzWh: adds every SKU she wants in every qty to IO
 activate EzWh
 EzWh ->EzWh : C.ID = getUserInfo()
-EzWh -> Facade: createInternalOrder(date, <SKU,qty>, C.id)
-activate Facade
-Facade ->DbHelper :createInternalOrder(date, <SKU,qty>, C.id)
+EzWh -> EzWhFacade: createInternalOrder(date, <SKU,qty>, C.id)
+activate EzWhFacade
+EzWhFacade ->DbHelper :createInternalOrder(date, <SKU,qty>, C.id)
 activate DbHelper
 DbHelper -> DbHelper : id is generated
 DbHelper ->InternalOrder: new internalOrder(id,issueDate, ISSUED,  <SKU,qty>, C.id)
 activate InternalOrder
 InternalOrder-->DbHelper : InternalOrder
 deactivate InternalOrder
-DbHelper --> Facade : InternalOrder
-Facade->DbHelper : modifySKU(newAvailableQuantity)
-Facade->DbHelper :modifyPosition(newOccupiedWeight , newOccupiedVolume)
-DbHelper --> Facade : InternalOrder
+DbHelper --> EzWhFacade : InternalOrder
+EzWhFacade->DbHelper : modifySKU(newAvailableQuantity)
+EzWhFacade->DbHelper :modifyPosition(newOccupiedWeight , newOccupiedVolume)
+DbHelper --> EzWhFacade : InternalOrder
 deactivate DbHelper
-Facade -->EzWh :InternalOrder
-deactivate Facade
-Facade -->Manager :InternalOrder
+EzWhFacade -->EzWh :InternalOrder
+deactivate EzWhFacade
+EzWhFacade -->Manager :InternalOrder
 EzWh --> Customer : Done
 deactivate EzWh
 
 Manager -> EzWh: Selects new InternalOrder
 activate EzWh
-EzWh -> Facade : modifyInternalOrderState(Accepted)
-activate Facade
-Facade->DbHelper : modifyInternalOrderState(Accepted)
+EzWh -> EzWhFacade : modifyInternalOrderState(Accepted)
+activate EzWhFacade
+EzWhFacade->DbHelper : modifyInternalOrderState(Accepted)
 activate DbHelper
-DbHelper --> Facade : done
+DbHelper --> EzWhFacade : done
 deactivate DbHelper
-Facade --> EzWh : done
-deactivate Facade
+EzWhFacade --> EzWh : done
+deactivate EzWhFacade
 EzWh --> Manager : done
 deactivate EzWh
 
@@ -823,9 +827,9 @@ deactivate EzWh
 ```plantuml
 actor Supplier
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
+note over EzWh: Includes Frontend and API
 note over DbHelper: id is generated\nby database
-participant Facade
+participant EzWhFacade
 participant DbHelper
 participant Item
 
@@ -833,10 +837,10 @@ Supplier -> EzWh: Selects description D, Price P , SKU
 
 EzWh ->EzWh : S.ID = getUserInfo()
 
-EzWh -> Facade:addNewItem(D , SKU, P, S.ID)
+EzWh -> EzWhFacade:createItem(D , SKU, P, S.ID)
 
-activate Facade
-Facade -> DbHelper: item = addNewItem(D , P, SKU, S.ID)
+activate EzWhFacade
+EzWhFacade -> DbHelper: item = createItem(D , P, SKU, S.ID)
 activate DbHelper
 DbHelper -> DbHelper : id is generated
 DbHelper -> Item : new Item(ID, D , P , SKU , S.ID)
@@ -844,10 +848,10 @@ DbHelper -> Item : new Item(ID, D , P , SKU , S.ID)
 activate Item
 Item --> DbHelper: Item
 deactivate Item
-DbHelper --> Facade : Item
+DbHelper --> EzWhFacade : Item
 deactivate DbHelper
-Facade --> EzWh : Done
-deactivate Facade
+EzWhFacade --> EzWh : Done
+deactivate EzWhFacade
 EzWh-->Supplier : Done
 ```
 
@@ -856,34 +860,34 @@ EzWh-->Supplier : Done
 ```plantuml
 actor Supplier
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
+note over EzWh: Includes Frontend and API
+participant EzWhFacade
 participant DbHelper
 
 
 Supplier -> EzWh: Search Item I
 activate EzWh
-EzWh -> Facade: getItembyId(id)
-activate Facade
-Facade -> DbHelper : getItembyId(id)
+EzWh -> EzWhFacade: getItembyId(id)
+activate EzWhFacade
+EzWhFacade -> DbHelper : getItembyId(id)
 activate DbHelper
-DbHelper --> Facade : Item
+DbHelper --> EzWhFacade : Item
 deactivate DbHelper
-Facade --> EzWh : Item
-deactivate Facade
+EzWhFacade --> EzWh : Item
+deactivate EzWhFacade
 EzWh --> Supplier : Item
 deactivate EzWh
 
 Supplier -> EzWh :Selects fot ID newDescription nD, newPrice P
 activate EzWh
-EzWh ->Facade : modifyItem(ID,nD,nP)
-activate Facade
-Facade ->DbHelper : modifyItem(ID,nD,nP)
+EzWh ->EzWhFacade : modifyItem(ID,nD,nP)
+activate EzWhFacade
+EzWhFacade ->DbHelper : modifyItem(ID,nD,nP)
 activate DbHelper
-DbHelper --> Facade : Done
+DbHelper --> EzWhFacade : Done
 deactivate DbHelper
-Facade --> EzWh : Done
-deactivate Facade
+EzWhFacade --> EzWh : Done
+deactivate EzWhFacade
 EzWh --> Supplier : Done
 deactivate EzWh
 ```
@@ -893,17 +897,17 @@ deactivate EzWh
 ```plantuml
 actor Manager
 participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
+note over EzWh: Includes Frontend and API
+participant EzWhFacade
 participant DbHelper
 note over DbHelper: id is generated\nby database
 participant TestDescriptor
 participant SKU
 
 Manager -> EzWh: Selects name N, procedureDescription PD, idSKU IS
-EzWh -> Facade: addTestDescriptor(N, PD, IS)
-activate Facade
-Facade -> DbHelper: addTestDescriptor(N, PD, IS)
+EzWh -> EzWhFacade: createTestDescriptor(N, PD, IS)
+activate EzWhFacade
+EzWhFacade -> DbHelper: createTestDescriptor(N, PD, IS)
 activate DbHelper
 DbHelper -> DbHelper : id is generated
 DbHelper -> TestDescriptor: new TestDescriptor(id, N, PD, IS)
@@ -916,9 +920,9 @@ activate SKU
 SKU --> DbHelper: Done
 deactivate SKU
 DbHelper -> DbHelper: modifySKU(s)
-DbHelper -> Facade: TestDescriptor td
+DbHelper -> EzWhFacade: TestDescriptor td
 deactivate DbHelper
-Facade --> EzWh: Done
-deactivate Facade
+EzWhFacade --> EzWh: Done
+deactivate EzWhFacade
 EzWh --> Manager: Done
 ```
