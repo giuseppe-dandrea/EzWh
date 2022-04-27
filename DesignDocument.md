@@ -642,16 +642,24 @@ actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
 participant Facade
+participant DBHelper
+note over DBHelper: id is generated\nby database
 participant RestockOrder
 
-Manager -> EzWh: Creates Restock Order, inserts issueDate D, Item I, quantity Q and Supplier SP
-EzWh -> Facade: CreateRestockOrder (D, (I, Q), SP)
+Manager -> EzWh: Creates Restock Order, inserts issueDate D,\nItem I, quantity Q and Supplier SP
+EzWh -> Facade: CreateRestockOrder(D, Map<I, Q>, SP)
 activate Facade
-Facade -> RestockOrder: new RestockOrder(null, D, "ISSDUED", null, SP, null)
+Facade -> DBHelper: restockOrder = CreateRestockOrder (D, Map<I, Q>, SP)
+activate DBHelper
+DBHelper -> RestockOrder: new RestockOrder(id, D, Map<I, Q>, SP)
 activate RestockOrder
-RestockOrder --> Facade: RestockOrder
-deactivate RestockOrder
+RestockOrder --> DBHelper: RestockOrder
+Deactivate RestockOrder
+DBHelper --> Facade: RestockOrder
+deactivate DBHelper
+Facade --> EzWh: Done
 deactivate Facade
+EzWh --> Manager: Done
 ```
 
 ## Scenario 4-1
@@ -682,42 +690,6 @@ deactivate Facade
 EzWh --> Administrator: Done
 ```
 
-## Scenario 5-1-1
-
-```plantuml
-actor Clerk
-participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
-participant RestockOrder
-
-Clerk -> EzWh: given Restock Order RO, it is in DELIVERY state, \nC records every item in the RO with a new RFID and changes state to DELIVERED
-EzWh -> Facade: getRestockOrderById(RoId)
-activate Facade
-Facade --> EzWh: RestockOrder
-deactivate Facade
-EzWh --> Clerk: Done
-
-Clerk -> EzWh: add RFID to SkuItem
-EzWh -> Facade: createSKUItem(RFID, SKUid, dateOfStock)
-activate Facade
-Facade --> EzWh: Done
-deactivate Facade
-EzWh --> Clerk: Done
-
-Clerk -> EzWh: Change Restock Order state to delivered
-EzWh -> Facade: modifyRestockOrder(id , "DELIVERED")
-activate Facade
-Facade -> Facade: restockOrder = getRestockOrderById(id)
-Facade -> RestockOrder: restockOrder.setState("DELIVERED")
-activate RestockOrder
-RestockOrder --> Facade: Done
-Deactivate RestockOrder
-Deactivate Facade
-Facade --> EzWh: Done
-EzWh --> Clerk: Done
-```
-
 ## Scenario 6-1
 
 Return order of SKU items that failed quality test
@@ -726,18 +698,28 @@ Return order of SKU items that failed quality test
 actor Manager
 participant EzWh
 participant Facade
+participant DBHelper
+note over DBHelper: id is generated\nby database
 participant RestockOrder
-participant ReturnOrder
 participant SkuItem
+participant ReturnOrder
+
 
 Manager -> EzWh: System provide RFID of SKU items\nthat not passed quality tests
 EzWh -> Facade: getRestockOrderById()
 activate Facade
-Facade -> Facade: restockOrder = getRestockOrderById()
-Facade -> RestockOrder: skuItems = restockOrder.getSkuItems()
+Facade -> DBHelper: restockOrder = getRestockOrderById(id)
+activate DBHelper
+DBHelper -> RestockOrder: new RestockOrder(id, issueDate, state,\nproducts, supplierId, transportNote, skuItems)
 activate RestockOrder
-RestockOrder --> Facade: List<SkuItem>
-deactivate RestockOrder
+RestockOrder --> DBHelper: RestockOrder
+Deactivate RestockOrder
+DBHelper --> Facade: RestockOrder
+deactivate DBHelper
+Facade -> SkuItem: skuItems = restockOrder.getSkuItems()
+activate SkuItem
+SkuItem --> Facade: List<SkuItem>
+deactivate SkuItem
 Facade --> EzWh: List<SkuItem>
 deactivate Facade
 EzWh --> Manager: List<SkuItem>
@@ -745,14 +727,22 @@ EzWh --> Manager: List<SkuItem>
 Manager -> EzWh: Create Return Order and\ninsert SKU Items to be returned
 EzWh -> Facade: createReturnOrder(date, products, restockorderid)
 activate Facade
-Facade -> ReturnOrder: returnOrder = new ReturnOrder(date, products, restockorderid)
+Facade -> DBHelper: returnOrder = createReturnOrder(date, products, restockorderid)
+activate DBHelper
+DBHelper -> ReturnOrder: new ReturnOrder(id, date, products, restockOrderId)
 activate ReturnOrder
-ReturnOrder --> Facade: ReturnOrder
-deactivate ReturnOrder
+ReturnOrder --> DBHelper: ReturnOrder
+Deactivate ReturnOrder
+DBHelper --> Facade: ReturnOrder
+deactivate DBHelper
 Facade -> SkuItem: Foreach skuItem in products\n  skuItem.setAvailable(False)
 activate SkuItem
 SkuItem --> Facade: Done
 Deactivate SkuItem
+Facade -> DBHelper: Foreach skuItem in products\n  modifySkuItem(skuItem)
+activate DBHelper
+DBHelper --> Facade: Done
+Deactivate DBHelper
 deactivate Facade
 Facade --> EzWh: Done
 EzWh --> Manager: Done
