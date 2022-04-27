@@ -663,6 +663,23 @@ Facade --> EzWh: Done
 EzWh --> Clerk: Done
 ```
 
+## Scenario 7-1
+```plantuml
+actor User
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+
+User -> EzWh: Selects email EM, password P
+EzWh -> Facade: login(EM, P)
+activate Facade
+Facade -> Facade: u = getUserByEmail(EM)
+Facade -> Facade: P == u.getPassword()
+Facade -> EzWh: u
+deactivate Facade
+EzWh -> User: u
+```
+
 ## Scenario 9-1
 
 ```plantuml
