@@ -521,15 +521,15 @@ Design Pattern : Facade
 # Verification traceability matrix
 
 | FR    | EzWh | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder | TransportNote |
-| ---   | :--: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: | :-----------: |
-| FR1   |  x   |  x   |     |         |                |            |          |      |              |               |             |			   |
-| FR2   |  x   |      |  x  |         |       x        |            |     x    |      |              |               |             |			   |
-| FR3.1 |  x   |      |  x  |         |                |            |     x    |      |              |               |             |			   |
-| FR3.2 |      |      |     |         |       x        |     x      |          |      |              |               |             |			   |
-| FR4   |  x   |  x   |     |         |                |            |          |      |              |               |             |		 	   |
+| ----- | :--: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: | :-----------: |
+| FR1   |  x   |  x   |     |         |                |            |          |      |              |               |             |               |
+| FR2   |  x   |      |  x  |         |       x        |            |    x     |      |              |               |             |               |
+| FR3.1 |  x   |      |  x  |         |                |            |    x     |      |              |               |             |               |
+| FR3.2 |      |      |     |         |       x        |     x      |          |      |              |               |             |               |
+| FR4   |  x   |  x   |     |         |                |            |          |      |              |               |             |               |
 | FR5   |  x   |      |  x  |    x    |                |            |          |  x   |      x       |               |      x      |       x       |
-| FR6   |  x   |      |  x  |    x    |                |            |          |      |              |       x       |             |			   |
-| FR7   |  x   |  x   |  x  |         |                |            |          |  x   |              |               |             |			   |
+| FR6   |  x   |      |  x  |    x    |                |            |          |      |              |       x       |             |               |
+| FR7   |  x   |  x   |  x  |         |                |            |          |  x   |              |               |             |               |
 
 # Verification sequence diagrams
 
@@ -654,7 +654,7 @@ deactivate RestockOrder
 deactivate Facade
 ```
 
-## Scenario 4-1 
+## Scenario 4-1
 
 ```plantuml
 actor Administrator
@@ -758,28 +758,56 @@ Facade --> EzWh: Done
 EzWh --> Manager: Done
 ```
 
-
 ## Scenario 9-1
 
 ```plantuml
 actor Customer
+actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
+note over DbHelper: id is generated\nby database
 participant Facade
+participant DbHelper
 participant InternalOrder
-actor Manager
+
 
 Customer -> EzWh: adds every SKU she wants in every qty to IO
+activate EzWh
+EzWh ->EzWh : C.ID = getUserInfo()
 EzWh -> Facade: createInternalOrder(date, <SKU,qty>, C.id)
-Facade ->Facade :id = len(InternalOrders)
 activate Facade
-Facade ->InternalOrder: newInternalOrder(id,issueDate, ISSUED,  <SKU,qty>, C.id)
-InternalOrder-->Facade : InternalOrder
-Facade->Facade : modifySKU(newAvailableQuantity)
-Facade->Facade :modifyPosition(newOccupiedWeight , newOccupiedVolume)
+Facade ->DbHelper :createInternalOrder(date, <SKU,qty>, C.id)
+activate DbHelper
+DbHelper -> DbHelper : id is generated
+DbHelper ->InternalOrder: new internalOrder(id,issueDate, ISSUED,  <SKU,qty>, C.id)
+activate InternalOrder
+InternalOrder-->DbHelper : InternalOrder
+deactivate InternalOrder
+DbHelper --> Facade : InternalOrder
+Facade->DbHelper : modifySKU(newAvailableQuantity)
+Facade->DbHelper :modifyPosition(newOccupiedWeight , newOccupiedVolume)
+DbHelper --> Facade : InternalOrder
+deactivate DbHelper
+Facade -->EzWh :InternalOrder
 deactivate Facade
-Manager->EzWh :select new internal order
+Facade -->Manager :InternalOrder
+EzWh --> Customer : Done
+deactivate EzWh
+
+Manager -> EzWh: Selects new InternalOrder
+activate EzWh
 EzWh -> Facade : modifyInternalOrderState(Accepted)
+activate Facade
+Facade->DbHelper : modifyInternalOrderState(Accepted)
+activate DbHelper
+DbHelper --> Facade : done
+deactivate DbHelper
+Facade --> EzWh : done
+deactivate Facade
+EzWh --> Manager : done
+deactivate EzWh
+
+
 ```
 
 ## Scenario 11-1
@@ -788,20 +816,31 @@ EzWh -> Facade : modifyInternalOrderState(Accepted)
 actor Supplier
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
+note over DbHelper: id is generated\nby database
 participant Facade
+participant DbHelper
 participant Item
 
 Supplier -> EzWh: Selects description D, Price P , SKU
 
-EzWh -> Facade: addNewItem(D , SKU, P)
+EzWh ->EzWh : S.ID = getUserInfo()
+
+EzWh -> Facade:addNewItem(D , SKU, P, S.ID)
 
 activate Facade
-Facade -> Facade: id = len(Items)
-Facade -> Item: new Item(id, D, P, SKU, S.id)
+Facade -> DbHelper: item = addNewItem(D , P, SKU, S.ID)
+activate DbHelper
+DbHelper -> DbHelper : id is generated
+DbHelper -> Item : new Item(ID, D , P , SKU , S.ID)
+
 activate Item
-Item --> Facade: Item
-deactivate Facade
+Item --> DbHelper: Item
 deactivate Item
+DbHelper --> Facade : Item
+deactivate DbHelper
+Facade --> EzWh : Done
+deactivate Facade
+EzWh-->Supplier : Done
 ```
 
 ## Scenario 11-2
@@ -811,16 +850,34 @@ actor Supplier
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
 participant Facade
+participant DbHelper
 
 
 Supplier -> EzWh: Search Item I
+activate EzWh
 EzWh -> Facade: getItembyId(id)
 activate Facade
+Facade -> DbHelper : getItembyId(id)
+activate DbHelper
+DbHelper --> Facade : Item
+deactivate DbHelper
 Facade --> EzWh : Item
 deactivate Facade
-Supplier -> EzWh: Select newDescription nD, newPrice nP
-EzWh -> Facade: modifyItem(id , nD , Np)
+EzWh --> Supplier : Item
+deactivate EzWh
 
+Supplier -> EzWh :Selects fot ID newDescription nD, newPrice P
+activate EzWh
+EzWh ->Facade : modifyItem(ID,nD,nP)
+activate Facade
+Facade ->DbHelper : modifyItem(ID,nD,nP)
+activate DbHelper
+DbHelper --> Facade : Done
+deactivate DbHelper
+Facade --> EzWh : Done
+deactivate Facade
+EzWh --> Supplier : Done
+deactivate EzWh
 ```
 
 ## Scenario 12-1
