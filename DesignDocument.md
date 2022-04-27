@@ -43,26 +43,26 @@ Architectural pattern: MVC
 # Low level design
 
 ```plantuml
-class EzWh {
+class EzWhFacade {
 	+ db : DbHelper
 	__
 	+ getSKUs() : List<SKU>
-	+ getSKUById(id : String) : SKU
+	+ getSKUById(id : Integer) : SKU
 	+ getSKUByDescription(description : String) : List<SKU>
-	+ createSKU(description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : SKU
+	+ createSKU(description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : void
 	+ modifySKU(id : String, newDescription : String, newWeight : Double, newVolume : Double, newNotes : String, newPrice : Double, newAvailableQuantity : Integer) : void
 	+ addSKUPosition(id : String, position : Position) : void
 	+ deleteSKU(id : String) : void
 	..
 	+ getSKUItems() : List<SKUItem>
-	+ getSKUItemsBySKU(SKUid : String) : List<SKUItem>
+	+ getSKUItemsBySKU(SKUid : Integer) : List<SKUItem>
 	+ getSKUItemByRfid(rfid : String) : SKUItem
-	+ createSKUItem(rfid : String, SKUid : String, dateOfStock : String) : SKUItem
+	+ createSKUItem(rfid : String, SKUid : Integer, dateOfStock : String) : void
 	+ modifySKUItem(rfid : String, newRfid : String, newAvailable : Bool, newDateOfStock : String) : void
 	+ deleteSKUItem(rfid : String) : void
 	..
 	+ getPositions() : List<Position>
-	+ createPosition(positionId : String, aisleId : String, row : String, col : String, maxWeight : Double, maxVolume : Double) : Position
+	+ createPosition(positionId : String, aisleId : String, row : String, col : String, maxWeight : Double, maxVolume : Double) : void
 	+ modifyPosition(positionId : String, newAisleId : String, newRow : String, newCol : String, newMaxWeight : Double, newMaxVolume : Double, newOccupiedWeight : Double, newOccupiedVolume : Double) : void
 	+ modifyPositionId(positionId : String, newPositionId: String) : void
 	+ deletePositionId(positionId : String) : void
@@ -70,20 +70,20 @@ class EzWh {
 	..
 	+ getTestDescriptors(): List<TestDescriptor>
 	+ getTestDescriptorByID(id: Integer): TestDescriptor
-	+ addTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): TestDescriptor
+	+ addTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): void
 	+ modifyTestDescriptor(id: Integer, newName: String, newProcedureDescription: String, newIdSKU: Integer): void
 	+ deleteTestDescriptor(id: Integer): void
 	..
 	+ getTestResultsByRFID(RFID: String): List<TestResult>
 	+ getTestResultByIDAndRFID(RFID: String, id: Integer): TestResult
-	+ addTestResult(RFID: String, idTestDescriptor: Integer, date: String, result: boolean): TestResults
+	+ addTestResult(RFID: String, idTestDescriptor: Integer, date: String, result: boolean): void
 	+ modifyTestResult(RFID: String, id: Integer, newIdTestDescriptor: Integer, newDate: String, newResult: boolean): void
 	+ deleteTestResult(RFID: String, id: Integer): void
 	..
 	+ getUserInfo(id: Integer): User
 	+ getSuppliers(): List<User>
 	+ getUsers(): List<User>
-	+ addUser(email: String, name: String, surname: String, password: String, type: String): User
+	+ addUser(email: String, name: String, surname: String, password: String, type: String): void
 	+ login(email: String, password: String, type: String): User
 	+ logout(id : Integer): void
 	+ modifyUserRights(email: String, oldType: String, newType: String): void
@@ -92,7 +92,7 @@ class EzWh {
 	..
 	+ getItems (): List<Item>
 	+ getItemById (id: String) : Item
-	+ addNewItem( description: String, price : double, SKUId : String, supplierId : String): Item
+	+ addNewItem( description: String, price : double, SKUId : String, supplierId : String): void
 	+ modifyItem(id: String, newDescription: String, newPrice: double ): void
 	+ deleteItem(id:String) : void
 	..
@@ -100,7 +100,7 @@ class EzWh {
 	+ getRestockOrdersIssued() : List<RestockOrder>
 	+ getRestockOrderById(id : Integer) : RestockOrder
 	+ getRestockOrderReturnItems(id : Integer) : List<SKUItem>
-	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : RestockOrder
+	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : void
 	+ modifyRestockOrder(id : Integer, state : String)
 	+ addSkuItemsToRestockOrder(id : Integer, skuItems : List<SKUItem>) : void
 	+ addTransportNoteToRestockOrder(id : Integer, transportNote : TransportNote) : void
@@ -108,14 +108,14 @@ class EzWh {
 	..
 	+ getReturnOrders() : List<ReturnOrder>
 	+ getReturnOrderById(id : Integer) : ReturnOrder
-	+ createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : ReturnOrder
+	+ createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : void
 	+ deleteReturnOrder(id : Integer) : void
 	..
 	+ getInternalOrders() : List<InternalOrder>
 	+ getInternalOrdersIssued() : List<InternalOrder>
 	+ getInternalOrdersAccepted() : List<InternalOrder>
 	+ getInternalOrderById(id : Integer) : InternalOrder
-	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : InternalOrder
+	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : void
 	+ modifyInternalOrderState(id : Integer, state : String, RFIDs : List<SKUItem>) : void
 	+ deleteInternalOrder(id : Integer) : void
 }
@@ -132,7 +132,7 @@ class DbHelper {
  	+ dropTables(): void
  	..
 	+ getSKUs() : List<SKU>
-	+ getSKUById(id : String) : SKU
+	+ getSKUById(id : Integer) : SKU
 	+ getSKUByDescription(description : String) : List<SKU>
 	+ createSKU(description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : SKU
 	+ modifySKU(sku : SKU) : void
@@ -140,7 +140,7 @@ class DbHelper {
 	+ deleteSKU(id : String) : void
 	..
 	+ getSKUItems() : List<SKUItem>
-	+ getSKUItemsBySKU(SKUid : String) : List<SKUItem>
+	+ getSKUItemsBySKU(SKUid : Integer) : List<SKUItem>
 	+ getSKUItemByRfid(rfid : String) : SKUItem
 	+ createSKUItem(skuItem : SKUItem) : void
 	+ modifySKUItem(skuItem : SKUItem) : void
@@ -155,7 +155,6 @@ class DbHelper {
 	..
 	+ getTestDescriptors(): List<TestDescriptor>
 	+ addTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): TestDescriptor
-	+ addTestDescriptor(testDescriptor : TestDescriptor): void
 	+ modifyTestDescriptor(testDescriptor : TestDescriptor): void
 	+ deleteTestDescriptor(id: Integer): void
 	..
@@ -204,7 +203,7 @@ class DbHelper {
 }
 
 class SKU {
-	- id : String
+	- id : Integer
 	- description : String
 	- weight : Double
 	- volume : Double
@@ -216,7 +215,7 @@ class SKU {
 	__
 	+ SKU(id : String, description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : SKU
 	..
-	+ getId() : String
+	+ getId() : Integer
 	+ getDescription() : String
 	+ getWeight() : Double
 	+ getVolume() : Double
@@ -226,7 +225,7 @@ class SKU {
 	+ getAvailableQuantity() : Integer
 	+ getTestDescriptors() : List<TestDescriptor>
 	..
-	+ setId(id : String) : void
+	+ setId(id : Integer) : void
 	+ setDescription(description : String) : void
 	+ setWeight(weight : Double) : void
 	+ setVolume(volume : Double) : void
@@ -499,41 +498,40 @@ class TransportNote {
 	+ setShipmentDate(shipmentDate : String) : void
 }
 
-EzWh -- DbHelper : Database interface
-EzWh -- SKU : Inventory
+EzWhFacade -- DbHelper : Database interface
+EzWhFacade -- SKU : Inventory
 SKU --  SKUItem : Describe
 SKUItem -- TestResult
 TestResult -u- TestDescriptor: Describe
-EzWh -- RestockOrder
-EzWh -- ReturnOrder
-EzWh -- InternalOrder
+EzWhFacade -- RestockOrder
+EzWhFacade -- ReturnOrder
+EzWhFacade -- InternalOrder
 RestockOrder -- Item
-EzWh -- User
-EzWh -- Position : Warehouse
+EzWhFacade -- User
+EzWhFacade -- Position : Warehouse
 UserType -- User
 InternalOrderState -- InternalOrder
 RestockOrderState -- RestockOrder
 RestockOrder -- TransportNote
 ```
 
-Design Pattern : Facade
+This design is based on the Facade pattern, in this way the API can communicate only with the Facade class that works as an interface between all the other classes.
+DbHelper is the interface for the database and is used to obtain persistance.
 
 # Verification traceability matrix
 
-| FR    | EzWh | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder | TransportNote |
-| ----- | :--: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: | :-----------: |
-| FR1   |  x   |  x   |     |         |                |            |          |      |              |               |             |               |
-| FR2   |  x   |      |  x  |         |       x        |            |    x     |      |              |               |             |               |
-| FR3.1 |  x   |      |  x  |         |                |            |    x     |      |              |               |             |               |
-| FR3.2 |      |      |     |         |       x        |     x      |          |      |              |               |             |               |
-| FR4   |  x   |  x   |     |         |                |            |          |      |              |               |             |               |
-| FR5   |  x   |      |  x  |    x    |                |            |          |  x   |      x       |               |      x      |       x       |
-| FR6   |  x   |      |  x  |    x    |                |            |          |      |              |       x       |             |               |
-| FR7   |  x   |  x   |  x  |         |                |            |          |  x   |              |               |             |               |
+| FR    | EzWh | DbHelper | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder | TransportNote |
+| ---   | :--: | :------: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: | :-----------: |
+| FR1   |  x   |    x     |  x   |     |         |                |            |          |      |              |               |             |			      |
+| FR2   |  x   |    x     |      |  x  |         |       x        |            |     x    |      |              |               |             |			      |
+| FR3.1 |  x   |    x     |      |  x  |         |                |            |     x    |      |              |               |             |			      |
+| FR3.2 |  x   |    x     |      |     |         |       x        |     x      |          |      |              |               |             |			      |
+| FR4   |  x   |    x     |  x   |     |         |                |            |          |      |              |               |             |		 	      |
+| FR5   |  x   |    x     |      |  x  |    x    |                |            |          |  x   |      x       |               |      x      |       x       |
+| FR6   |  x   |    x     |      |  x  |    x    |                |            |          |      |              |       x       |             |			      |
+| FR7   |  x   |    x     |  x   |  x  |         |                |            |          |  x   |              |               |             |			      |
 
 # Verification sequence diagrams
-
-\<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
 ## Scenario 1-1
 
@@ -542,17 +540,25 @@ actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
 participant Facade
+participant DbHelper
+note over DbHelper: id is generated\nby database
 participant SKU
 
 Manager -> EzWh: Selects description D, weight W, volume V,\nnotes N, price P, availableQuantity Q
 EzWh -> Facade: createSKU(D, W, V, N, P, Q)
 activate Facade
-Facade -> Facade: id = len(SKUs)
-Facade -> SKU: new SKU(id, D, W, V, N, P, Q)
+Facade -> DbHelper: createSKU(D, W, V, N, P, Q)
+activate DbHelper
+DbHelper -> DbHelper : id is generated
+DbHelper -> SKU: new SKU(id, D, W, V, N, P, Q)
 activate SKU
-SKU --> Facade: SKU
+SKU -> DbHelper: SKU
 deactivate SKU
+DbHelper -> Facade : SKU
+deactivate DbHelper
+Facade --> EzWh : Done
 deactivate Facade
+EzWh --> Manager : Done
 ```
 
 ## Scenario 1-3
@@ -562,38 +568,42 @@ actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
 participant Facade
+participant DbHelper
 participant SKU
-
 
 Manager -> EzWh: Selects SKU S, description D, newWeight W, newVolume V,\nnotes N, price, P, availableQuantity Q
 EzWh -> Facade: modifySKU(S, D, W, V, N, P, Q)
-activate Facade
-Facade -> Facade: SKU = getSKUById(S)
-Facade -> SKU: SKU.setDescription(D)
+Facade -> DbHelper : sku = getSKUById(S)
+activate DbHelper
+DbHelper -> Facade : SKU
+deactivate DbHelper
+Facade -> SKU: sku.setDescription(D)
 activate SKU
 SKU --> Facade: Done
 deactivate SKU
-Facade -> SKU: SKU.setWeight(W)
+Facade -> SKU: sku.setWeight(W)
 activate SKU
 SKU --> Facade: Done
 deactivate SKU
-Facade -> SKU: SKU.setVolume(V)
+Facade -> SKU: sku.setVolume(V)
 activate SKU
 SKU --> Facade: Done
 deactivate SKU
-Facade -> SKU: SKU.setNotes(N)
+Facade -> SKU: sku.setNotes(N)
 activate SKU
 SKU --> Facade: Done
 deactivate SKU
-Facade -> SKU: SKU.setPrice(P)
+Facade -> SKU: sku.setPrice(P)
 activate SKU
 SKU --> Facade: Done
 deactivate SKU
-Facade -> SKU: SKU.setAvailableQuantity(Q)
-activate SKU
-SKU --> Facade: Done
-deactivate SKU
-deactivate Facade
+Facade -> SKU: sku.setAvailableQuantity(Q)
+Facade -> DbHelper : modifySKU(sku)
+activate DbHelper
+DbHelper --> Facade : Done
+deactivate DbHelper
+Facade --> EzWh : Done
+EzWh --> Manager : Done
 ```
 
 ## Scenario 2-1
@@ -603,16 +613,23 @@ actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
 participant Facade
+participant DbHelper
 participant Position
 
 Manager -> EzWh: Selects positionId P, aisleId A, row R,\ncol C, maxWeight W, maxVolume V
 EzWh -> Facade: createPosition(P, A, R, C, W, V)
 activate Facade
-Facade -> Position: new Position(P, A, R, C, W, V)
+Facade -> DbHelper: createPosition(P, A, R, C, W, V)
+activate DbHelper
+DbHelper-> Position: new Position(P, A, R, C, W, V)
 activate Position
-Position --> Facade: Position
+Position -> DbHelper: Position
 deactivate Position
+DbHelper->Facade: Position
+deactivate DbHelper
+Facade --> EzWh: Done
 deactivate Facade
+EzWh --> Manager : Done
 ```
 
 ## Scenario 2-2
@@ -622,17 +639,18 @@ actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and\ninterface for Backend
 participant Facade
-participant Position
+participant DbHelper
 
 Manager -> EzWh: Selects positionId P and newPositionId N
 EzWh -> Facade: modifyPositionId(P, N)
 activate Facade
-Facade -> Facade: pos = getPositionById(P)
-Facade -> Position: pos.setPositionId(N)
-activate Position
-Position --> Facade: Done
-deactivate Position
+Facade -> DbHelper : modifyPositionId(P, N)
+activate DbHelper
+DbHelper --> Facade : Done
+deactivate DbHelper
+Facade --> EzWh : Done
 deactivate Facade
+EzWh --> Manager : Done
 ```
 
 ## Scenario 3-1
