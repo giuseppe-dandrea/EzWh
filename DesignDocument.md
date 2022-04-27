@@ -20,30 +20,25 @@ The design must satisfy the Official Requirements document, notably functional a
 # High level design
 
 ```plantuml
-
-package Frontend <<Folder>>{
-    package View <<Folder>>{
-}
-    package Controller <<Folder>>{
-}
-}
-package Backend <<Folder>>{
-
-    package Controller/API <<Folder>>{
-}
-    package Model <<Folder>>{
-}
+package it.polito.ezwh <<Folder>>{
 
 }
+package it.polito.ezwh.gui <<Folder>>{
 
-Controller <|-- View
-"Controller/API" --|> Model
-Frontend --|>Backend
+}
+package it.polito.ezwh.data <<Folder>>{
 
 
+}
+package it.polito.ezwh.exceptions <<Folder>>{
+
+}
+it.polito.ezwh <|-- it.polito.ezwh.data
+it.polito.ezwh <|-- it.polito.ezwh.gui
+it.polito.ezwh.data <|-- it.polito.ezwh.exceptions : import
 ```
 
-Architectural pattern: Hybird of layerd pattern and MVC , separating Frontend and Backend .
+Architectural pattern: MCV
 
 # Low level design
 
@@ -664,6 +659,7 @@ EzWh --> Clerk: Done
 ```
 
 ## Scenario 6-1
+
 Return order of SKU items that failed quality test
 
 ```plantuml
@@ -703,6 +699,7 @@ EzWh --> Manager: Done
 ```
 
 ## Scenario 7-1
+
 ```plantuml
 actor User
 participant EzWh
