@@ -19,8 +19,31 @@ The design must satisfy the Official Requirements document, notably functional a
 
 # High level design
 
-<discuss architectural styles used, if any>
-<report package diagram, if needed>
+```plantuml
+
+package Frontend <<Folder>>{
+    package View <<Folder>>{
+}
+    package Controller <<Folder>>{
+}
+}
+package Backend <<Folder>>{
+
+    package Controller/API <<Folder>>{
+}
+    package Model <<Folder>>{
+}
+
+}
+
+Controller <|-- View
+"Controller/API" --|> Model
+Frontend --|>Backend
+
+
+```
+
+Architectural pattern: Hybird of layerd pattern and MVC , separating Frontend and Backend .
 
 # Low level design
 
@@ -540,6 +563,7 @@ deactivate Facade
 ```
 
 ## Scenario 4-1 <!-- Manager -->
+
 ```plantuml
 actor Administrator
 participant EzWh
@@ -560,7 +584,8 @@ deactivate Facade
 EzWh --> Administrator: Done
 ```
 
-## Scenario 4-2 <!--Manager--> 
+## Scenario 4-2 <!--Manager-->
+
 ```plantuml
 actor Administrator
 participant EzWh
@@ -581,7 +606,49 @@ deactivate Facade
 EzWh --> Administrator: Done
 ```
 
+## Scenario 11-1
+
+```plantuml
+actor Supplier
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant Item
+
+Supplier -> EzWh: Selects description D, Price P , SKU
+
+EzWh -> Facade: addNewItem(D , SKU, P)
+
+activate Facade
+Facade -> Facade: id = len(Items)
+Facade -> Item: new Item(id, D, P, SKU, S.id)
+activate Item
+Item --> Facade: Item
+deactivate Facade
+deactivate Item
+```
+
+## Scenario 11-2
+
+```plantuml
+actor Supplier
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+
+
+Supplier -> EzWh: Search Item I
+EzWh -> Facade: getItembyId(id)
+activate Facade
+Facade --> EzWh : Item
+deactivate Facade
+Supplier -> EzWh: Select newDescription nD, newPrice nP
+EzWh -> Facade: modifyItem(id , nD , Np)
+
+```
+
 ## Scenario 12-1
+
 ```plantuml
 actor Manager
 participant EzWh
@@ -602,13 +669,14 @@ Facade -> Facade: s = getSKUByID(IS)
 Facade -> SKU: s.addTestDescriptor(t)
 activate SKU
 SKU --> Facade: Done
-deactivate SKU 
+deactivate SKU
 Facade --> EzWh: Done
 deactivate Facade
 EzWh --> Manager: Done
 ```
 
 ## Scenario 12-2
+
 ```plantuml
 actor Manager
 participant EzWh
@@ -623,7 +691,7 @@ Facade -> Facade: td = getTestDescriptorByID(ID)
 Facade -> TestDescriptor: td.setProcedureDescription(NPD)
 activate TestDescriptor
 TestDescriptor --> Facade: Done
-deactivate TestDescriptor 
+deactivate TestDescriptor
 Facade --> EzWh: Done
 deactivate Facade
 EzWh --> Manager: Done
