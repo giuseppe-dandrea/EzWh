@@ -636,7 +636,7 @@ note over EzWh: Includes Frontend and\ninterface for Backend
 participant Facade
 participant RestockOrder
 
-Clerk -> EzWh: given Restock Order RO, it is in DELIVERY state, C records every item in the RO with a new RFID and changes state to DELIVERED
+Clerk -> EzWh: given Restock Order RO, it is in DELIVERY state, \nC records every item in the RO with a new RFID and changes state to DELIVERED
 EzWh -> Facade: getRestockOrderById(RoId)
 activate Facade
 Facade --> EzWh: RestockOrder
