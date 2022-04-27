@@ -451,10 +451,10 @@ Design Pattern : Facade
 
 | FR  | EzWh | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder |
 | --- | :--: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: |
-| FR1 |  x   |      |     |         |                |            |          |      |              |               |             |
+| FR1 |  x   |  x   |     |         |                |            |          |      |              |               |             |
 | FR2 |  x   |      |     |         |                |            |          |      |              |               |             |
-| FR3 |  x   |      |     |         |                |            |          |      |              |               |             |
-| FR4 |  x   |      |     |         |                |            |          |      |              |               |             |
+| FR3 |  x   |      |     |         |       x        |            |          |      |              |               |             |
+| FR4 |  x   |  x   |     |         |                |            |          |      |              |               |             |
 | FR5 |  x   |      |     |         |                |            |          |      |              |               |             |
 | FR6 |  x   |      |     |         |                |            |          |      |              |               |             |
 | FR7 |  x   |      |     |         |                |            |          |      |              |               |             |
