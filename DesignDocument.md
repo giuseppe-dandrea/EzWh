@@ -44,14 +44,7 @@ Architectural pattern: MCV
 
 ```plantuml
 class EzWh {
-	+ SKUs : List<SKU>
-	+ SKUItems : List<SKUItem>
-	+ positions : List<Position>
-	+ testDescriptors: List<TestDescriptor>
-	+ users: List<User>
-	+ restockOrders : List<RestockOrder>
-	+ returnOrders : List<ReturnOrder>
-	+ internalOrders : List<InternalOrder>
+	+ DbHelper db
 	__
 	+ getSKUs() : List<SKU>
 	+ getSKUById(id : String) : SKU
@@ -75,22 +68,22 @@ class EzWh {
 	+ deletePositionId(positionId : String) : void
 	~ getPositionById(positionId : String) : Position
 	..
-	+ listAllTestDescriptors(): List<TestDescriptor>
+	+ getTestDescriptors(): List<TestDescriptor>
 	+ getTestDescriptorByID(id: Integer): TestDescriptor
-	+ addTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): void
+	+ addTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): TestDescriptor
 	+ modifyTestDescriptor(id: Integer, newName: String, newProcedureDescription: String, newIdSKU: Integer): void
 	+ deleteTestDescriptor(id: Integer): void
 	..
-	+ listAllTestResultsByRFID(RFID: String): List<TestResult>
+	+ getTestResultsByRFID(RFID: String): List<TestResult>
 	+ getTestResultByIDAndRFID(RFID: String, id: Integer): TestResult
-	+ addTestResult(RFID: String, idTestDescriptor: Integer, date: String, result: boolean): void
+	+ addTestResult(RFID: String, idTestDescriptor: Integer, date: String, result: boolean): TestResults
 	+ modifyTestResult(RFID: String, id: Integer, newIdTestDescriptor: Integer, newDate: String, newResult: boolean): void
 	+ deleteTestResult(RFID: String, id: Integer): void
 	..
 	+ getUserInfo(id: Integer): User
-	+ listAllSuppliers(): List<User>
-	+ listAllUsers(): List<User>
-	+ addUser(email: String, name: String, surname: String, password: String, type: String): void
+	+ getSuppliers(): List<User>
+	+ getUsers(): List<User>
+	+ addUser(email: String, name: String, surname: String, password: String, type: String): User
 	+ login(email: String, password: String, type: String): User
 	+ logout(id : Integer): void
 	+ modifyUserRights(email: String, oldType: String, newType: String): void
@@ -107,23 +100,23 @@ class EzWh {
 	+ getRestockOrdersIssued() : List<RestockOrder>
 	+ getRestockOrderById(id : Integer) : RestockOrder
 	+ getRestockOrderReturnItems(id : Integer) : List<SKUItem>
-	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : void
-	+ modifyRestockOrder(id : Integer, state : RestockOrderState)
+	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : RestockOrder
+	+ modifyRestockOrder(id : Integer, state : String)
 	+ addSkuItemsToRestockOrder(id : Integer, skuItems : List<SKUItem>) : void
 	+ addTransportNoteToRestockOrder(transportNote : TransportNote) : void
 	+ deleteRestockOrder(id : Integer) : void
 	..
 	+ getReturnOrders() : List<ReturnOrder>
 	+ getReturnOrderById(id : Integer) : ReturnOrder
-	+ createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : void
+	+ createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : ReturnOrder
 	+ deleteReturnOrder(id : Integer) : void
 	..
 	+ getInternalOrders() : List<InternalOrder>
 	+ getInternalOrdersIssued() : List<InternalOrder>
 	+ getInternalOrdersAccepted() : List<InternalOrder>
 	+ getInternalOrderById(id : Integer) : InternalOrder
-	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : void
-	+ modifyInternalOrderState(state : InternalOrderState, RFIDs : List<JSON>)
+	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : InternalOrder
+	+ modifyInternalOrderState(state : String, RFIDs : List<SKUItem>) : void
 	+ deleteInternalOrder(id : Integer) : void
 }
 
@@ -162,7 +155,6 @@ class SKU {
 	..
 	+ initTestDescriptor() : void
 	+ addTestDescriptor(testDescriptor : TestDescriptor) : void
-
 }
 
 class Position {
@@ -340,7 +332,7 @@ class InternalOrder {
 	- customerId : Integer
 	- skuItems : List<SKUItem>
 	--
-	+ InternalOrder(id: Integer, issueDate : String, state : InternalOrderState, products : List<SkuItem>, customerId : Integer) : void
+	+ InternalOrder(id: Integer, issueDate : String, state : InternalOrderState, products : Map<SKU, Integer>, customerId : Integer) : void
 	..
 	+ getId() : Integer
 	+ getIssueDate() : String
@@ -394,8 +386,8 @@ class RestockOrder {
 	- transportNote : TransportNote
 	- skuItems : List<SKUItem>
 	--
-	+ RestockOrder(id: Integer, issueDate : String, state : RestockOrderState, products : List <SKU>, supplierId : Integer, transportNote : TransportNote) : void
-	+ RestockOrder(id: Integer, issueDate : String, state : RestockOrderState, products : List <SKU>, supplierId : Integer, transportNote : TransportNote, skuItems : List<SKUItem>) : void
+	+ RestockOrder(id: Integer, issueDate : String, state : RestockOrderState, products : Map<Item, Integer>, supplierId : Integer, transportNote : TransportNote) : void
+	+ RestockOrder(id: Integer, issueDate : String, state : RestockOrderState, products : Map<Item, Integer>, supplierId : Integer, transportNote : TransportNote, skuItems : List<SKUItem>) : void
 	..
 	+ getId() : Integer
 	+ getIssueDate() : String
@@ -444,16 +436,16 @@ Design Pattern : Facade
 
 # Verification traceability matrix
 
-| FR  | EzWh | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder |
-| --- | :--: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: |
-| FR1 |  x   |  x   |     |         |                |            |          |      |              |               |             |
-| FR2 |  x   |      |     |         |                |            |          |      |              |               |             |
-| FR3 |  x   |      |     |         |       x        |            |          |      |              |               |             |
-| FR4 |  x   |  x   |     |         |                |            |          |      |              |               |             |
-| FR5 |  x   |      |     |         |                |            |          |      |              |               |             |
-| FR6 |  x   |      |     |         |                |            |          |      |              |               |             |
-| FR7 |  x   |      |     |         |                |            |          |      |              |               |             |
-| FR8 |  x   |  x   |  x  |         |                |            |          |  x   |              |               |             |
+| FR    | EzWh | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder | TransportNote |
+| ---   | :--: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: | :-----------: |
+| FR1   |  x   |  x   |     |         |                |            |          |      |              |               |             |			   |
+| FR2   |  x   |      |  x  |         |       x        |            |     x    |      |              |               |             |			   |
+| FR3.1 |  x   |      |  x  |         |                |            |     x    |      |              |               |             |			   |
+| FR3.2 |      |      |     |         |       x        |     x      |          |      |              |               |             |			   |
+| FR4   |  x   |  x   |     |         |                |            |          |      |              |               |             |		 	   |
+| FR5   |  x   |      |  x  |    x    |                |            |          |  x   |      x       |               |      x      |       x       |
+| FR6   |  x   |      |  x  |    x    |                |            |          |      |              |       x       |             |			   |
+| FR7   |  x   |  x   |  x  |         |                |            |          |  x   |              |               |             |			   |
 
 # Verification sequence diagrams
 
@@ -698,23 +690,6 @@ Facade --> EzWh: Done
 EzWh --> Manager: Done
 ```
 
-## Scenario 7-1
-
-```plantuml
-actor User
-participant EzWh
-note over EzWh: Includes Frontend and\ninterface for Backend
-participant Facade
-
-User -> EzWh: Selects email EM, password P
-EzWh -> Facade: login(EM, P)
-activate Facade
-Facade -> Facade: u = getUserByEmail(EM)
-Facade -> Facade: P == u.getPassword()
-Facade -> EzWh: u
-deactivate Facade
-EzWh -> User: u
-```
 
 ## Scenario 9-1
 
