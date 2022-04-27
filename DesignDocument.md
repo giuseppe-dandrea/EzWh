@@ -2,7 +2,7 @@
 
 Authors: Abdelrahman SAYED AHMED , Giuseppe D'Andrea , Shayan Taghinezhad Roudbaraki , Giacomo Bruno
 
-Date: 26/04/2022
+Date: 27/04/2022
 
 Version: 2.0
 
@@ -20,7 +20,7 @@ The design must satisfy the Official Requirements document, notably functional a
 # High level design
 
 ```plantuml
-package it.polito.ezwh <<Folder>>{
+package it.polito.ezwh.controller <<Folder>>{
 
 }
 package it.polito.ezwh.gui <<Folder>>{
@@ -33,12 +33,12 @@ package it.polito.ezwh.data <<Folder>>{
 package it.polito.ezwh.exceptions <<Folder>>{
 
 }
-it.polito.ezwh <|-- it.polito.ezwh.data
-it.polito.ezwh <|-- it.polito.ezwh.gui
-it.polito.ezwh.data <|-- it.polito.ezwh.exceptions : import
+it.polito.ezwh.gui --|> it.polito.ezwh.controller
+it.polito.ezwh.controller --|> it.polito.ezwh.data
+it.polito.ezwh.data --|> it.polito.ezwh.exceptions : import
 ```
 
-Architectural pattern: MVC
+Architectural pattern: Layered
 
 # Low level design
 
