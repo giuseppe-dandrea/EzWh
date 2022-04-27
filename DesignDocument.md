@@ -537,7 +537,7 @@ DbHelper is the interface for the database and is used to obtain persistance.
 
 # Verification sequence diagrams
 
-## Scenario 1-1
+## Scenario 1-1 - Create SKU
 
 ```plantuml
 actor Manager
@@ -565,7 +565,7 @@ deactivate EzWhFacade
 EzWh --> Manager : Done
 ```
 
-## Scenario 1-3
+## Scenario 1-3 - Modify SKU weight and volume
 
 ```plantuml
 actor Manager
@@ -610,7 +610,7 @@ EzWhFacade --> EzWh : Done
 EzWh --> Manager : Done
 ```
 
-## Scenario 2-1
+## Scenario 2-1 - Create position
 
 ```plantuml
 actor Manager
@@ -636,7 +636,7 @@ deactivate EzWhFacade
 EzWh --> Manager : Done
 ```
 
-## Scenario 2-2
+## Scenario 2-2 - Modify positionID of P
 
 ```plantuml
 actor Manager
@@ -657,7 +657,7 @@ deactivate EzWhFacade
 EzWh --> Manager : Done
 ```
 
-## Scenario 3-1
+## Scenario 3-1 - Restock Order of SKU S issued by quantity
 
 ```plantuml
 actor Manager
@@ -684,7 +684,7 @@ deactivate EzWhFacade
 EzWh --> Manager: Done
 ```
 
-## Scenario 4-1
+## Scenario 4-1 - Create user and define rights
 
 ```plantuml
 actor Administrator
@@ -712,9 +712,7 @@ deactivate EzWhFacade
 EzWh --> Administrator: Done
 ```
 
-## Scenario 6-1
-
-Return order of SKU items that failed quality test
+## Scenario 6-1 - Return order of SKU items that failed quality test
 
 ```plantuml
 actor Manager
@@ -770,7 +768,7 @@ EzWhFacade --> EzWh: Done
 EzWh --> Manager: Done
 ```
 
-## Scenario 9-1
+## Scenario 9-1 - Internal Order IO accepted
 
 ```plantuml
 actor Customer
@@ -822,7 +820,7 @@ deactivate EzWh
 
 ```
 
-## Scenario 11-1
+## Scenario 11-1 - Create Item I
 
 ```plantuml
 actor Supplier
@@ -855,7 +853,7 @@ deactivate EzWhFacade
 EzWh-->Supplier : Done
 ```
 
-## Scenario 11-2
+## Scenario 11-2 - Modify Item description and price
 
 ```plantuml
 actor Supplier
@@ -892,7 +890,7 @@ EzWh --> Supplier : Done
 deactivate EzWh
 ```
 
-## Scenario 12-1
+## Scenario 12-1 - Create test description
 
 ```plantuml
 actor Manager
