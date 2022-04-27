@@ -38,13 +38,13 @@ it.polito.ezwh <|-- it.polito.ezwh.gui
 it.polito.ezwh.data <|-- it.polito.ezwh.exceptions : import
 ```
 
-Architectural pattern: MCV
+Architectural pattern: MVC
 
 # Low level design
 
 ```plantuml
 class EzWh {
-	+ DbHelper db
+	+ db : DbHelper
 	__
 	+ getSKUs() : List<SKU>
 	+ getSKUById(id : String) : SKU
@@ -103,7 +103,7 @@ class EzWh {
 	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : RestockOrder
 	+ modifyRestockOrder(id : Integer, state : String)
 	+ addSkuItemsToRestockOrder(id : Integer, skuItems : List<SKUItem>) : void
-	+ addTransportNoteToRestockOrder(transportNote : TransportNote) : void
+	+ addTransportNoteToRestockOrder(id : Integer, transportNote : TransportNote) : void
 	+ deleteRestockOrder(id : Integer) : void
 	..
 	+ getReturnOrders() : List<ReturnOrder>
@@ -116,7 +116,90 @@ class EzWh {
 	+ getInternalOrdersAccepted() : List<InternalOrder>
 	+ getInternalOrderById(id : Integer) : InternalOrder
 	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : InternalOrder
-	+ modifyInternalOrderState(state : String, RFIDs : List<SKUItem>) : void
+	+ modifyInternalOrderState(id : Integer, state : String, RFIDs : List<SKUItem>) : void
+	+ deleteInternalOrder(id : Integer) : void
+}
+
+class DbHelper {
+	+ dbName : String
+	+ dbConnection : Connection
+	__
+	+ DbHelper(dbName : String) : DbHelper
+	..
+	+ createConnection() : void
+ 	+ closeConnection() : void
+ 	+ createTables(): void
+ 	+ dropTables(): void
+ 	..
+	+ getSKUs() : List<SKU>
+	+ getSKUById(id : String) : SKU
+	+ getSKUByDescription(description : String) : List<SKU>
+	+ createSKU(description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : SKU
+	+ modifySKU(sku : SKU) : void
+	+ addSKUPosition(id : String, position : Position) : void
+	+ deleteSKU(id : String) : void
+	..
+	+ getSKUItems() : List<SKUItem>
+	+ getSKUItemsBySKU(SKUid : String) : List<SKUItem>
+	+ getSKUItemByRfid(rfid : String) : SKUItem
+	+ createSKUItem(skuItem : SKUItem) : void
+	+ modifySKUItem(skuItem : SKUItem) : void
+	+ deleteSKUItem(rfid : String) : void
+	..
+	+ getPositions() : List<Position>
+	+ createPosition(position : Position) : void
+	+ modifyPosition(position : Position) : void
+	+ modifyPositionId(positionId : String, newPositionId: String) : void
+	+ deletePositionId(positionId : String) : void
+	+ getPositionById(positionId : String) : Position
+	..
+	+ getTestDescriptors(): List<TestDescriptor>
+	+ addTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): TestDescriptor
+	+ addTestDescriptor(testDescriptor : TestDescriptor): void
+	+ modifyTestDescriptor(testDescriptor : TestDescriptor): void
+	+ deleteTestDescriptor(id: Integer): void
+	..
+	+ getTestResultsByRFID(RFID: String): List<TestResult>
+	+ getTestResultByIDAndRFID(RFID: String, id: Integer): TestResult
+	+ addTestResult(RFID: String, idTestDescriptor: Integer, date: String, result: boolean): TestResults
+	+ modifyTestResult(RFID: String, id: Integer, testResult : TestResult): void
+	+ deleteTestResult(RFID: String, id: Integer): void
+	..
+	+ getUserInfo(id: Integer): User
+	+ getSuppliers(): List<User>
+	+ getUsers(): List<User>
+	+ addUser(email: String, name: String, surname: String, password: String, type: String): User
+	+ modifyUserRights(email: String, oldType: String, newType: String): void
+	+ deleteUser(email: String, type: String): void
+	+ getUserByEmail(email: String): User
+	..
+	+ getItems (): List<Item>
+	+ getItemById (id: String) : Item
+	+ addNewItem( description: String, price : double, SKUId : String, supplierId : String): Item
+	+ modifyItem(item : Item): void
+	+ deleteItem(id:String) : void
+	..
+	+ getRestockOrders() : List<RestockOrder>
+	+ getRestockOrdersIssued() : List<RestockOrder>
+	+ getRestockOrderById(id : Integer) : RestockOrder
+	+ getRestockOrderReturnItems(id : Integer) : List<SKUItem>
+	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : RestockOrder
+	+ modifyRestockOrder(restockOrder : RestockOrder)
+	+ addSkuItemsToRestockOrder(id : Integer, skuItems : List<SKUItem>) : void
+	+ addTransportNoteToRestockOrder(id : Integer, transportNote : TransportNote) : void
+	+ deleteRestockOrder(id : Integer) : void
+	..
+	+ getReturnOrders() : List<ReturnOrder>
+	+ getReturnOrderById(id : Integer) : ReturnOrder
+	+ createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : ReturnOrder
+	+ deleteReturnOrder(id : Integer) : void
+	..
+	+ getInternalOrders() : List<InternalOrder>
+	+ getInternalOrdersIssued() : List<InternalOrder>
+	+ getInternalOrdersAccepted() : List<InternalOrder>
+	+ getInternalOrderById(id : Integer) : InternalOrder
+	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : InternalOrder
+	+ modifyInternalOrderState(id : Integer, state : String, RFIDs : List<SKUItem>) : void
 	+ deleteInternalOrder(id : Integer) : void
 }
 
@@ -416,6 +499,7 @@ class TransportNote {
 	+ setShipmentDate(shipmentDate : String) : void
 }
 
+EzWh -- DbHelper : Database interface
 EzWh -- SKU : Inventory
 SKU --  SKUItem : Describe
 SKUItem -- TestResult
