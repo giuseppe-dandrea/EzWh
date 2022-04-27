@@ -663,6 +663,45 @@ Facade --> EzWh: Done
 EzWh --> Clerk: Done
 ```
 
+## Scenario 6-1
+Return order of SKU items that failed quality test
+
+```plantuml
+actor Manager
+participant EzWh
+participant Facade
+participant RestockOrder
+participant ReturnOrder
+participant SkuItem
+
+Manager -> EzWh: System provide RFID of SKU items\nthat not passed quality tests
+EzWh -> Facade: getRestockOrderById()
+activate Facade
+Facade -> Facade: restockOrder = getRestockOrderById()
+Facade -> RestockOrder: skuItems = restockOrder.getSkuItems()
+activate RestockOrder
+RestockOrder --> Facade: List<SkuItem>
+deactivate RestockOrder
+Facade --> EzWh: List<SkuItem>
+deactivate Facade
+EzWh --> Manager: List<SkuItem>
+
+Manager -> EzWh: Create Return Order and\ninsert SKU Items to be returned
+EzWh -> Facade: createReturnOrder(date, products, restockorderid)
+activate Facade
+Facade -> ReturnOrder: returnOrder = new ReturnOrder(date, products, restockorderid)
+activate ReturnOrder
+ReturnOrder --> Facade: ReturnOrder
+deactivate ReturnOrder
+Facade -> SkuItem: Foreach skuItem in products\n  skuItem.setAvailable(False)
+activate SkuItem
+SkuItem --> Facade: Done
+Deactivate SkuItem
+deactivate Facade
+Facade --> EzWh: Done
+EzWh --> Manager: Done
+```
+
 ## Scenario 7-1
 ```plantuml
 actor User
