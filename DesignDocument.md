@@ -445,6 +445,8 @@ RestockOrderState -- RestockOrder
 RestockOrder -- TransportNote
 ```
 
+Design Pattern : Facade
+
 # Verification traceability matrix
 
 | FR  | EzWh | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder |
@@ -604,6 +606,29 @@ deactivate User
 Facade --> EzWh: Done
 deactivate Facade
 EzWh --> Administrator: Done
+```
+
+## Scenario 9-1
+
+```plantuml
+actor Customer
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant InternalOrder
+actor Manager
+
+Customer -> EzWh: adds every SKU she wants in every qty to IO
+EzWh -> Facade: createInternalOrder(date, <SKU,qty>, C.id)
+Facade ->Facade :id = len(InternalOrders)
+activate Facade
+Facade ->InternalOrder: newInternalOrder(id,issueDate, ISSUED,  <SKU,qty>, C.id)
+InternalOrder-->Facade : InternalOrder
+Facade->Facade : modifySKU(newAvailableQuantity)
+Facade->Facade :modifyPosition(newOccupiedWeight , newOccupiedVolume)
+deactivate Facade
+Manager->EzWh :select new internal order
+EzWh -> Facade : modifyInternalOrderState(Accepted)
 ```
 
 ## Scenario 11-1
