@@ -564,6 +564,25 @@ deactivate Position
 deactivate Facade
 ```
 
+## Scenario 3-1
+
+```plantuml
+actor Manager
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant RestockOrder
+
+Manager -> EzWh: Creates Restock Order, inserts issueDate D, Item I, quantity Q and Supplier SP
+EzWh -> Facade: CreateRestockOrder (D, (I, Q), SP)
+activate Facade
+Facade -> RestockOrder: new RestockOrder(null, D, "ISSDUED", null, SP, null)
+activate RestockOrder
+RestockOrder --> Facade: RestockOrder
+deactivate RestockOrder
+deactivate Facade
+```
+
 ## Scenario 4-1 <!-- Manager -->
 
 ```plantuml
@@ -606,6 +625,42 @@ deactivate User
 Facade --> EzWh: Done
 deactivate Facade
 EzWh --> Administrator: Done
+```
+
+## Scenario 5-1-1
+
+```plantuml
+actor Clerk
+participant EzWh
+note over EzWh: Includes Frontend and\ninterface for Backend
+participant Facade
+participant RestockOrder
+
+Clerk -> EzWh: given Restock Order RO, it is in DELIVERY state, C records every item in the RO with a new RFID and changes state to DELIVERED
+EzWh -> Facade: getRestockOrderById(RoId)
+activate Facade
+Facade --> EzWh: RestockOrder
+deactivate Facade
+EzWh --> Clerk: Done
+
+Clerk -> EzWh: add RFID to SkuItem
+EzWh -> Facade: createSKUItem(RFID, SKUid, dateOfStock)
+activate Facade
+Facade --> EzWh: Done
+deactivate Facade
+EzWh --> Clerk: Done
+
+Clerk -> EzWh: Change Restock Order state to delivered
+EzWh -> Facade: modifyRestockOrder(id , "DELIVERED")
+activate Facade
+Facade -> Facade: restockOrder = getRestockOrderById(id)
+Facade -> RestockOrder: restockOrder.setState("DELIVERED")
+activate RestockOrder
+RestockOrder --> Facade: Done
+Deactivate RestockOrder
+Deactivate Facade
+Facade --> EzWh: Done
+EzWh --> Clerk: Done
 ```
 
 ## Scenario 9-1
