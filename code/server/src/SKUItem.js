@@ -30,4 +30,4 @@ class SKUItem {
 	}
 }
 
-export { SKUItem };
+module.exports = SKUItem;

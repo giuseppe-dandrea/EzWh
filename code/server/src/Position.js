@@ -12,4 +12,4 @@ class Position {
 	}
 }
 
-export { Position }
+module.exports = Position;

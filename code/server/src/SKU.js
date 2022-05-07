@@ -25,4 +25,4 @@ class SKU {
 	}
 }
 
-export { SKU }
+module.exports = SKU;
