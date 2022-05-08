@@ -13,6 +13,8 @@ class User {
     }
 }
 
+
+// MAP??
 const UserTypes = {
     ADMINISTRATOR: 0,
     MANAGER: 1,
@@ -23,7 +25,7 @@ const UserTypes = {
     SUPPLIER: 6
 }
 
-const getUserTypes = (id) => {
+const getUserTypesByID = (id) => {
     switch(id) {
         case 0:
             return "Administrator";
@@ -44,4 +46,25 @@ const getUserTypes = (id) => {
     }
 }
 
-module.exports = {User, UserTypes, getUserTypes};
+const getUserTypesByString = (userType) => {
+    switch(userType) {
+        case "Administrator":
+            return 0;
+        case "Manager":
+            return 1;
+        case "Clerk":
+            return 2;
+        case "Delivery employee":
+            return 3;
+        case "Quality check employee":
+            return 4;
+        case "Internal customer":
+            return 5;
+        case "Supplier":
+            return 6;
+        default:
+            //exception ???
+    }
+}
+
+module.exports = {User, UserTypes, getUserTypesByID, getUserTypesByString};
