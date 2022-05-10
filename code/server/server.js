@@ -1,6 +1,6 @@
-'use strict';
-const express = require('express');
-const EzWhFacade = require('./src/EzWhFacade');
+"use strict";
+const express = require("express");
+const EzWhFacade = require("./src/EzWhFacade");
 const facade = new EzWhFacade();
 
 // init express
@@ -10,10 +10,10 @@ const port = 3001;
 app.use(express.json());
 
 //GET /api/test
-app.get('/api/hello', (req,res)=>{
+app.get("/api/hello", (req, res) => {
   let message = {
-    message: 'Hello World!'
-  }
+    message: "Hello World!",
+  };
   return res.status(200).json(message);
 });
 
