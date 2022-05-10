@@ -1,6 +1,7 @@
 'use strict';
 const express = require('express');
-const DbHelper = require('./src/DbHelper')
+const EzWhFacade = require('./src/EzWhFacade');
+const facade = new EzWhFacade();
 
 // init express
 const app = new express();
@@ -13,9 +14,6 @@ app.get('/api/hello', (req,res)=>{
   let message = {
     message: 'Hello World!'
   }
-  let dbHelper = new DbHelper("./code/server/devDB");
-  // dbHelper.dropTables();
-  dbHelper.createTables();
   return res.status(200).json(message);
 });
 

@@ -1,7 +1,7 @@
 const sqlite3 = require("sqlite3");
 
 class DbHelper {
-  constructor(dbName) {
+  constructor(dbName = "../devDB") {
     this.dbName = dbName;
     this.createConnection();
   }
