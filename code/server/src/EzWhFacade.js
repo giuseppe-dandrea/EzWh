@@ -1,4 +1,4 @@
-import DbHelper from "./DbHelper";
+const DbHelper = require("./DbHelper.js");
 
 class EzWhFacade {
 	constructor() {
