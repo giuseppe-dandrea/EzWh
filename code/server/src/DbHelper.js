@@ -170,6 +170,100 @@ class DbHelper {
         console.log("Error creating TransportNote table", err);
       }
     });
+	const createInternalOrderTable = `CREATE TABLE InternalOrder (
+		InternalOrderID INTEGER NOT NULL,
+		SssueDate VARCHAR(20) NOT NULL,
+		State VARCHAR(20) NOT NULL,
+		CustomerId INTEGER NOT NULL,
+		PRIMARY KEY(InternalOrderID)
+	);`
+	this.dbConnection.run(createInternalOrderTable, (err) => {
+		if (err) {
+			console.log("Error creating InternalOrder table", err);
+		}
+	});
+	
+	const createInternalOrderProductTable = `CREATE TABLE InternalOrderProduct (
+		SKUID INTEGER NOT NULL,
+		InternalOrderID INTEGER NOT NULL,
+		Count INTEGER NOT NULL,
+		PRIMARY KEY(SKUID, internalOrderID),
+		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
+		FOREIGN KEY (InternalOrderID) REFERENCES InternalOrder(InternalOrderID)
+	);`
+	this.dbConnection.run(createInternalOrderProductTable, (err) => {
+		if (err) {
+			console.log("Error creating InternalOrderProduct table", err);
+		}
+	});
+	
+	const createInternalOrderSKUItemTable = `CREATE TABLE InternalOrderSKUItem (
+		SKUItemRFID INTEGER NOT NULL,
+		InternalOrderID INTEGER NOT NULL,
+		PRIMARY KEY(SKUItemRFID, InternalOrderID),
+		FOREIGN KEY (SKUItemRFID) REFERENCES SKUItem(SKUItemRFID),
+		FOREIGN KEY (InternalOrderID) REFERENCES InternalOrder(InternalOrderID)
+	);`
+	this.dbConnection.run(createInternalOrderSKUItemTable, (err) => {
+			if (err) {
+				console.log("Error creating Internal OrderSKUItem table", err);
+			}
+	});
+	
+	const createRestockOrderTable = `CREATE TABLE RestockOrder (
+		RestockOrderID INTEGER NOT NULL,
+		IssueDate VARCHAR(20) NOT NULL,
+		TransportNote VARCHAR(20) NOT NULL,
+		SupplierID INTEGER NOT NULL,
+		FOREIGN KEY (SupplierID) REFERENCES User(SupplierID),
+		PRIMARY KEY(RestockOrderID)
+	);`
+	this.dbConnection.run(createRestockOrderTable, (err) => {
+			if (err) {
+				console.log("Error creating Restock Order table", err);
+			}
+	});
+	
+	const createRestockOrderProductTable = `CREATE TABLE RestockOrderProduct (
+		SKUID INTEGER NOT NULL,
+		RestockOrderID INTEGER NOT NULL,
+		Count INTEGER NOT NULL,
+		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
+		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID),
+		PRIMARY KEY(SKUID, RestockOrderID)
+	);`
+	this.dbConnection.run(createRestockOrderProductTable, (err) => {
+		if (err) {
+			console.log("Error creating RestockOrderProduct table", err);
+		}
+	});
+	
+	const createRestockOrderSKUItemTable = `CREATE TABLE RestockOrderSKUItem (
+		SKUItemRFID INTEGER NOT NULL,
+		RestockOrderID INTEGER NOT NULL,
+		FOREIGN KEY (SKUItemRFID) REFERENCES SKUItem(SKUItemRFID),
+		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID),
+		PRIMARY KEY(SKUItemRFID, RestockOrderID)
+	);`
+	this.dbConnection.run(createRestockOrderSKUItemTable, (err) => {
+			if (err) {
+				console.log("Error creating RestockOrderSKUItem table", err);
+			}
+	});
+	
+	const createReturnOrderTable = `CREATE TABLE ReturnOrder (
+		ReturnOrderID INTEGER NOT NULL,
+		ReturnDate VARCHAR(20) NOT NULL,
+		TransportNote VARCHAR(20) NOT NULL,
+		RestockOrderID INTEGER NOT NULL,
+		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
+		PRIMARY KEY(ReturnOrderID)
+	);`
+	this.dbConnection.run(createReturnOrderTable, (err) => {
+			if (err) {
+				console.log("Error creating Return Order table", err);
+			}
+	});
   }
 
   dropTables() {
@@ -242,6 +336,54 @@ class DbHelper {
         console.log("Error dropping TransportNote table", err);
       }
     });
+	const dropInternalOrderTable = `DROP TABLE InternalOrder;`;
+	this.dbConnection.run(dropInternalOrderTable, (err) => {
+		if (err) {
+			console.log("Error dropping Internal Order table", err);
+		}
+	});
+	
+	const dropInternalOrderProductsTable = `DROP TABLE InternalOrderProducts;`;
+	this.dbConnection.run(dropInternalOrderProductsTable, (err) => {
+		if (err) {
+			console.log("Error dropping InternalOrderProducts table", err);
+		}
+	});
+	
+	const dropInternalOrderSKUItemTable = `DROP TABLE InternalOrderSKUItem;`;
+	this.dbConnection.run(dropInternalOrderSKUItemTable, (err) => {
+		if (err) {
+			console.log("Error dropping InternalOrderSKUItem table", err);
+		}
+	});
+	
+	const dropRestockOrderTable = `DROP TABLE RestockOrder;`;
+	this.dbConnection.run(dropRestockOrderTable, (err) => {
+		if (err) {
+			console.log("Error dropping RestockOrder table", err);
+		}
+	});
+	
+	const dropRestockOrderProductsTable = `DROP TABLE RestockOrderProducts;`;
+	this.dbConnection.run(dropRestockOrderProductsTable, (err) => {
+		if (err) {
+			console.log("Error dropping RestockOrderProducts table", err);
+		}
+	});
+	
+	const dropRestockOrderSKUItemTable = `DROP TABLE RestockOrderSKUItem;`;
+	this.dbConnection.run(dropRestockOrderSKUItemTable, (err) => {
+		if (err) {
+			console.log("Error dropping RestockOrderSKUItem table", err);
+		}
+	});
+	
+	const dropReturnOrderTable = `DROP TABLE ReturnOrder;`;
+	this.dbConnection.run(dropReturnOrderTable, (err) => {
+		if (err) {
+			console.log("Error dropping ReturnOrder table", err);
+		}
+	});
   }
 }
 
