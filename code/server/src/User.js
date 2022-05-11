@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 class User {
     constructor(id, name, surname, email, type, password) {
         this.id=id;
@@ -5,66 +7,40 @@ class User {
         this.surname = surname;
         this.email = email;
         this.type = type;
-        this.password = this.password; // NOT IN CLEAR!!!!
+        this.password = password; 
     }
 
-    setPassword(password) {
-        this.password = password; // NOT IN CLEAR!!!!
+    static storePassword(password) {
+        let salt = crypto.randomInt(8192);
+        let hashPassword = crypto.createHash("sha256").update(password,"utf8")
+        .update(salt, "utf8").digest(base64);
+        return `${salt}:${hashPassword}`;
     }
-}
 
-
-// MAP??
-const UserTypes = {
-    ADMINISTRATOR: 0,
-    MANAGER: 1,
-    CLERK: 2,
-    DELIVERY_EMPLOYEE: 3,
-    QUALITY_CHECK_EMPLOYEE: 4,
-    INTERNAL_CUSTOMER: 5,
-    SUPPLIER: 6
-}
-
-const getUserTypesByID = (id) => {
-    switch(id) {
-        case 0:
-            return "Administrator";
-        case 1:
-            return "Manager";
-        case 2:
-            return "Clerk";
-        case 3:
-            return "Delivery employee";
-        case 4:
-            return "Quality check employee";
-        case 5:
-            return "Internal customer";
-        case 6:
-            return "Supplier";
-        default:
-            //exception ???
+    verifyPassword(password) {
+        let psw = this.password.split(':');
+        let hashPassword = crypto.createHash("sha256").update(password,"utf8")
+        .update(psw[0], "utf8").digest(base64);
+        return hashPassword==psw[1];
     }
 }
 
-const getUserTypesByString = (userType) => {
-    switch(userType) {
-        case "Administrator":
-            return 0;
-        case "Manager":
-            return 1;
-        case "Clerk":
-            return 2;
-        case "Delivery employee":
-            return 3;
-        case "Quality check employee":
-            return 4;
-        case "Internal customer":
-            return 5;
-        case "Supplier":
-            return 6;
-        default:
-            //exception ???
-    }
+
+class UserTypes {
+    static ADMINISTRATOR = 'administrator';
+    static MANAGER = 'manager';
+    static CLERK =  'clerk';
+    static DELIVERY_EMPLOYEE = "deliveryEmployee";
+    static QUALITY_CHECK_EMPLOYEE  = "qualityEmployee";
+    static INTERNAL_CUSTOMER = "customer";
+    static SUPPLIER = "supplier";
+
+    static isUserTypes = (userType) => {
+        return userType==UserTypes.ADMINISTRATOR || userType==UserTypes.MANAGER ||
+        userType==UserTypes.CLERK || userType==UserTypes.DELIVERY_EMPLOYEE ||
+        userType==UserTypes.QUALITY_CHECK_EMPLOYEE || userType==UserTypes.INTERNAL_CUSTOMER ||
+        userType==UserTypes.SUPPLIER;
+     }
 }
 
-module.exports = {User, UserTypes, getUserTypesByID, getUserTypesByString};
+module.exports = {User, UserTypes};

@@ -1,4 +1,7 @@
 const sqlite3 = require("sqlite3");
+const TestDescriptor = require('./TestDescriptor');
+const TestResult = require("./TestResult");
+const { User } = require('./User');
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -387,6 +390,237 @@ class DbHelper {
       }
     });
   }
+
+  // TestDescriptor
+  getTestDescriptors() {
+    return new Promise((resolve, reject) => {
+      const sql = 'SELECT * FROM TestDescriptor';
+      this.db.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const tds = rows.map((r) => (
+          new TestDescriptor(r.TestDescriptorID, r.Name, r.ProcedureDescription, r.SKUID)
+        ));
+        resolve(tds);
+      });
+    });
+  }
+
+  createTestDescriptor(name, procedureDescription, idSKU) {
+    return new Promise((resolve, reject) => {
+      const sql = `INSERT INTO TestDescriptor (Name, ProcedureDescription, SKUID)
+      VALUES (${name}, ${procedureDescription}, ${idSKU})`;
+      this.db.run(sql, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+      resolve();
+    });
+  }
+
+  modifyTestDescriptor(testDescriptor) {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE TestDescriptor SET Name=${testDescriptor.name},
+         ProcedureDescription=${testDescriptor.procedureDescription},
+         SKUID=${testDescriptor.SKUID}
+         WHERE TestDescriptorID=${testDescriptor.id}`;
+      this.db.run(sql, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+      resolve();
+    });
+  }
+
+  deleteTestDescriptor(id) {
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM TestDescriptor WHERE TestDescriptorID=${id}`;
+      this.db.run(sql, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+      resolve();
+    });
+  }
+
+  //TestResult
+  getTestResultsByRFID(RFID) {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM TestResult WHERE RFID=${RFID}`;
+      this.db.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const trs = rows.map((r) => (
+          new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, R.date, r.result)
+        ));
+        resolve(trs);
+      });
+    });
+  }
+
+  getTestResultByIDAndRFID(RFID, id) {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM TestResult WHERE RFID=${RFID}
+       AND TestResultID=${id}`;
+      this.db.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const trs = rows.map((r) => (
+          new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, R.date, r.result)
+        ));
+        resolve(trs);
+      });
+    });
+  }
+
+  addTestResult(RFID, idTestDescriptor, date, result) {
+    return new Promise((resolve, reject) => {
+      const sql = `INSERT INTO TestResult (RFID, TestDescriptorID, date, result)
+      VALUES (${RFID}, ${idTestDescriptor}, ${date}, ${result})`;
+      this.db.run(sql, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+      resolve();
+    });
+  }
+
+  modifyTestResult(testResult) {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE TestResult SET
+         TestDescriptorID=${testResult.idTestDescriptor},
+         date=${testResult.date},
+         result=${testResult.result}
+         WHERE TestResultID=${testResult.id} AND RFID=${testResult.RFID}`;
+      this.db.run(sql, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+      resolve();
+    });
+  }
+
+  deleteTestResult(RFID, id) {
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM TestResult WHERE
+       TestResultID=${id} AND RFID=${RFID}`;
+      this.db.run(sql, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+      resolve();
+    });
+  }
+
+  // User
+  getUserInfo(id) { } //TO DO
+
+  getSuppliers() {
+    return new Promise((resolve, reject) => {
+      const sql = 'SELECT * FROM User WHERE Type="supplier"';
+      this.db.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const users = rows.map((u) => (
+          new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
+        ));
+        resolve(users);
+      });
+    });
+  }
+
+  getUsers() {
+    return new Promise((resolve, reject) => {
+      const sql = 'SELECT * FROM User WHERE Type<>"manager"'; //also ADMIN??
+      this.db.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const users = rows.map((u) => (
+          new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
+        ));
+        resolve(users);
+      });
+    });
+  }
+
+  createUser(email, name, surname, password, type) {
+    return new Promise((resolve, reject) => {
+      const sql = `INSERT INTO User (Name, Surname, Email, Type, Password)
+      VALUES (${name}, ${surname}, ${email}, ${type}, ${password})`;
+      this.db.run(sql, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+      resolve();
+    });
+  }
+
+  modifyUserRights(email, oldType, newType) {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE User SET
+         Type=${newType}
+         WHERE Email=${email} AND Type=${oldType}`;
+      this.db.run(sql, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+      resolve();
+    });
+  }
+
+  deleteUser(email, type) {
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM User WHERE Email=${email} AND Type=${type}`;
+      this.db.run(sql, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+      resolve();
+    });
+  }
+
+  getUserByEmail(email) {
+    const sql = `SELECT * FROM User WHERE Email=${email}`;
+    this.db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const users = rows.map((u) => (
+        new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
+      ));
+      resolve(users);
+    });
+  }
+
 }
 
 module.exports = DbHelper;
