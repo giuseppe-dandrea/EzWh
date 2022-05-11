@@ -1,7 +1,7 @@
 const sqlite3 = require("sqlite3");
 
 class DbHelper {
-  constructor(dbName) {
+  constructor(dbName = "./code/server/dev.db") {
     this.dbName = dbName;
     this.createConnection();
   }
@@ -28,7 +28,7 @@ class DbHelper {
     		Volume DOUBLE NOT NULL,
     		Price DOUBLE NOT NULL,
     		Notes VARCHAR(100),
-    		Position VARCHAR(20) NOT NULL,
+    		Position VARCHAR(20),
     		AvailableQuantity INTEGER NOT NULL,
     		PRIMARY KEY(SKUID)
 		);`;
@@ -149,7 +149,7 @@ class DbHelper {
     		SKUID INTEGER NOT NULL,
     		SupplierID INTEGER NOT NULL,
     		PRIMARY KEY (ItemID),
-    		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)
+    		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
     		FOREIGN KEY (SupplierId) REFERENCES User(UserID)
 		);`;
     this.dbConnection.run(createItemTable, (err) => {
@@ -162,9 +162,8 @@ class DbHelper {
     const createTransportNoteTable = `CREATE TABLE IF NOT EXISTS TransportNote (
     		ShipmentDate VARCHAR(100) NOT NULL, 
     		RestockOrderID INTEGER NOT NULL ,
-    		
-    		PRIMARY KEY (RestockOrderID)
-			  FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
+    		PRIMARY KEY (RestockOrderID),
+			FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
 		);`;
     this.dbConnection.run(createTransportNoteTable, (err) => {
       if (err) {
@@ -176,7 +175,7 @@ class DbHelper {
 		IssueDate VARCHAR(20) NOT NULL,
 		State VARCHAR(20) NOT NULL,
 		CustomerId INTEGER NOT NULL,
-		PRIMARY KEY(InternalOrderID)
+		PRIMARY KEY(InternalOrderID),
 		FOREIGN KEY (CustomerId) REFERENCES User(UserID)
 	);`;
     this.dbConnection.run(createInternalOrderTable, (err) => {
@@ -233,7 +232,6 @@ class DbHelper {
 		PRIMARY KEY(SKUID, RestockOrderID),
 		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-		
 	);`;
     this.dbConnection.run(createRestockOrderProductTable, (err) => {
       if (err) {
