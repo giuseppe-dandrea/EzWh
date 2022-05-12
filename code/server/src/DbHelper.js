@@ -670,11 +670,11 @@ class DbHelper {
           reject(err);
           return;
         }
-        const tds = rows.map(
+        const i = rows.map(
           (r) =>
             new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID)
         );
-        resolve(tds);
+        resolve(i);
       });
     });
   }
