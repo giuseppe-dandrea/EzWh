@@ -1,7 +1,8 @@
 class SKUItem {
-	constructor(rfid, sku, dateOfStock, testResults = undefined) {
+	constructor(rfid, sku, available, dateOfStock, testResults = undefined) {
 		this.rfid = rfid;
 		this.sku = sku;
+		this.available = available;
 		this.dateOfStock = dateOfStock;
 		if (testResults === undefined) {
 			this.initTestResults();

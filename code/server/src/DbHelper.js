@@ -38,43 +38,17 @@ class DbHelper {
       }
     });
 
-    const createSKUTestDescriptorTable = `CREATE TABLE IF NOT EXISTS SKUTestDescriptor (
-    		SKUID INTEGER NOT NULL,
-    		TestDescriptorID INTEGER NOT NULL,
-    		PRIMARY KEY(SKUID, TestDescriptorID),
-    		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
-    		FOREIGN KEY (TestDescriptorID) REFERENCES TestDescriptor(TestDescriptorID)
-		);`;
-    this.dbConnection.run(createSKUTestDescriptorTable, (err) => {
-      if (err) {
-        console.log("Error creating SKUTestDescriptor table", err);
-      }
-    });
-
     const createSKUItemTable = `CREATE TABLE IF NOT EXISTS SKUItem (
     		RFID VARCHAR(20) NOT NULL,
     		SKUID INTEGER NOT NULL,
     		Available INTEGER NOT NULL,
-    		DateOfStock VARCHAR(11) NOT NULL,
+    		DateOfStock VARCHAR(11),
     		PRIMARY KEY (RFID),
     		FOREIGN KEY (SKUID) references SKU(SKUID)
 		);`;
     this.dbConnection.run(createSKUItemTable, (err) => {
       if (err) {
         console.log("Error creating SKUItem table", err);
-      }
-    });
-
-    const createSKUItemTestResultTable = `CREATE TABLE IF NOT EXISTS SKUItemTestResult (
-    		RFID VARCHAR(20) NOT NULL,
-    		TestResultID INTEGER NOT NULL,
-    		PRIMARY KEY (RFID, TestResultID),
-    		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
-    		FOREIGN KEY (TestResultID) REFERENCES TestResult(TestResultID)
-		);`;
-    this.dbConnection.run(createSKUItemTestResultTable, (err) => {
-      if (err) {
-        console.log("Error creating SKUItemTestResult table", err);
       }
     });
 
@@ -276,24 +250,10 @@ class DbHelper {
       }
     });
 
-    const dropSKUTestDescriptorTable = `DROP TABLE SKUTestDescriptor;`;
-    this.dbConnection.run(dropSKUTestDescriptorTable, (err) => {
-      if (err) {
-        console.log("Error dropping SKUTestDescriptor table", err);
-      }
-    });
-
     const dropSKUItemTable = `DROP TABLE SKUItem;`;
     this.dbConnection.run(dropSKUItemTable, (err) => {
       if (err) {
         console.log("Error dropping SKUItem table", err);
-      }
-    });
-
-    const dropSKUItemTestResultTable = `DROP TABLE SKUItemTestResults;`;
-    this.dbConnection.run(dropSKUItemTestResultTable, (err) => {
-      if (err) {
-        console.log("Error dropping SKUItemTestResult table", err);
       }
     });
 
@@ -387,6 +347,183 @@ class DbHelper {
       }
     });
   }
+
+  getSKUs() {
+	  return new Promise((resolve, reject) => {
+		  const getSKUs = `SELECT * FROM SKU;`;
+		  this.dbConnection.all(getSKUs, (err, rows) => {
+			  if (err) {
+				  reject(err.toString());
+			  } else {
+				  resolve(rows);
+			  }
+		  });
+	  });
+  }
+
+  getTestDescriptorsBySKUID(skuid) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `SELECT * FROM TestDescriptor WHERE SKUID = ?;`;
+		  this.dbConnection.all(sql, skuid, (err, rows) => {
+			  if (err) {
+				  reject(err.toString());
+			  } else {
+				  resolve(rows);
+			  }
+		  });
+	  });
+  }
+
+  createSKU(description, weight, volume, notes, price, availableQuantity) {
+	  return new Promise(((resolve, reject) => {
+		  const createSKU = `INSERT INTO SKU(description, weight, volume, price, notes, availableQuantity) 
+							VALUES (?, ?, ?, ?, ?, ?);`;
+		  this.dbConnection.run(createSKU, [description, weight, volume, price, notes, availableQuantity], (err) => {
+			  if (err) {
+				  reject(err.toString());
+			  } else {
+				  resolve();
+			  }
+		  });
+	  }));
+  }
+
+  getSKUById(id) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `SELECT * FROM SKU WHERE SKUID = ?;`;
+		  this.dbConnection.get(sql, id, (err, row) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(row);
+			}
+		  });
+	  });
+  }
+
+  modifySKU(id, newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `UPDATE SKU SET
+            Description = ?,
+			Weight = ?,
+			Volume = ?,
+			Notes = ?,
+			Price = ?,
+			AvailableQuantity = ?
+			WHERE SKUID = ?;`;
+		  this.dbConnection.run(sql, [newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity, id], (err) => {
+			  if (err)
+				  reject(err);
+			  else
+				  resolve();
+		  });
+	  });
+  }
+
+  addSKUPosition(id, positionId) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `UPDATE SKU SET
+		  	Position = ?
+		  	WHERE SKUID = ?;`;
+		  this.dbConnection.run(sql, [positionId, id], (err) => {
+			  if (err)
+				  reject(err);
+			  else
+				  resolve();
+		  });
+	  });
+  }
+
+  deleteSKU(id) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `DELETE FROM SKU WHERE SKUID = ?;`;
+		  this.dbConnection.run(sql, id, (err) => {
+			  if (err)
+				  reject(err);
+			  else
+				  resolve();
+		  });
+	  });
+  }
+
+  getSKUItems() {
+	  return new Promise((resolve, reject) => {
+		  const sql = `SELECT * FROM SKUItem;`;
+		  this.dbConnection.all(sql, (err, rows) => {
+			  if (err) {
+				  reject(err);
+			  } else {
+				  resolve(rows);
+			  }
+		  });
+	  });
+  }
+
+  getSKUItemsBySKU(SKUID) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `SELECT * FROM SKUItem WHERE SKUID = ? AND Available = 1;`;
+		  this.dbConnection.all(sql, SKUID, (err, rows) => {
+			  if (err)
+				  reject(err);
+			  else
+				  resolve(rows);
+		  });
+	  });
+  }
+
+  getSKUItemByRfid(rfid) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `SELECT * FROM SKUItem WHERE RFID = ?;`;
+		  this.dbConnection.get(sql, rfid, (err, row) => {
+			  if (err)
+				  reject(err);
+			  else
+				  resolve(row);
+		  });
+	  });
+  }
+
+  createSKUItem(rfid, SKUId, dateOfStock) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `INSERT INTO SKUItem(rfid, skuid, available, dateofstock) VALUES (?, ?, 0, ?)`
+		  this.dbConnection.run(sql, [rfid, SKUId, dateOfStock], (err) => {
+			  if (err)
+				  reject(err);
+			  else
+				  resolve();
+		  } );
+	  });
+  }
+
+  modifySKUItem(rfid, newRfid, newAvailable, newDateOfStock) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `UPDATE SKUItem SET
+		  	RFID = ?,
+		  	Available = ?,
+		  	DateOfStock = ?
+		  	WHERE RFID = ?;`;
+		  this.dbConnection.run(sql, [newRfid, newAvailable, newDateOfStock, rfid], (err) => {
+			  if (err)
+				  reject(err);
+			  else
+				  resolve();
+		  });
+	  });
+  }
+
+  deleteSKUItem(rfid) {
+	  return new Promise((resolve, reject) => {
+		  const sql = `DELETE FROM SKUItem WHERE RFID = ?;`;
+		  this.dbConnection.run(sql, rfid, (err) => {
+			  if (err)
+				  reject(err);
+			  else
+				  resolve(err);
+		  });
+	  });
+  }
+
+
 }
 
 module.exports = DbHelper;

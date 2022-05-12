@@ -1,4 +1,3 @@
-import { Position } from './Position'
 class SKU {
 	constructor(id, description, weight, volume, notes, price, availableQuantity, position = undefined, testDescriptors = undefined) {
 		this.id = id;
@@ -21,7 +20,7 @@ class SKU {
 	}
 
 	addTestDescriptor(testDescriptor) {
-		this.testDescriptors.append(testDescriptor);
+		this.testDescriptors.push(testDescriptor);
 	}
 }
 
