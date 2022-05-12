@@ -1,5 +1,6 @@
 class TestResult {
-    constructor(id, idTestDescriptor, date, result) {
+    constructor(rfid, id, idTestDescriptor, date, result) {
+        this.rfid = rfid;
         this.id = id;
         this.idTestDescriptor = idTestDescriptor;
         this.date = date;
