@@ -183,10 +183,6 @@ class EzWhFacade {
 				throw EzWhException.InternalError;
 		}
 	}
-  constructor() {
-    this.db = new DbHelper("./dev.db");
-    this.db.createTables();
-  }
 
   //TestDescriptor
   async getTestDescriptors() {
