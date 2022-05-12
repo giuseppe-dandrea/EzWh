@@ -246,6 +246,24 @@ class EzWhFacade {
       throw EzWhException.InternalError;
     }
   }
+  /***ITEMS***/
+  async getItems() {
+    try {
+      let itemList = await this.db.getItems();
+      return itemList;
+    } catch (err) {
+      throw EzWhException.InternalError;
+    }
+  }
+
+  async getItemByID(id) {
+    try {
+      let item = await this.db.getItemByID(id);
+      return item;
+    } catch (err) {
+      throw EzWhException.InternalError;
+    }
+  }
 }
 
 module.exports = EzWhFacade;

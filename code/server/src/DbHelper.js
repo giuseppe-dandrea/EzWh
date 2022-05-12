@@ -1,7 +1,8 @@
 const sqlite3 = require("sqlite3");
-const TestDescriptor = require('./TestDescriptor');
+const TestDescriptor = require("./TestDescriptor");
 const TestResult = require("./TestResult");
-const { User } = require('./User');
+const { User } = require("./User");
+const Item = require("./Item");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -394,15 +395,21 @@ class DbHelper {
   // TestDescriptor
   getTestDescriptors() {
     return new Promise((resolve, reject) => {
-      const sql = 'SELECT * FROM TestDescriptor';
+      const sql = "SELECT * FROM TestDescriptor";
       this.db.all(sql, [], (err, rows) => {
         if (err) {
           reject(err);
           return;
         }
-        const tds = rows.map((r) => (
-          new TestDescriptor(r.TestDescriptorID, r.Name, r.ProcedureDescription, r.SKUID)
-        ));
+        const tds = rows.map(
+          (r) =>
+            new TestDescriptor(
+              r.TestDescriptorID,
+              r.Name,
+              r.ProcedureDescription,
+              r.SKUID
+            )
+        );
         resolve(tds);
       });
     });
@@ -460,9 +467,16 @@ class DbHelper {
           reject(err);
           return;
         }
-        const trs = rows.map((r) => (
-          new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, R.date, r.result)
-        ));
+        const trs = rows.map(
+          (r) =>
+            new TestResult(
+              r.RFID,
+              r.TestResultID,
+              r.TestDescriptorID,
+              R.date,
+              r.result
+            )
+        );
         resolve(trs);
       });
     });
@@ -477,9 +491,16 @@ class DbHelper {
           reject(err);
           return;
         }
-        const trs = rows.map((r) => (
-          new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, R.date, r.result)
-        ));
+        const trs = rows.map(
+          (r) =>
+            new TestResult(
+              r.RFID,
+              r.TestResultID,
+              r.TestDescriptorID,
+              R.date,
+              r.result
+            )
+        );
         resolve(trs);
       });
     });
@@ -531,7 +552,7 @@ class DbHelper {
   }
 
   // User
-  getUserInfo(id) { } //TO DO
+  getUserInfo(id) {} //TO DO
 
   getSuppliers() {
     return new Promise((resolve, reject) => {
@@ -541,9 +562,10 @@ class DbHelper {
           reject(err);
           return;
         }
-        const users = rows.map((u) => (
-          new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
-        ));
+        const users = rows.map(
+          (u) =>
+            new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
+        );
         resolve(users);
       });
     });
@@ -557,9 +579,10 @@ class DbHelper {
           reject(err);
           return;
         }
-        const users = rows.map((u) => (
-          new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
-        ));
+        const users = rows.map(
+          (u) =>
+            new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
+        );
         resolve(users);
       });
     });
@@ -614,13 +637,47 @@ class DbHelper {
         reject(err);
         return;
       }
-      const users = rows.map((u) => (
-        new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
-      ));
+      const users = rows.map(
+        (u) =>
+          new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
+      );
       resolve(users);
     });
   }
 
+  /***ITEMS***/
+  getItems() {
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM Item;";
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const tds = rows.map(
+          (r) =>
+            new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID)
+        );
+        resolve(tds);
+      });
+    });
+  }
+  getItemByID(id) {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM Item WHERE ItemID = ${id};`;
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const tds = rows.map(
+          (r) =>
+            new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID)
+        );
+        resolve(tds);
+      });
+    });
+  }
 }
 
 module.exports = DbHelper;
