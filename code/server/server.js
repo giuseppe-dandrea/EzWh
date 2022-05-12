@@ -1,4 +1,5 @@
 "use strict";
+const morgan = require('morgan');
 const express = require("express");
 const dayjs = require("dayjs");
 const EzWhFacade = require("./src/EzWhFacade");
@@ -12,6 +13,14 @@ const app = new express();
 const port = 3001;
 
 app.use(express.json());
+app.use(morgan('dev'));
+
+EzWhFacade
+//GET /api/test
+app.get("/createTables", async (req, res) => {
+  EzWhFacade();
+  return res.status(200).json(message);
+});
 
 //GET /api/test
 app.get("/api/hello", (req, res) => {
@@ -510,6 +519,100 @@ app.get("/api/items/:id", [param("id")], async (req, res) => {
     return res.status(500).end();
   }
 });
+
+app.get("/api/restockOrders", async (req, res) => {
+  try {
+    const restockOrders = await facade.getRestockOrders();
+    // const restockOrders=[] 
+    return res.status(200).json(restockOrders);
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.get("/api/restockOrdersIssued", async (req, res) => {
+  try {
+    const restockOrdersIssued = await facade.getRestockOrdersIssued();
+    return res.status(200).json(restockOrdersIssued);
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.get("/api/restockOrders/:ID", [param("ID")], async (req, res) => {
+  try {
+    const restockOrder = await facade.getRestockOrderByID(req.params.ID);
+    return res.status(200).json(restockOrder);
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.get("/api/restockOrders/:ID/returnItems", [param("ID")], async (req, res) => {
+  try {
+    const returnItems = await facade.getRestockOrderReturnItems(req.params.ID);
+    return res.status(200).json(returnItems);
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.post("/api/restockOrder/:ID",
+  [param("ID")],
+  async (req, res) => {
+  try {
+    // create the new restockOrder
+    return res.status(201).end();
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.put("/api/restockOrder/:ID",
+  [param("ID")],
+  async (req, res) => {
+  try {
+    // update restokOrder
+    return res.status(200).end();
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.put("/api/restockOrder/:ID/skuItems",
+  [param("ID")],
+  async (req, res) => {
+  try {
+    // update skuItems
+    return res.status(200).end();
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.put("/api/restockOrder/:id/transportNote",
+  [param("ID")],
+  async (req, res) => {
+  try {
+    // update transportNote
+    return res.status(200).end();
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.delete(
+  "/api/restockOrder/:ID",
+  [param("ID").isInt({ min: 1 })],
+  (req, res) => {
+    try {
+      // delete restockOrder
+      return res.status(204).end();
+    } catch (err) {
+      return res.status(503).end();
+    }
+  }
+);
 
 // activate the server
 app.listen(port, () => {

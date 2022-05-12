@@ -264,6 +264,15 @@ class EzWhFacade {
       throw EzWhException.InternalError;
     }
   }
+
+  async getRestockOrders(){
+    try {
+      let restockOrders = await this.db.getRestockOrders();
+      return restockOrders;
+    } catch (err) {
+      throw EzWhException.InternalError;
+    }
+  }
 }
 
 module.exports = EzWhFacade;

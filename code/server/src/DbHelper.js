@@ -3,6 +3,7 @@ const TestDescriptor = require("./TestDescriptor");
 const TestResult = require("./TestResult");
 const { User } = require("./User");
 const Item = require("./Item");
+const RestockOrder = require("./RestockOrder");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -220,7 +221,7 @@ class DbHelper {
 		IssueDate VARCHAR(20) NOT NULL,
 		TransportNote VARCHAR(20) NOT NULL,
 		SupplierID INTEGER NOT NULL,
-		FOREIGN KEY (SupplierID) REFERENCES User(SupplierID),
+		FOREIGN KEY (SupplierID) REFERENCES User(UserID),
 		PRIMARY KEY(RestockOrderID)
 	);`;
     this.dbConnection.run(createRestockOrderTable, (err) => {
@@ -675,6 +676,25 @@ class DbHelper {
             new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID)
         );
         resolve(i);
+      });
+    });
+  }
+
+  getRestockOrders() {
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM RestockOrder;";
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const products=[];
+        const SKUItems=[];
+        const tds = rows.map(
+          (r) =>
+            new RestockOrder(r.RestockOrderID, r.IssueDate, r.State, products, r.SupplierID, r.TransportNode, SKUItems)
+        );
+        resolve(tds);
       });
     });
   }

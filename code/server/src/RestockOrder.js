@@ -17,3 +17,5 @@ class RestockOrder {
     this.skuItems = skuItems;
   }
 }
+
+module.exports = RestockOrder;
