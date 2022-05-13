@@ -4,6 +4,7 @@ const TestResult = require("./TestResult");
 const { User } = require("./User");
 const Item = require("./Item");
 const Position = require("./Position");
+const RestockOrder = require("./RestockOrder");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -197,9 +198,10 @@ class DbHelper {
     const createRestockOrderTable = `CREATE TABLE IF NOT EXISTS RestockOrder (
 		RestockOrderID INTEGER NOT NULL,
 		IssueDate VARCHAR(20) NOT NULL,
+    State VARCHAR(20) NOT NULL,
 		TransportNote VARCHAR(20) NOT NULL,
 		SupplierID INTEGER NOT NULL,
-		FOREIGN KEY (SupplierID) REFERENCES User(SupplierID),
+		FOREIGN KEY (SupplierID) REFERENCES User(UserID),
 		PRIMARY KEY(RestockOrderID)
 	);`;
     this.dbConnection.run(createRestockOrderTable, (err) => {
@@ -209,11 +211,11 @@ class DbHelper {
     });
 
     const createRestockOrderProductTable = `CREATE TABLE IF NOT EXISTS RestockOrderProduct (
-		SKUID INTEGER NOT NULL,
+		ItemID INTEGER NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
 		Count INTEGER NOT NULL,
-		PRIMARY KEY(SKUID, RestockOrderID),
-		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
+		PRIMARY KEY(ItemID, RestockOrderID),
+		FOREIGN KEY (ItemID) REFERENCES Item(ItemID),
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
 	);`;
     this.dbConnection.run(createRestockOrderProductTable, (err) => {
@@ -335,10 +337,10 @@ class DbHelper {
       }
     });
 
-    const dropRestockOrderProductsTable = `DROP TABLE RestockOrderProducts;`;
+    const dropRestockOrderProductsTable = `DROP TABLE RestockOrderProduct;`;
     this.dbConnection.run(dropRestockOrderProductsTable, (err) => {
       if (err) {
-        console.log("Error dropping RestockOrderProducts table", err);
+        console.log("Error dropping RestockOrderProduct table", err);
       }
     });
 
@@ -878,6 +880,195 @@ class DbHelper {
       });
     });
   }
+
+  getRestockOrders() {
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM RestockOrder;";
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        console.log(rows);
+        const products=[];
+        const SKUItems=[];
+        if (rows.length === 0){
+          const tds = [];
+        }
+        else{
+          const tds = rows.map(
+            (r) =>
+              new RestockOrder(r.RestockOrderID, r.IssueDate, r.State, products, r.SupplierID, r.TransportNode, SKUItems)
+          );
+          console.log(tds)
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  getRestockOrdersIssued() {
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM RestockOrder WHERE state='ISSUED';";
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const products=[];
+        const SKUItems=[];
+        let tds = [];
+        if (rows.length !== 0){
+          tds = rows.map(
+            (r) =>
+              new RestockOrder(r.RestockOrderID, r.IssueDate, r.State, products, r.SupplierID, r.TransportNode, SKUItems)
+          );
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  getRestockOrderByID(id) {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM RestockOrder WHERE RestockOrderID= ${id};`;
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const products=[];
+        const SKUItems=[];
+        let tds = [];
+        if (rows.length !== 0){
+          tds = rows.map(
+            (r) =>
+              new RestockOrder(r.RestockOrderID, r.IssueDate, r.State, products, r.SupplierID, r.TransportNode, SKUItems)
+          );
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  /* Should modify sql */
+  getRestockOrderReturnItems(id) {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT SKUID, RFID FROM SKUItem;`;
+/*    SELECT SKUID, RFID FROM SKUItem as s
+      JOIN SKUItemTestResult as r
+      JOIN RestockOrderProduct as p
+      JOIN Item as i
+      WHERE s.SKUItemID=r.SKUItemID and
+      s.SKUItemID=p.SKUItemID and
+      s.SKUItemID=i.SKUItemID and
+      p.RestockOrderID = ${id} and
+      it haven't passed at least one quality test` */
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const products=[];
+        const SKUItems=[];
+        let tds = [];
+        if (rows.length !== 0){
+          tds = rows.map(
+            (r) =>
+              new SKUItem(r.RFID, r.SKUID)
+          );
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  // products array doesn't pass ItemID
+  createRestockOrder(issueDate, products, supplierID) {
+    return new Promise((resolve, reject) => {
+      const sql = `INSERT INTO RestockOrder
+      (IssueDate, SupplierID, State, TransportNote)
+      values
+      ('${issueDate}', ${supplierID}, 'ISSUED', 'ISSUED'); `;
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  }
+
+  modifyRestockOrder(id, newState) {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE RestockOrder
+      SET State='${newState}'
+      WHERE RestockOrderID=${id}`;
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  }
+
+  addSkuItemsToRestockOrder(ID, skuItems){
+    return new Promise((resolve, reject) => {
+
+      //create insert statement for multiple SKUItems
+      let sql = `INSERT INTO RestockOrderSkuItem
+      (RFID, RestockOrderID)
+      values `;
+      skuItems.forEach(item => {
+        sql+=`('${item.RFID}', ${ID}),`
+      });
+      sql=sql.slice(0, -1);
+      sql+=`;`;
+      //end of creating sql statement
+
+      console.log(sql);
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  }
+
+  addTransportNoteToRestockOrder(ID, transportNote){
+    return new Promise((resolve, reject) => {
+      const sql=`update RestockOrder set TransportNote='${transportNote}' where RestockOrderID=${ID}`
+      console.log(sql);
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  }
+  
+  // also delete from other tables?
+  deleteRestockOrder(ID){
+    return new Promise((resolve, reject) => {
+      const sql=`delete from RestockOrder where RestockOrderID=${ID}`
+      console.log(sql);
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  }
+
 
   createItem(item) {
     return new Promise((resolve, reject) => {
