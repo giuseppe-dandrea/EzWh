@@ -1,4 +1,5 @@
 "use strict";
+const morgan = require('morgan');
 const express = require("express");
 const dayjs = require("dayjs");
 const customParseFormat = require("dayjs/plugin/customParseFormat");
@@ -14,6 +15,14 @@ const app = new express();
 const port = 3001;
 
 app.use(express.json());
+app.use(morgan('dev'));
+
+// EzWhFacade
+//GET /api/test
+app.get("/api/create", async (req, res) => {
+  new EzWhFacade();
+  return res.status(200).end();
+});
 
 
 //GET /api/test
@@ -888,6 +897,107 @@ app.delete("/api/items/:id", param("id").isInt({ min: 1 }), async (req, res) => 
     else if (err === EzWhException.InternalError) return res.status(503).end();
   }
 });
+
+app.get("/api/restockOrders", async (req, res) => {
+  try {
+    const restockOrders = await facade.getRestockOrders();
+    // const restockOrders=[]
+    return res.status(200).json(restockOrders);
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.get("/api/restockOrdersIssued", async (req, res) => {
+  try {
+    const restockOrdersIssued = await facade.getRestockOrdersIssued();
+    return res.status(200).json(restockOrdersIssued);
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.get("/api/restockOrders/:ID", [param("ID")], async (req, res) => {
+  try {
+    const restockOrder = await facade.getRestockOrderByID(req.params.ID);
+    return res.status(200).json(restockOrder);
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.get("/api/restockOrders/:ID/returnItems", [param("ID")], async (req, res) => {
+  try {
+    const returnItems = await facade.getRestockOrderReturnItems(req.params.ID);
+    return res.status(200).json(returnItems);
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+app.post("/api/restockOrder",
+  async (req, res) => {
+  try {
+    console.log(req.body)
+    await facade.createRestockOrder(req.body.issueDate, req.body.products, req.body.supplierID);
+    return res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
+});
+
+app.put("/api/restockOrder/:ID",
+  [param("ID")],
+  async (req, res) => {
+  try {
+    console.log(req.params.ID);
+    await facade.modifyRestockOrder(req.params.ID, req.body.newState);
+    return res.status(200).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
+});
+
+app.put("/api/restockOrder/:ID/skuItems",
+  [param("ID")],
+  async (req, res) => {
+  try {
+    console.log(req.body);
+    await facade.addSkuItemsToRestockOrder(req.params.ID, req.body.skuItems)
+    return res.status(200).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
+});
+
+app.put("/api/restockOrder/:ID/transportNote",
+  [param("ID")],
+  async (req, res) => {
+  try {
+    await facade.addTransportNoteToRestockOrder(req.params.ID, req.body.transportNote);
+    return res.status(200).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
+});
+
+app.delete(
+  "/api/restockOrder/:ID",
+  [param("ID").isInt({ min: 1 })],
+  async (req, res) => {
+    try {
+      await facade.deleteRestockOrder(req.params.ID);
+      return res.status(204).end();
+    } catch (err) {
+      console.log(err);
+      return res.status(503).end();
+    }
+  }
+);
 
 // activate the server
 app.listen(port, () => {
