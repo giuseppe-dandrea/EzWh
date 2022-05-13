@@ -3,6 +3,7 @@ const TestDescriptor = require("./TestDescriptor");
 const TestResult = require("./TestResult");
 const { User } = require("./User");
 const Item = require("./Item");
+const Position = require("./Position");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -63,8 +64,8 @@ class DbHelper {
     		Col VARCHAR(20) NOT NULL,
     		MaxWeight DOUBLE NOT NULL,
     		MaxVolume DOUBLE NOT NULL,
-    		OccupiedWeight DOUBLE,
-    		OccupiedVolume DOUBLE,
+    		OccupiedWeight DOUBLE DEFAULT 0,
+    		OccupiedVolume DOUBLE DEFAULT 0,
     		SKUID INTEGER,
     		PRIMARY KEY (PositionID),
     		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)
@@ -127,9 +128,12 @@ class DbHelper {
     		SKUID INTEGER NOT NULL,
     		SupplierID INTEGER NOT NULL,
     		PRIMARY KEY (ItemID),
-    		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
-    		FOREIGN KEY (SupplierId) REFERENCES User(UserID)
-		);`;
+        UNIQUE(SupplierID,SKUID),
+        FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
+    		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
+    		);`;
+
+    /**/
     this.dbConnection.run(createItemTable, (err) => {
       if (err) {
         console.log("Error creating Item table", err);
@@ -141,7 +145,7 @@ class DbHelper {
     		ShipmentDate VARCHAR(100) NOT NULL, 
     		RestockOrderID INTEGER NOT NULL ,
     		PRIMARY KEY (RestockOrderID),
-			FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
+			  FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
 		);`;
     this.dbConnection.run(createTransportNoteTable, (err) => {
       if (err) {
@@ -353,61 +357,61 @@ class DbHelper {
   }
 
   getSKUs() {
-	  return new Promise((resolve, reject) => {
-		  const getSKUs = `SELECT * FROM SKU;`;
-		  this.dbConnection.all(getSKUs, (err, rows) => {
-			  if (err) {
-				  reject(err.toString());
-			  } else {
-				  resolve(rows);
-			  }
-		  });
-	  });
+    return new Promise((resolve, reject) => {
+      const getSKUs = `SELECT * FROM SKU;`;
+      this.dbConnection.all(getSKUs, (err, rows) => {
+        if (err) {
+          reject(err.toString());
+        } else {
+          resolve(rows);
+        }
+      });
+    });
   }
 
   getTestDescriptorsBySKUID(skuid) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `SELECT * FROM TestDescriptor WHERE SKUID = ?;`;
-		  this.dbConnection.all(sql, skuid, (err, rows) => {
-			  if (err) {
-				  reject(err.toString());
-			  } else {
-				  resolve(rows);
-			  }
-		  });
-	  });
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM TestDescriptor WHERE SKUID = ?;`;
+      this.dbConnection.all(sql, skuid, (err, rows) => {
+        if (err) {
+          reject(err.toString());
+        } else {
+          resolve(rows);
+        }
+      });
+    });
   }
 
   createSKU(description, weight, volume, notes, price, availableQuantity) {
-	  return new Promise(((resolve, reject) => {
-		  const createSKU = `INSERT INTO SKU(description, weight, volume, price, notes, availableQuantity) 
+    return new Promise((resolve, reject) => {
+      const createSKU = `INSERT INTO SKU(description, weight, volume, price, notes, availableQuantity) 
 							VALUES (?, ?, ?, ?, ?, ?);`;
-		  this.dbConnection.run(createSKU, [description, weight, volume, price, notes, availableQuantity], (err) => {
-			  if (err) {
-				  reject(err.toString());
-			  } else {
-				  resolve();
-			  }
-		  });
-	  }));
+      this.dbConnection.run(createSKU, [description, weight, volume, price, notes, availableQuantity], (err) => {
+        if (err) {
+          reject(err.toString());
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
   getSKUById(id) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `SELECT * FROM SKU WHERE SKUID = ?;`;
-		  this.dbConnection.get(sql, id, (err, row) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(row);
-			}
-		  });
-	  });
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM SKU WHERE SKUID = ?;`;
+      this.dbConnection.get(sql, id, (err, row) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(row);
+        }
+      });
+    });
   }
 
   modifySKU(id, newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `UPDATE SKU SET
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE SKU SET
             Description = ?,
 			Weight = ?,
 			Volume = ?,
@@ -415,119 +419,105 @@ class DbHelper {
 			Price = ?,
 			AvailableQuantity = ?
 			WHERE SKUID = ?;`;
-		  this.dbConnection.run(sql, [newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity, id], (err) => {
-			  if (err)
-				  reject(err);
-			  else
-				  resolve();
-		  });
-	  });
+      this.dbConnection.run(
+        sql,
+        [newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity, id],
+        (err) => {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
+    });
   }
 
   addSKUPosition(id, positionId) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `UPDATE SKU SET
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE SKU SET
 		  	Position = ?
 		  	WHERE SKUID = ?;`;
-		  this.dbConnection.run(sql, [positionId, id], (err) => {
-			  if (err)
-				  reject(err);
-			  else
-				  resolve();
-		  });
-	  });
+      this.dbConnection.run(sql, [positionId, id], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
   }
 
   deleteSKU(id) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `DELETE FROM SKU WHERE SKUID = ?;`;
-		  this.dbConnection.run(sql, id, (err) => {
-			  if (err)
-				  reject(err);
-			  else
-				  resolve();
-		  });
-	  });
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM SKU WHERE SKUID = ?;`;
+      this.dbConnection.run(sql, id, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
   }
 
   getSKUItems() {
-	  return new Promise((resolve, reject) => {
-		  const sql = `SELECT * FROM SKUItem;`;
-		  this.dbConnection.all(sql, (err, rows) => {
-			  if (err) {
-				  reject(err);
-			  } else {
-				  resolve(rows);
-			  }
-		  });
-	  });
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM SKUItem;`;
+      this.dbConnection.all(sql, (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+    });
   }
 
   getSKUItemsBySKU(SKUID) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `SELECT * FROM SKUItem WHERE SKUID = ? AND Available = 1;`;
-		  this.dbConnection.all(sql, SKUID, (err, rows) => {
-			  if (err)
-				  reject(err);
-			  else
-				  resolve(rows);
-		  });
-	  });
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM SKUItem WHERE SKUID = ? AND Available = 1;`;
+      this.dbConnection.all(sql, SKUID, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
   }
 
   getSKUItemByRfid(rfid) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `SELECT * FROM SKUItem WHERE RFID = ?;`;
-		  this.dbConnection.get(sql, rfid, (err, row) => {
-			  if (err)
-				  reject(err);
-			  else
-				  resolve(row);
-		  });
-	  });
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM SKUItem WHERE RFID = ?;`;
+      this.dbConnection.get(sql, rfid, (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
   }
 
   createSKUItem(rfid, SKUId, dateOfStock) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `INSERT INTO SKUItem(rfid, skuid, available, dateofstock) VALUES (?, ?, 0, ?)`
-		  this.dbConnection.run(sql, [rfid, SKUId, dateOfStock], (err) => {
-			  if (err)
-				  reject(err);
-			  else
-				  resolve();
-		  } );
-	  });
+    return new Promise((resolve, reject) => {
+      const sql = `INSERT INTO SKUItem(rfid, skuid, available, dateofstock) VALUES (?, ?, 0, ?)`;
+      this.dbConnection.run(sql, [rfid, SKUId, dateOfStock], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
   }
 
   modifySKUItem(rfid, newRfid, newAvailable, newDateOfStock) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `UPDATE SKUItem SET
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE SKUItem SET
 		  	RFID = ?,
 		  	Available = ?,
 		  	DateOfStock = ?
 		  	WHERE RFID = ?;`;
-		  this.dbConnection.run(sql, [newRfid, newAvailable, newDateOfStock, rfid], (err) => {
-			  if (err)
-				  reject(err);
-			  else
-				  resolve();
-		  });
-	  });
+      this.dbConnection.run(sql, [newRfid, newAvailable, newDateOfStock, rfid], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
   }
 
   deleteSKUItem(rfid) {
-	  return new Promise((resolve, reject) => {
-		  const sql = `DELETE FROM SKUItem WHERE RFID = ?;`;
-		  this.dbConnection.run(sql, rfid, (err) => {
-			  if (err)
-				  reject(err);
-			  else
-				  resolve(err);
-		  });
-	  });
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM SKUItem WHERE RFID = ?;`;
+      this.dbConnection.run(sql, rfid, (err) => {
+        if (err) reject(err);
+        else resolve(err);
+      });
+    });
   }
-
-
 
   // TestDescriptor
   getTestDescriptors() {
@@ -538,15 +528,7 @@ class DbHelper {
           reject(err);
           return;
         }
-        const tds = rows.map(
-          (r) =>
-            new TestDescriptor(
-              r.TestDescriptorID,
-              r.Name,
-              r.ProcedureDescription,
-              r.SKUID
-            )
-        );
+        const tds = rows.map((r) => new TestDescriptor(r.TestDescriptorID, r.Name, r.ProcedureDescription, r.SKUID));
         resolve(tds);
       });
     });
@@ -604,16 +586,7 @@ class DbHelper {
           reject(err);
           return;
         }
-        const trs = rows.map(
-          (r) =>
-            new TestResult(
-              r.RFID,
-              r.TestResultID,
-              r.TestDescriptorID,
-              R.date,
-              r.result
-            )
-        );
+        const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, R.date, r.result));
         resolve(trs);
       });
     });
@@ -628,16 +601,7 @@ class DbHelper {
           reject(err);
           return;
         }
-        const trs = rows.map(
-          (r) =>
-            new TestResult(
-              r.RFID,
-              r.TestResultID,
-              r.TestDescriptorID,
-              R.date,
-              r.result
-            )
-        );
+        const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, R.date, r.result));
         resolve(trs);
       });
     });
@@ -699,10 +663,7 @@ class DbHelper {
           reject(err);
           return;
         }
-        const users = rows.map(
-          (u) =>
-            new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
-        );
+        const users = rows.map((u) => new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password));
         resolve(users);
       });
     });
@@ -716,10 +677,7 @@ class DbHelper {
           reject(err);
           return;
         }
-        const users = rows.map(
-          (u) =>
-            new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
-        );
+        const users = rows.map((u) => new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password));
         resolve(users);
       });
     });
@@ -774,11 +732,121 @@ class DbHelper {
         reject(err);
         return;
       }
-      const users = rows.map(
-        (u) =>
-          new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
-      );
+      const users = rows.map((u) => new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password));
       resolve(users);
+    });
+  }
+  /***POSITION***/
+  //SKUs
+  getPositions() {
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM Position;";
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const positions = rows.map(
+          (r) =>
+            new Position(
+              r.PositionID,
+              r.AisleID,
+              r.Row,
+              r.Col,
+              r.MaxWeight,
+              r.MaxVolume,
+              r.OccupiedWeight,
+              r.OccupiedVolume
+            )
+        );
+        resolve(positions);
+      });
+    });
+  }
+  getPositionByID(id) {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM Position WHERE PositionID = ${id};`;
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const p = rows.map(
+          (r) =>
+            new Position(
+              r.PositionID,
+              r.AisleID,
+              r.Row,
+              r.Col,
+              r.MaxWeight,
+              r.MaxVolume,
+              r.OccupiedWeight,
+              r.OccupiedVolume
+            )
+        );
+        resolve(p);
+      });
+    });
+  }
+  createPosition(position) {
+    return new Promise((resolve, reject) => {
+      const sql = `INSERT INTO Position(PositionID, AisleID, Row, Col, MaxWeight, MaxVolume) 
+      VALUES (?, ?, ?, ?, ?, ?);`;
+      this.dbConnection.run(
+        sql,
+        [position.positionId, position.aisleId, position.row, position.col, position.maxWeight, position.maxVolume],
+        (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(this.lastID);
+          }
+        }
+      );
+    });
+  }
+  modifyPosition(
+    oldID,
+    newPositionID,
+    newAisleID,
+    newRow,
+    newCol,
+    newMaxWeight,
+    newMaxVolume,
+    newOccupiedWeight,
+    newOccupiedVolume
+  ) {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE Position SET PositionID =${newPositionID} , AisleID = ${newAisleID}, Row =${newRow} , Col =${newCol} , MaxWeight =${newMaxWeight} , MaxVolume=${newMaxVolume} ,OccupiedWeight=${newOccupiedWeight}, OccupiedVolume =${newOccupiedVolume}
+    WHERE PositionID = ${oldID};`;
+      this.dbConnection.run(sql, [], (err) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else resolve();
+      });
+    });
+  }
+
+  modifyPositionID(oldID, newPositionID, newAisleID, newRow, newCol) {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE Position SET PositionID =${newPositionID} , AisleID = ${newAisleID}, Row =${newRow} , Col =${newCol} WHERE PositionID = ${oldID};`;
+      this.dbConnection.run(sql, [], (err) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else resolve();
+      });
+    });
+  }
+
+  deletePosition(id) {
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM Position WHERE PositionID = ?;`;
+      this.dbConnection.run(sql, [id], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
     });
   }
 
@@ -791,10 +859,7 @@ class DbHelper {
           reject(err);
           return;
         }
-        const tds = rows.map(
-          (r) =>
-            new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID)
-        );
+        const tds = rows.map((r) => new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID));
         resolve(tds);
       });
     });
@@ -807,14 +872,44 @@ class DbHelper {
           reject(err);
           return;
         }
-        const i = rows.map(
-          (r) =>
-            new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID)
-        );
+        const i = rows.map((r) => new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID));
         resolve(i);
       });
     });
   }
-}
 
+  createItem(item) {
+    return new Promise((resolve, reject) => {
+      const sql = `INSERT INTO Item(ItemID, Description, Price, SKUID, SupplierID) 
+        VALUES (?, ?, ?, ?, ?);`;
+      this.dbConnection.run(sql, [item.id, item.description, item.price, item.skuId, item.supplierId], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(this.lastID);
+        }
+      });
+    });
+  }
+
+  modifyItem(id, newDescription, newPrice) {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE Item SET Description = ?, Price = ?  WHERE ItemID = ?;`;
+      this.dbConnection.run(sql, [newDescription, newPrice, id], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  deleteItem(id) {
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM Item WHERE ItemID = ?;`;
+      this.dbConnection.run(sql, [id], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+}
 module.exports = DbHelper;
