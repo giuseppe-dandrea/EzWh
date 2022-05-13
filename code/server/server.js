@@ -15,11 +15,11 @@ const port = 3001;
 app.use(express.json());
 app.use(morgan('dev'));
 
-EzWhFacade
+// EzWhFacade
 //GET /api/test
-app.get("/createTables", async (req, res) => {
-  EzWhFacade();
-  return res.status(200).json(message);
+app.get("/api/create", async (req, res) => {
+  new EzWhFacade();
+  return res.status(200).end();
 });
 
 //GET /api/test
@@ -523,7 +523,7 @@ app.get("/api/items/:id", [param("id")], async (req, res) => {
 app.get("/api/restockOrders", async (req, res) => {
   try {
     const restockOrders = await facade.getRestockOrders();
-    // const restockOrders=[] 
+    // const restockOrders=[]
     return res.status(200).json(restockOrders);
   } catch (err) {
     return res.status(500).end();
@@ -557,13 +557,14 @@ app.get("/api/restockOrders/:ID/returnItems", [param("ID")], async (req, res) =>
   }
 });
 
-app.post("/api/restockOrder/:ID",
-  [param("ID")],
+app.post("/api/restockOrder",
   async (req, res) => {
   try {
-    // create the new restockOrder
+    console.log(req.body)
+    await facade.createRestockOrder(req.body.issueDate, req.body.products, req.body.supplierID);
     return res.status(201).end();
   } catch (err) {
+    console.log(err);
     return res.status(500).end();
   }
 });
@@ -572,9 +573,11 @@ app.put("/api/restockOrder/:ID",
   [param("ID")],
   async (req, res) => {
   try {
-    // update restokOrder
+    console.log(req.params.ID);
+    await facade.modifyRestockOrder(req.params.ID, req.body.newState);
     return res.status(200).end();
   } catch (err) {
+    console.log(err);
     return res.status(500).end();
   }
 });
@@ -583,20 +586,23 @@ app.put("/api/restockOrder/:ID/skuItems",
   [param("ID")],
   async (req, res) => {
   try {
-    // update skuItems
+    console.log(req.body);
+    await facade.addSkuItemsToRestockOrder(req.params.ID, req.body.skuItems)
     return res.status(200).end();
   } catch (err) {
+    console.log(err);
     return res.status(500).end();
   }
 });
 
-app.put("/api/restockOrder/:id/transportNote",
+app.put("/api/restockOrder/:ID/transportNote",
   [param("ID")],
   async (req, res) => {
   try {
-    // update transportNote
+    await facade.addTransportNoteToRestockOrder(req.params.ID, req.body.transportNote);
     return res.status(200).end();
   } catch (err) {
+    console.log(err);
     return res.status(500).end();
   }
 });
@@ -604,11 +610,12 @@ app.put("/api/restockOrder/:id/transportNote",
 app.delete(
   "/api/restockOrder/:ID",
   [param("ID").isInt({ min: 1 })],
-  (req, res) => {
+  async (req, res) => {
     try {
-      // delete restockOrder
+      await facade.deleteRestockOrder(req.params.ID);
       return res.status(204).end();
     } catch (err) {
+      console.log(err);
       return res.status(503).end();
     }
   }

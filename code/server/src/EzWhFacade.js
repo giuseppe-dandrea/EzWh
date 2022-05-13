@@ -273,6 +273,83 @@ class EzWhFacade {
       throw EzWhException.InternalError;
     }
   }
+
+  async getRestockOrdersIssued(){
+    try {
+      let restockOrdersIssued = await this.db.getRestockOrdersIssued();
+      return restockOrdersIssued;
+    } catch (err) {
+      throw EzWhException.InternalError;
+    }
+  }
+
+  async getRestockOrderByID(id){
+    try {
+      let restockOrder = await this.db.getRestockOrderByID(id);
+      return restockOrder;
+    } catch (err) {
+      throw EzWhException.InternalError;
+    }
+  }
+  
+
+  async getRestockOrderReturnItems(id){
+    try {
+      let restockOrderReturnItems = await this.db.getRestockOrderReturnItems(id);
+      return restockOrderReturnItems;
+    } catch (err) {
+      throw EzWhException.InternalError;
+    }
+  }  
+  
+  async createRestockOrder(issueDate, products, supplierID){
+    try {
+      await this.db.createRestockOrder(issueDate, products, supplierID);
+      return;
+    } catch (err) {
+      throw EzWhException.InternalError;
+    }
+  } 
+
+  async modifyRestockOrder(id, newState){
+    try {
+      await this.db.modifyRestockOrder(id, newState);
+      return;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  } 
+
+  async addSkuItemsToRestockOrder(ID, skuItems){
+    try {
+      await this.db.addSkuItemsToRestockOrder(ID, skuItems);
+      return;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  } 
+
+  async addTransportNoteToRestockOrder(ID, transportNote){
+    try {
+      await this.db.addTransportNoteToRestockOrder(ID, transportNote);
+      return;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
+
+  async deleteRestockOrder(ID){
+    try {
+       this.db.deleteRestockOrder(ID);
+      return;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }  
 }
 
 module.exports = EzWhFacade;
