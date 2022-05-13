@@ -15,15 +15,6 @@ const port = 3001;
 
 app.use(express.json());
 
-// middleware to strip the first colon from :param
-const stripColonFromParam = (param) => {
-	return (req, res, next) => {
-		if (req.params[param] && req.params[param][0] === ":") {
-			req.params[param] = req.params[param].substring(1);
-		}
-		next();
-	}
-}
 
 //GET /api/test
 app.get("/api/hello", (req, res) => {
@@ -51,7 +42,6 @@ app.get("/api/skus", async (req, res) => {
 
 //GET /api/skus/:id
 app.get("/api/skus/:id",
-	stripColonFromParam("id"),
 	param("id").isInt({min : 1}),
 	async (req, res) => {
 	const validationErrors = validationResult(req);
@@ -97,7 +87,6 @@ app.post("/api/sku",
 
 //PUT /api/sku/:id
 app.put("/api/sku/:id",
-	stripColonFromParam("id"),
 	param("id").isInt({min : 1}),
 	body("newDescription").exists(),
 	body("newWeight").isFloat({min : 0}),
@@ -125,7 +114,6 @@ app.put("/api/sku/:id",
 
 //PUT /api/sku/:id/position
 app.put("/api/sku/:id/position",
-	stripColonFromParam("id"),
 	param("id").isInt({min : 1}),
 	body("position").exists(),
 	async (req, res) => {
@@ -148,7 +136,6 @@ app.put("/api/sku/:id/position",
 
 //DELETE /api/skus/:id
 app.delete("/api/skus/:id",
-	stripColonFromParam("id"),
 	param("id").isInt({min : 1}),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
@@ -185,7 +172,6 @@ app.get("/api/skuitems", async (req, res) => {
 
 //GET /api/skuitems/sku/:id
 app.get("/api/skuitems/sku/:id",
-	stripColonFromParam("id"),
 	param("id").isInt({min : 1}),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
@@ -211,7 +197,6 @@ app.get("/api/skuitems/sku/:id",
 
 //GET /api/skuitems/:rfid
 app.get("/api/skuitems/:rfid",
-	stripColonFromParam("rfid"),
 	param("rfid").exists(),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
@@ -262,7 +247,6 @@ app.post("/api/skuitem",
 
 //PUT /api/skuitems/:rfid
 app.put("/api/skuitems/:rfid",
-	stripColonFromParam("rfid"),
 	param("rfid").exists(),
 	body("newRFID").exists(),
 	body("newAvailable").isInt({min : 0, max: 1}),
@@ -290,7 +274,6 @@ app.put("/api/skuitems/:rfid",
 
 //DELETE /api/skuitems/:rfid
 app.delete("/api/skuitems/:rfid",
-	stripColonFromParam("rfid"),
 	param("rfid").exists(),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
