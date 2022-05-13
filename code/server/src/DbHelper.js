@@ -35,7 +35,8 @@ class DbHelper {
     		Notes VARCHAR(100),
     		Position VARCHAR(20),
     		AvailableQuantity INTEGER NOT NULL,
-    		PRIMARY KEY(SKUID)
+    		PRIMARY KEY(SKUID),
+    		FOREIGN KEY (Position) REFERENCES Position(PositionID)
 		);`;
     this.dbConnection.run(createSKUTable, (err) => {
       if (err) {
