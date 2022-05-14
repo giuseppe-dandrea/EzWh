@@ -200,7 +200,8 @@ class DbHelper {
     State VARCHAR(20) NOT NULL,
 		TransportNote VARCHAR(20) NOT NULL,
 		SupplierID INTEGER NOT NULL,
-		FOREIGN KEY (SupplierID) REFERENCES User(UserID),
+		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
+    on delete cascade,
 		PRIMARY KEY(RestockOrderID)
 	);`;
     this.dbConnection.run(createRestockOrderTable, (err) => {
@@ -214,9 +215,11 @@ class DbHelper {
 		RestockOrderID INTEGER NOT NULL,
 		Count INTEGER NOT NULL,
 		PRIMARY KEY(ItemID, RestockOrderID),
-		FOREIGN KEY (ItemID) REFERENCES Item(ItemID),
+		FOREIGN KEY (ItemID) REFERENCES Item(ItemID)
+    on delete cascade,
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-	);`;
+    on delete cascade
+    );`;
     this.dbConnection.run(createRestockOrderProductTable, (err) => {
       if (err) {
         console.log("Error creating RestockOrderProduct table", err);
@@ -227,9 +230,10 @@ class DbHelper {
 		RFID INTEGER NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
 		PRIMARY KEY(RFID, RestockOrderID),
-		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
+		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
+    on delete cascade,
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-		
+		on delete cascade
 	);`;
     this.dbConnection.run(createRestockOrderSKUItemTable, (err) => {
       if (err) {
@@ -244,6 +248,7 @@ class DbHelper {
 		RestockOrderID INTEGER NOT NULL,
 		PRIMARY KEY(ReturnOrderID),
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
+    on delete cascade
 	);`;
     this.dbConnection.run(createReturnOrderTable, (err) => {
       if (err) {
@@ -1024,8 +1029,7 @@ class DbHelper {
       skuItems.forEach(item => {
         sql+=`('${item.RFID}', ${ID}),`
       });
-      sql=sql.slice(0, -1);
-      sql+=`;`;
+      sql=sql.slice(0, -1)+`;`;  //remove last , and add ;
       //end of creating sql statement
 
       console.log(sql);
@@ -1053,7 +1057,6 @@ class DbHelper {
     });
   }
   
-  // also delete from other tables?
   deleteRestockOrder(ID){
     return new Promise((resolve, reject) => {
       const sql=`delete from RestockOrder where RestockOrderID=${ID}`
