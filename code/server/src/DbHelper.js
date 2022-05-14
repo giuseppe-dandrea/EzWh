@@ -5,6 +5,7 @@ const { User, UserTypes } = require("./User");
 const Item = require("./Item");
 const Position = require("./Position");
 const RestockOrder = require("./RestockOrder");
+const ReturnOrder = require("./ReturnOrder");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -27,7 +28,21 @@ class DbHelper {
     this.dbConnection.close();
   }
 
-  createTables() {
+  async runSQL(SQL){
+    return new Promise((resolve, reject) => {
+      this.dbConnection.run(SQL, (err) => {
+        if (err) {
+          console.log("Error running SQL", err);
+          reject(err);
+        }
+        else{
+          resolve();
+        }
+      });
+    });
+  }
+
+  async createTables() {
     const createSKUTable = `CREATE TABLE IF NOT EXISTS SKU (
     		SKUID INTEGER NOT NULL,
     		Description VARCHAR(100) NOT NULL,
@@ -202,7 +217,8 @@ class DbHelper {
     State VARCHAR(20) NOT NULL,
 		TransportNote VARCHAR(20) NOT NULL,
 		SupplierID INTEGER NOT NULL,
-		FOREIGN KEY (SupplierID) REFERENCES User(UserID),
+		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
+    on delete cascade,
 		PRIMARY KEY(RestockOrderID)
 	);`;
     this.dbConnection.run(createRestockOrderTable, (err) => {
@@ -216,9 +232,11 @@ class DbHelper {
 		RestockOrderID INTEGER NOT NULL,
 		Count INTEGER NOT NULL,
 		PRIMARY KEY(ItemID, RestockOrderID),
-		FOREIGN KEY (ItemID) REFERENCES Item(ItemID),
+		FOREIGN KEY (ItemID) REFERENCES Item(ItemID)
+    on delete cascade,
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-	);`;
+    on delete cascade
+    );`;
     this.dbConnection.run(createRestockOrderProductTable, (err) => {
       if (err) {
         console.log("Error creating RestockOrderProduct table", err);
@@ -229,9 +247,10 @@ class DbHelper {
 		RFID INTEGER NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
 		PRIMARY KEY(RFID, RestockOrderID),
-		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
+		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
+    on delete cascade,
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-		
+		on delete cascade
 	);`;
     this.dbConnection.run(createRestockOrderSKUItemTable, (err) => {
       if (err) {
@@ -242,16 +261,31 @@ class DbHelper {
     const createReturnOrderTable = `CREATE TABLE IF NOT EXISTS ReturnOrder (
 		ReturnOrderID INTEGER NOT NULL,
 		ReturnDate VARCHAR(20) NOT NULL,
-		TransportNote VARCHAR(20) NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
 		PRIMARY KEY(ReturnOrderID),
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-	);`;
+    on delete cascade
+	  );`;
     this.dbConnection.run(createReturnOrderTable, (err) => {
       if (err) {
         console.log("Error creating Return Order table", err);
       }
     });
+
+    const createReturnOrderProductTable = `CREATE TABLE IF NOT EXISTS ReturnOrderProduct (
+      RFID VARCHAR(20) NOT NULL,
+      ReturnOrderID INTEGER NOT NULL,
+      PRIMARY KEY(RFID, ReturnOrderID),
+      FOREIGN KEY (ReturnOrderID) REFERENCES ReturnOrder(ReturnOrderID)
+      on delete cascade,
+      FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
+      on delete cascade
+      );`;
+      this.dbConnection.run(createReturnOrderProductTable, (err) => {
+        if (err) {
+          console.log("Error creating Return Order Product table", err);
+        }
+      });
   }
 
   dropTables() {
@@ -1070,8 +1104,7 @@ class DbHelper {
       skuItems.forEach(item => {
         sql+=`('${item.RFID}', ${ID}),`
       });
-      sql=sql.slice(0, -1);
-      sql+=`;`;
+      sql=sql.slice(0, -1)+`;`;  //remove last , and add ;
       //end of creating sql statement
 
       console.log(sql);
@@ -1099,7 +1132,6 @@ class DbHelper {
     });
   }
   
-  // also delete from other tables?
   deleteRestockOrder(ID){
     return new Promise((resolve, reject) => {
       const sql=`delete from RestockOrder where RestockOrderID=${ID}`
@@ -1145,6 +1177,86 @@ class DbHelper {
       this.dbConnection.run(sql, [id], (err) => {
         if (err) reject(err);
         else resolve();
+      });
+    });
+  }
+
+  createReturnOrder(returnDate, products, restockOrderID){
+    return new Promise((resolve, reject) => {
+      const db = this.dbConnection;
+      const sql = `insert into ReturnOrder (ReturnDate, RestockOrderId)
+      values ('${returnDate}', ${restockOrderID});`;
+      this.dbConnection.run(sql, function(err){
+        if (err) reject(err);
+        else{
+          console.log(`this.lastID is ${this.lastID}`);
+          var stmt = db.prepare('insert into ReturnOrderProduct (RFID, ReturnOrderID) values (?, ?)');
+          products.forEach(item=>{
+            stmt.run(item.RFID, this.lastID);
+            console.log(`RFID is ${item.RFID}`);
+          });
+          stmt.finalize();
+          resolve();
+        }
+      });
+    });
+  }
+
+  // also get products related to each returnOrder
+  getReturnOrders(){
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM ReturnOrder;";
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        let tds = [];
+        if (rows.length !== 0){
+          const products=[];
+          tds = rows.map(
+            (r) =>
+              new ReturnOrder(r.ReturnOrderID, r.ReturnDate, products, r.RestockOrderID)
+          );
+          console.log(tds)
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  // get products
+  getReturnOrderByID(ID){
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM ReturnOrder WHERE ReturnOrderID= ${ID};`;
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const products=[];
+        let tds = [];
+        if (rows.length !== 0){
+          tds = rows.map(
+            (r) =>
+            new ReturnOrder(r.ReturnOrderID, r.ReturnDate, products, r.RestockOrderID)
+          );
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  deleteRestockOrder(ID){
+    return new Promise((resolve, reject) => {
+      const sql=`delete from ReturnOrder where ReturnOrderID=${ID}`
+      console.log(sql);
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
       });
     });
   }

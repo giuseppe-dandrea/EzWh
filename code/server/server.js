@@ -20,8 +20,13 @@ app.use(morgan('dev'));
 // EzWhFacade
 //GET /api/test
 app.get("/api/create", async (req, res) => {
-  new EzWhFacade();
-  return res.status(200).end();
+  try{
+    new EzWhFacade();
+    return res.status(200).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
 });
 
 
@@ -1017,7 +1022,51 @@ app.delete(
   async (req, res) => {
     try {
       await facade.deleteRestockOrder(req.params.ID);
-      return res.status(204).end();
+      return res.status(201).end();
+    } catch (err) {
+      console.log(err);
+      return res.status(503).end();
+    }
+  }
+);
+
+app.post("/api/returnOrder", async (req, res) => {
+  try{
+    await facade.createReturnOrder(req.body.returnDate, req.body.products, req.body.restockOrderId)
+    return res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(503).end();
+  }
+});
+
+app.get("/api/returnOrders", async (req, res) => {
+  try{
+    const returnOrders = await facade.getReturnOrders();
+    return res.status(201).json(returnOrders);
+  } catch (err) {
+    console.log(err);
+    return res.status(503).end();
+  }
+});
+
+app.get("/api/returnOrders/:ID", [param("ID")], async (req, res) => {
+  try {
+    const returnOrder = await facade.getReturnOrderByID(req.params.ID);
+    return res.status(200).json(returnOrder);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
+});
+
+app.delete(
+  "/api/returnOrder/:ID",
+  [param("ID").isInt({ min: 1 })],
+  async (req, res) => {
+    try {
+      await facade.deleteReturnOrder(req.params.ID);
+      return res.status(201).end();
     } catch (err) {
       console.log(err);
       return res.status(503).end();
