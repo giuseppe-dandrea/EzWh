@@ -668,13 +668,23 @@ class EzWhFacade {
 
   async deleteRestockOrder(ID){
     try {
-       this.db.deleteRestockOrder(ID);
+       await this.db.deleteRestockOrder(ID);
       return;
     } catch (err) {
       console.log(err);
       throw EzWhException.InternalError;
     }
   }  
+
+  async createReturnOrder(returnDate, products, restockOrderID){
+    try {
+      await this.db.createReturnOrder(returnDate, products, restockOrderID);
+     return;
+   } catch (err) {
+     console.log(err);
+     throw EzWhException.InternalError;
+   }
+  }
 }
 
 module.exports = EzWhFacade;

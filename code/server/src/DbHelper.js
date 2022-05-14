@@ -26,7 +26,21 @@ class DbHelper {
     this.dbConnection.close();
   }
 
-  createTables() {
+  async runSQL(SQL){
+    return new Promise((resolve, reject) => {
+      this.dbConnection.run(SQL, (err) => {
+        if (err) {
+          console.log("Error running SQL", err);
+          reject(err);
+        }
+        else{
+          resolve();
+        }
+      });
+    });
+  }
+
+  async createTables() {
     const createSKUTable = `CREATE TABLE IF NOT EXISTS SKU (
     		SKUID INTEGER NOT NULL,
     		Description VARCHAR(100) NOT NULL,
@@ -244,17 +258,31 @@ class DbHelper {
     const createReturnOrderTable = `CREATE TABLE IF NOT EXISTS ReturnOrder (
 		ReturnOrderID INTEGER NOT NULL,
 		ReturnDate VARCHAR(20) NOT NULL,
-		TransportNote VARCHAR(20) NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
 		PRIMARY KEY(ReturnOrderID),
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
     on delete cascade
-	);`;
+	  );`;
     this.dbConnection.run(createReturnOrderTable, (err) => {
       if (err) {
         console.log("Error creating Return Order table", err);
       }
     });
+
+    const createReturnOrderProductTable = `CREATE TABLE IF NOT EXISTS ReturnOrderProduct (
+      RFID VARCHAR(20) NOT NULL,
+      ReturnOrderID INTEGER NOT NULL,
+      PRIMARY KEY(RFID, ReturnOrderID),
+      FOREIGN KEY (ReturnOrderID) REFERENCES ReturnOrder(ReturnOrderID)
+      on delete cascade,
+      FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
+      on delete cascade
+      );`;
+      this.dbConnection.run(createReturnOrderProductTable, (err) => {
+        if (err) {
+          console.log("Error creating Return Order Product table", err);
+        }
+      });
   }
 
   dropTables() {
@@ -1102,6 +1130,27 @@ class DbHelper {
       this.dbConnection.run(sql, [id], (err) => {
         if (err) reject(err);
         else resolve();
+      });
+    });
+  }
+
+  createReturnOrder(returnDate, products, restockOrderID){
+    return new Promise((resolve, reject) => {
+      const db = this.dbConnection;
+      const sql = `insert into ReturnOrder (ReturnDate, RestockOrderId)
+      values ('${returnDate}', ${restockOrderID});`;
+      this.dbConnection.run(sql, function(err){
+        if (err) reject(err);
+        else{
+          console.log(`this.lastID is ${this.lastID}`);
+          var stmt = db.prepare('insert into ReturnOrderProduct (RFID, ReturnOrderID) values (?, ?)');
+          products.forEach(item=>{
+            stmt.run(item.RFID, this.lastID);
+            console.log(`RFID is ${item.RFID}`);
+          });
+          stmt.finalize();
+          resolve();
+        }
       });
     });
   }

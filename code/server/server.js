@@ -20,8 +20,13 @@ app.use(morgan('dev'));
 // EzWhFacade
 //GET /api/test
 app.get("/api/create", async (req, res) => {
-  new EzWhFacade();
-  return res.status(200).end();
+  try{
+    new EzWhFacade();
+    return res.status(200).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
 });
 
 
@@ -991,13 +996,23 @@ app.delete(
   async (req, res) => {
     try {
       await facade.deleteRestockOrder(req.params.ID);
-      return res.status(204).end();
+      return res.status(201).end();
     } catch (err) {
       console.log(err);
       return res.status(503).end();
     }
   }
 );
+
+app.post("/api/returnOrder", async (req, res) => {
+  try{
+    await facade.createReturnOrder(req.body.returnDate, req.body.products, req.body.restockOrderId)
+    return res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(503).end();
+  }
+});
 
 // activate the server
 app.listen(port, () => {
