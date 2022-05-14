@@ -5,6 +5,7 @@ const { User } = require("./User");
 const Item = require("./Item");
 const Position = require("./Position");
 const RestockOrder = require("./RestockOrder");
+const ReturnOrder = require("./ReturnOrder");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -1151,6 +1152,65 @@ class DbHelper {
           stmt.finalize();
           resolve();
         }
+      });
+    });
+  }
+
+  // also get products related to each returnOrder
+  getReturnOrders(){
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM ReturnOrder;";
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        let tds = [];
+        if (rows.length !== 0){
+          const products=[];
+          tds = rows.map(
+            (r) =>
+              new ReturnOrder(r.ReturnOrderID, r.ReturnDate, products, r.RestockOrderID)
+          );
+          console.log(tds)
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  // get products
+  getReturnOrderByID(ID){
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM ReturnOrder WHERE ReturnOrderID= ${ID};`;
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const products=[];
+        let tds = [];
+        if (rows.length !== 0){
+          tds = rows.map(
+            (r) =>
+            new ReturnOrder(r.ReturnOrderID, r.ReturnDate, products, r.RestockOrderID)
+          );
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  deleteRestockOrder(ID){
+    return new Promise((resolve, reject) => {
+      const sql=`delete from ReturnOrder where ReturnOrderID=${ID}`
+      console.log(sql);
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
       });
     });
   }

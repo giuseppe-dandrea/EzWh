@@ -1014,6 +1014,40 @@ app.post("/api/returnOrder", async (req, res) => {
   }
 });
 
+app.get("/api/returnOrders", async (req, res) => {
+  try{
+    const returnOrders = await facade.getReturnOrders();
+    return res.status(201).json(returnOrders);
+  } catch (err) {
+    console.log(err);
+    return res.status(503).end();
+  }
+});
+
+app.get("/api/returnOrders/:ID", [param("ID")], async (req, res) => {
+  try {
+    const returnOrder = await facade.getReturnOrderByID(req.params.ID);
+    return res.status(200).json(returnOrder);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
+});
+
+app.delete(
+  "/api/returnOrder/:ID",
+  [param("ID").isInt({ min: 1 })],
+  async (req, res) => {
+    try {
+      await facade.deleteReturnOrder(req.params.ID);
+      return res.status(201).end();
+    } catch (err) {
+      console.log(err);
+      return res.status(503).end();
+    }
+  }
+);
+
 // activate the server
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
