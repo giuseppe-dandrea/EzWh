@@ -5,6 +5,7 @@ class EzWhException {
   static PositionFull = "ERROR: Position cannot contain all the requested items";
   static Unauthorized = "ERROR: User not authorized";
   static EntryNotAllowed = "ERROR: Unprocessable Entity";
+  static Conflict = "ERROR: conflict in DB";
 }
 
 module.exports = EzWhException;

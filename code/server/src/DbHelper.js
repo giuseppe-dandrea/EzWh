@@ -1,14 +1,16 @@
 const sqlite3 = require("sqlite3");
 const TestDescriptor = require("./TestDescriptor");
 const TestResult = require("./TestResult");
-const { User } = require("./User");
+const { User, UserTypes } = require("./User");
 const Item = require("./Item");
 const Position = require("./Position");
 const RestockOrder = require("./RestockOrder");
+const ReturnOrder = require("./ReturnOrder");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
     this.dbName = dbName;
+    this.idTR = 1;
     this.createConnection();
   }
 
@@ -26,7 +28,21 @@ class DbHelper {
     this.dbConnection.close();
   }
 
-  createTables() {
+  async runSQL(SQL){
+    return new Promise((resolve, reject) => {
+      this.dbConnection.run(SQL, (err) => {
+        if (err) {
+          console.log("Error running SQL", err);
+          reject(err);
+        }
+        else{
+          resolve();
+        }
+      });
+    });
+  }
+
+  async createTables() {
     const createSKUTable = `CREATE TABLE IF NOT EXISTS SKU (
     		SKUID INTEGER NOT NULL,
     		Description VARCHAR(100) NOT NULL,
@@ -80,12 +96,13 @@ class DbHelper {
 
     const createUserTable = `CREATE TABLE IF NOT EXISTS User (
 			UserID INTEGER NOT NULL,
-			Name VARCHAR(20) NOT NULL,
-			Surname VARCHAR(20) NOT NULL,
-			Email VARCHAR(20) NOT NULL,
-			Type VARCHAR(30) NOT NULL,
-			Password VARCHAR(30) NOT NULL,
-			PRIMARY KEY (UserID)
+			Name VARCHAR(50) NOT NULL,
+			Surname VARCHAR(50) NOT NULL,
+			Email VARCHAR(50) NOT NULL,
+			Type VARCHAR(50) NOT NULL,
+			Password VARCHAR(50) NOT NULL,
+			PRIMARY KEY (UserID),
+      UNIQUE (Email, Type)
 		);`;
     this.dbConnection.run(createUserTable, (err) => {
       if (err) {
@@ -201,7 +218,8 @@ class DbHelper {
     State VARCHAR(20) NOT NULL,
 		TransportNote VARCHAR(20) NOT NULL,
 		SupplierID INTEGER NOT NULL,
-		FOREIGN KEY (SupplierID) REFERENCES User(UserID),
+		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
+    on delete cascade,
 		PRIMARY KEY(RestockOrderID)
 	);`;
     this.dbConnection.run(createRestockOrderTable, (err) => {
@@ -215,9 +233,11 @@ class DbHelper {
 		RestockOrderID INTEGER NOT NULL,
 		Count INTEGER NOT NULL,
 		PRIMARY KEY(ItemID, RestockOrderID),
-		FOREIGN KEY (ItemID) REFERENCES Item(ItemID),
+		FOREIGN KEY (ItemID) REFERENCES Item(ItemID)
+    on delete cascade,
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-	);`;
+    on delete cascade
+    );`;
     this.dbConnection.run(createRestockOrderProductTable, (err) => {
       if (err) {
         console.log("Error creating RestockOrderProduct table", err);
@@ -228,9 +248,10 @@ class DbHelper {
 		RFID INTEGER NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
 		PRIMARY KEY(RFID, RestockOrderID),
-		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
+		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
+    on delete cascade,
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-		
+		on delete cascade
 	);`;
     this.dbConnection.run(createRestockOrderSKUItemTable, (err) => {
       if (err) {
@@ -241,16 +262,31 @@ class DbHelper {
     const createReturnOrderTable = `CREATE TABLE IF NOT EXISTS ReturnOrder (
 		ReturnOrderID INTEGER NOT NULL,
 		ReturnDate VARCHAR(20) NOT NULL,
-		TransportNote VARCHAR(20) NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
 		PRIMARY KEY(ReturnOrderID),
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-	);`;
+    on delete cascade
+	  );`;
     this.dbConnection.run(createReturnOrderTable, (err) => {
       if (err) {
         console.log("Error creating Return Order table", err);
       }
     });
+
+    const createReturnOrderProductTable = `CREATE TABLE IF NOT EXISTS ReturnOrderProduct (
+      RFID VARCHAR(20) NOT NULL,
+      ReturnOrderID INTEGER NOT NULL,
+      PRIMARY KEY(RFID, ReturnOrderID),
+      FOREIGN KEY (ReturnOrderID) REFERENCES ReturnOrder(ReturnOrderID)
+      on delete cascade,
+      FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
+      on delete cascade
+      );`;
+      this.dbConnection.run(createReturnOrderProductTable, (err) => {
+        if (err) {
+          console.log("Error creating Return Order Product table", err);
+        }
+      });
   }
 
   dropTables() {
@@ -525,13 +561,17 @@ class DbHelper {
   // TestDescriptor
   getTestDescriptors() {
     return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM TestDescriptor";
-      this.db.all(sql, [], (err, rows) => {
+      const sql = 'SELECT * FROM TestDescriptor';
+      this.dbConnection.all(sql, [], (err, rows) => {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
-        const tds = rows.map((r) => new TestDescriptor(r.TestDescriptorID, r.Name, r.ProcedureDescription, r.SKUID));
+        const tds = rows.map((r) => (
+          new TestDescriptor(r.TestDescriptorID, r.Name, r.ProcedureDescription, r.SKUID)
+        ));
         resolve(tds);
       });
     });
@@ -540,9 +580,11 @@ class DbHelper {
   createTestDescriptor(name, procedureDescription, idSKU) {
     return new Promise((resolve, reject) => {
       const sql = `INSERT INTO TestDescriptor (Name, ProcedureDescription, SKUID)
-      VALUES (${name}, ${procedureDescription}, ${idSKU})`;
-      this.db.run(sql, function (err) {
+      VALUES (?, ?, ?)`;
+      this.dbConnection.run(sql, [name, procedureDescription, idSKU], function (err) {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
@@ -553,12 +595,14 @@ class DbHelper {
 
   modifyTestDescriptor(testDescriptor) {
     return new Promise((resolve, reject) => {
-      const sql = `UPDATE TestDescriptor SET Name=${testDescriptor.name},
-         ProcedureDescription=${testDescriptor.procedureDescription},
-         SKUID=${testDescriptor.SKUID}
-         WHERE TestDescriptorID=${testDescriptor.id}`;
-      this.db.run(sql, function (err) {
+      const sql = `UPDATE TestDescriptor SET Name=?,
+         ProcedureDescription=?, SKUID=?
+         WHERE TestDescriptorID=?`;
+      this.dbConnection.run(sql, [testDescriptor.name, testDescriptor.procedureDescription,
+      testDescriptor.idSKU, testDescriptor.id], function (err) {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
@@ -569,9 +613,11 @@ class DbHelper {
 
   deleteTestDescriptor(id) {
     return new Promise((resolve, reject) => {
-      const sql = `DELETE FROM TestDescriptor WHERE TestDescriptorID=${id}`;
-      this.db.run(sql, function (err) {
+      const sql = `DELETE FROM TestDescriptor WHERE TestDescriptorID=?`;
+      this.dbConnection.run(sql, [id], function (err) {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
@@ -583,13 +629,17 @@ class DbHelper {
   //TestResult
   getTestResultsByRFID(RFID) {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT * FROM TestResult WHERE RFID=${RFID}`;
-      this.db.all(sql, [], (err, rows) => {
+      const sql = `SELECT * FROM TestResult WHERE RFID=?`;
+      this.dbConnection.all(sql, [RFID], (err, rows) => {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
-        const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, R.date, r.result));
+        const trs = rows.map((r) => (
+          new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, r.date, r.result)
+        ));
         resolve(trs);
       });
     });
@@ -597,29 +647,36 @@ class DbHelper {
 
   getTestResultByIDAndRFID(RFID, id) {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT * FROM TestResult WHERE RFID=${RFID}
-       AND TestResultID=${id}`;
-      this.db.all(sql, [], (err, rows) => {
+      const sql = `SELECT * FROM TestResult WHERE RFID=?
+       AND TestResultID=?`;
+      this.dbConnection.all(sql, [RFID, id], (err, rows) => {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
-        const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, R.date, r.result));
-        resolve(trs);
+        const trs = rows.map((r) => (
+          new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, r.date, r.result)
+        ));
+        resolve(trs[0]);
       });
     });
   }
 
   addTestResult(RFID, idTestDescriptor, date, result) {
     return new Promise((resolve, reject) => {
-      const sql = `INSERT INTO TestResult (RFID, TestDescriptorID, date, result)
-      VALUES (${RFID}, ${idTestDescriptor}, ${date}, ${result})`;
-      this.db.run(sql, function (err) {
+      const sql = `INSERT INTO TestResult (TestResultID, RFID, TestDescriptorID, date, result)
+      VALUES (?, ?, ?, ?, ?)`;
+      this.dbConnection.run(sql, [this.idTR, RFID, idTestDescriptor, date, result], function (err) {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
       });
+      this.idTR++;
       resolve();
     });
   }
@@ -627,12 +684,13 @@ class DbHelper {
   modifyTestResult(testResult) {
     return new Promise((resolve, reject) => {
       const sql = `UPDATE TestResult SET
-         TestDescriptorID=${testResult.idTestDescriptor},
-         date=${testResult.date},
-         result=${testResult.result}
-         WHERE TestResultID=${testResult.id} AND RFID=${testResult.RFID}`;
-      this.db.run(sql, function (err) {
+         TestDescriptorID=?, date=?,
+         result=? WHERE TestResultID=?AND RFID=?`;
+      this.dbConnection.run(sql, [testResult.idTestDescriptor, testResult.date,
+      testResult.result, testResult.id, testResult.rfid], function (err) {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
@@ -644,9 +702,11 @@ class DbHelper {
   deleteTestResult(RFID, id) {
     return new Promise((resolve, reject) => {
       const sql = `DELETE FROM TestResult WHERE
-       TestResultID=${id} AND RFID=${RFID}`;
-      this.db.run(sql, function (err) {
+       TestResultID=? AND RFID=?`;
+      this.dbConnection.run(sql, [id, RFID], function (err) {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
@@ -656,17 +716,21 @@ class DbHelper {
   }
 
   // User
-  getUserInfo(id) {} //TO DO
+  getUserInfo(id) { } //TO DO
 
   getSuppliers() {
     return new Promise((resolve, reject) => {
       const sql = 'SELECT * FROM User WHERE Type="supplier"';
-      this.db.all(sql, [], (err, rows) => {
+      this.dbConnection.all(sql, [], (err, rows) => {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
-        const users = rows.map((u) => new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password));
+        const users = rows.map((u) => (
+          new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
+        ));
         resolve(users);
       });
     });
@@ -675,12 +739,16 @@ class DbHelper {
   getUsers() {
     return new Promise((resolve, reject) => {
       const sql = 'SELECT * FROM User WHERE Type<>"manager"'; //also ADMIN??
-      this.db.all(sql, [], (err, rows) => {
+      this.dbConnection.all(sql, [], (err, rows) => {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
-        const users = rows.map((u) => new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password));
+        const users = rows.map((u) => (
+          new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
+        ));
         resolve(users);
       });
     });
@@ -689,9 +757,11 @@ class DbHelper {
   createUser(email, name, surname, password, type) {
     return new Promise((resolve, reject) => {
       const sql = `INSERT INTO User (Name, Surname, Email, Type, Password)
-      VALUES (${name}, ${surname}, ${email}, ${type}, ${password})`;
-      this.db.run(sql, function (err) {
+      VALUES (?, ?, ?, ?, ?)`;
+      this.dbConnection.run(sql, [name, surname, email, type, password], function (err) {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
@@ -702,11 +772,12 @@ class DbHelper {
 
   modifyUserRights(email, oldType, newType) {
     return new Promise((resolve, reject) => {
-      const sql = `UPDATE User SET
-         Type=${newType}
-         WHERE Email=${email} AND Type=${oldType}`;
-      this.db.run(sql, function (err) {
+      const sql = `UPDATE User SET Type=?
+         WHERE Email=? AND Type=?`;
+      this.dbConnection.run(sql, [newType, email, oldType], function (err) {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
@@ -717,9 +788,11 @@ class DbHelper {
 
   deleteUser(email, type) {
     return new Promise((resolve, reject) => {
-      const sql = `DELETE FROM User WHERE Email=${email} AND Type=${type}`;
-      this.db.run(sql, function (err) {
+      const sql = `DELETE FROM User WHERE Email=? AND Type=?`;
+      this.dbConnection.run(sql, [email, type], function (err) {
         if (err) {
+          console.log("Error in DB");
+          console.log(err);
           reject(err);
           return;
         }
@@ -728,17 +801,24 @@ class DbHelper {
     });
   }
 
-  getUserByEmail(email) {
-    const sql = `SELECT * FROM User WHERE Email=${email}`;
-    this.db.all(sql, [], (err, rows) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      const users = rows.map((u) => new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password));
-      resolve(users);
+  getUserByEmail(email, type) {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM User WHERE Email=? AND Type=?`;
+      this.dbConnection.all(sql, [email, type], (err, rows) => {
+        if (err) {
+          console.log("Error in DB");
+          console.log(err);
+          reject(err);
+          return;
+        }
+        const users = rows.map((u) => (
+          new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password)
+        ));
+        resolve(users[0]);
+      });
     });
   }
+  
   /***POSITION***/
   //SKUs
   getPositions() {
@@ -1025,8 +1105,7 @@ class DbHelper {
       skuItems.forEach(item => {
         sql+=`('${item.RFID}', ${ID}),`
       });
-      sql=sql.slice(0, -1);
-      sql+=`;`;
+      sql=sql.slice(0, -1)+`;`;  //remove last , and add ;
       //end of creating sql statement
 
       console.log(sql);
@@ -1054,7 +1133,6 @@ class DbHelper {
     });
   }
   
-  // also delete from other tables?
   deleteRestockOrder(ID){
     return new Promise((resolve, reject) => {
       const sql=`delete from RestockOrder where RestockOrderID=${ID}`
@@ -1100,6 +1178,86 @@ class DbHelper {
       this.dbConnection.run(sql, [id], (err) => {
         if (err) reject(err);
         else resolve();
+      });
+    });
+  }
+
+  createReturnOrder(returnDate, products, restockOrderID){
+    return new Promise((resolve, reject) => {
+      const db = this.dbConnection;
+      const sql = `insert into ReturnOrder (ReturnDate, RestockOrderId)
+      values ('${returnDate}', ${restockOrderID});`;
+      this.dbConnection.run(sql, function(err){
+        if (err) reject(err);
+        else{
+          console.log(`this.lastID is ${this.lastID}`);
+          var stmt = db.prepare('insert into ReturnOrderProduct (RFID, ReturnOrderID) values (?, ?)');
+          products.forEach(item=>{
+            stmt.run(item.RFID, this.lastID);
+            console.log(`RFID is ${item.RFID}`);
+          });
+          stmt.finalize();
+          resolve();
+        }
+      });
+    });
+  }
+
+  // also get products related to each returnOrder
+  getReturnOrders(){
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM ReturnOrder;";
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        let tds = [];
+        if (rows.length !== 0){
+          const products=[];
+          tds = rows.map(
+            (r) =>
+              new ReturnOrder(r.ReturnOrderID, r.ReturnDate, products, r.RestockOrderID)
+          );
+          console.log(tds)
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  // get products
+  getReturnOrderByID(ID){
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM ReturnOrder WHERE ReturnOrderID= ${ID};`;
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const products=[];
+        let tds = [];
+        if (rows.length !== 0){
+          tds = rows.map(
+            (r) =>
+            new ReturnOrder(r.ReturnOrderID, r.ReturnDate, products, r.RestockOrderID)
+          );
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  deleteRestockOrder(ID){
+    return new Promise((resolve, reject) => {
+      const sql=`delete from ReturnOrder where ReturnOrderID=${ID}`
+      console.log(sql);
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
       });
     });
   }
