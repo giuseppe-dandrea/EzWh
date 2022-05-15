@@ -469,6 +469,7 @@ class EzWhFacade {
 				if (u.verifyPassword(password)) {
 					return {
 						id: u.id,
+            username: u.email,
 						name: u.name,
 						surname: u.surname
 					};
