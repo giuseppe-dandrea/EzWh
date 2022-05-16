@@ -663,7 +663,8 @@ app.put('/api/users/:username',
       const errors = validationResult(req);
       if (!errors.isEmpty() || Object.keys(req.body) == 0 ||
         !UserTypes.isUserTypes(req.body.oldType) || !UserTypes.isUserTypes(req.body.newType)
-        || req.body.oldType == UserTypes.MANAGER || req.body.oldType == UserTypes.ADMINISTRATOR) {
+        || req.body.oldType == UserTypes.MANAGER || req.body.oldType == UserTypes.ADMINISTRATOR
+        || req.body.newType == UserTypes.MANAGER || req.body.newType == UserTypes.ADMINISTRATOR) {
         return res.status(422).end();
       }
       await facade.modifyUserRights(req.params.username,
