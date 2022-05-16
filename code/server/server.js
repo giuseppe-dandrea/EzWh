@@ -1097,6 +1097,62 @@ app.get("/api/internalOrders", async (req, res) => {
   }
 });
 
+app.get("/api/internalOrdersIssued", async (req, res) => {
+  try{
+    const internalOrdersIssued = await facade.getInternalOrders("ISSUED");
+    return res.status(201).json(internalOrdersIssued);
+  } catch (err) {
+    console.log(err);
+    return res.status(503).end();
+  }
+});
+
+app.get("/api/internalOrdersAccepted", async (req, res) => {
+  try{
+    const internalOrdersAccepted = await facade.getInternalOrders("ACCEPTED");
+    return res.status(201).json(internalOrdersAccepted);
+  } catch (err) {
+    console.log(err);
+    return res.status(503).end();
+  }
+});
+
+app.get("/api/internalOrders/:ID", [param("ID")], async (req, res) => {
+  try {
+    const internalOrder = await facade.getInternalOrderByID(req.params.ID);
+    return res.status(200).json(internalOrder);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
+});
+
+app.put("/api/internalOrders/:ID",
+  [param("ID")],
+  async (req, res) => {
+  try {
+    await facade.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);
+    return res.status(200).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
+});
+
+app.delete(
+  "/api/InternalOrders/:ID",
+  [param("ID").isInt({ min: 1 })],
+  async (req, res) => {
+    try {
+      await facade.deleteInternalOrder(req.params.ID);
+      return res.status(201).end();
+    } catch (err) {
+      console.log(err);
+      return res.status(503).end();
+    }
+  }
+);
+
 // activate the server
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);

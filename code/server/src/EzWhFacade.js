@@ -798,15 +798,46 @@ class EzWhFacade {
    }
   }
 
-  async getInternalOrders(){
+  async getInternalOrders(state){
     try {
-      const returnOrders = await this.db.getInternalOrders();
-      return returnOrders;
+      const internalOrders = await this.db.getInternalOrders(state);
+      return internalOrders;
    } catch (err) {
      console.log(err);
      throw EzWhException.InternalError;
    }
   }
+
+  async getInternalOrderByID(ID){
+    try {
+      const internalOrder = await this.db.getInternalOrderByID(ID);
+      return internalOrder;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
+
+  async modifyInternalOrder(ID, newState, products){
+    try {
+      await this.db.modifyInternalOrder(ID, newState, products);
+      return;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
+
+  async deleteInternalOrder(ID){
+    try {
+      await this.db.deleteInternalOrder(ID);
+      return;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
 }
+
 
 module.exports = EzWhFacade;

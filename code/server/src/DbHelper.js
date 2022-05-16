@@ -176,9 +176,9 @@ class DbHelper {
 		InternalOrderID INTEGER NOT NULL,
 		IssueDate VARCHAR(20) NOT NULL,
 		State VARCHAR(20) NOT NULL,
-		CustomerId INTEGER NOT NULL,
+		CustomerID INTEGER NOT NULL,
 		PRIMARY KEY(InternalOrderID),
-		FOREIGN KEY (CustomerId) REFERENCES User(UserID)
+		FOREIGN KEY (CustomerID) REFERENCES User(UserID)
 	);`;
     this.dbConnection.run(createInternalOrderTable, (err) => {
       if (err) {
@@ -1268,6 +1268,7 @@ class DbHelper {
       const db = this.dbConnection;
       const sql = `insert into InternalOrder (IssueDate, CustomerID, State)
       values ('${issueDate}', ${customerID}, 'ISSUED');`;
+      console.log(sql);
       this.dbConnection.run(sql, function(err){
         if (err) reject(err);
         else{
@@ -1287,9 +1288,13 @@ class DbHelper {
   }
 
   // shoould complete products and skuItems
-  getInternalOrders(){
+  getInternalOrders(state){
     return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM InternalOrder;";
+      let sql = `SELECT * FROM InternalOrder`;
+      if (state!==undefined){
+        sql+=` where State='${state}'`
+      }
+      sql+=`;`
       this.dbConnection.all(sql, [], (err, rows) => {
         if (err) {
           reject(err);
@@ -1309,6 +1314,63 @@ class DbHelper {
         console.log("internalOrders tds:");
         console.log(tds)
         resolve(tds);
+      });
+    });
+  }
+
+  getInternalOrderByID(ID){
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM InternalOrder WHERE InternalOrderID= ${ID};`;
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const products=[];
+        const SKUItems = [];
+        let tds = [];
+        if (rows.length !== 0){
+          tds = rows.map(
+            (r) =>
+            new InternalOrder(r.InternalOrderID, r.IssueDate, r.State, products, r.CustomerID, SKUItems)
+          );
+        }
+        resolve(tds);
+      });
+    });
+  }
+
+  modifyInternalOrder(ID, newState, products){
+    return new Promise((resolve, reject) => {
+      if (newState){
+        const sql = `update InternalOrder
+        SET State='${newState}'
+        where InternalOrderID=${ID}`;
+        this.dbConnection.all(sql, [], (err, rows) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          if (products){
+            // add update for products
+          }
+          console.log(`newState is ${newState}`);
+          resolve();
+        });
+      }
+    });
+  }
+
+  deleteInternalOrder(ID){
+    return new Promise((resolve, reject) => {
+      const sql=`delete from InternalOrder where InternalOrderID=${ID}`
+      console.log(sql);
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
       });
     });
   }
