@@ -1075,6 +1075,18 @@ app.delete(
   }
 );
 
+app.post("/api/internalOrders",
+  async (req, res) => {
+  try {
+    console.log(req.body)
+    await facade.createInternalOrder(req.body.issueDate, req.body.products, req.body.customerId);
+    return res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
+});
+
 // activate the server
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);

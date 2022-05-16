@@ -28,7 +28,7 @@ class DbHelper {
     this.dbConnection.close();
   }
 
-  async runSQL(SQL){
+  runSQL(SQL){
     return new Promise((resolve, reject) => {
       this.dbConnection.run(SQL, (err) => {
         if (err) {
@@ -188,7 +188,7 @@ class DbHelper {
     const createInternalOrderProductTable = `CREATE TABLE IF NOT EXISTS InternalOrderProduct (
 		SKUID INTEGER NOT NULL,
 		InternalOrderID INTEGER NOT NULL,
-		Count INTEGER NOT NULL,
+		QTY INTEGER NOT NULL,
 		PRIMARY KEY(SKUID, InternalOrderID),
 		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
 		FOREIGN KEY (InternalOrderID) REFERENCES InternalOrder(InternalOrderID)
@@ -231,7 +231,7 @@ class DbHelper {
     const createRestockOrderProductTable = `CREATE TABLE IF NOT EXISTS RestockOrderProduct (
 		ItemID INTEGER NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
-		Count INTEGER NOT NULL,
+		QTY INTEGER NOT NULL,
 		PRIMARY KEY(ItemID, RestockOrderID),
 		FOREIGN KEY (ItemID) REFERENCES Item(ItemID)
     on delete cascade,
@@ -1191,12 +1191,14 @@ class DbHelper {
         if (err) reject(err);
         else{
           console.log(`this.lastID is ${this.lastID}`);
-          var stmt = db.prepare('insert into ReturnOrderProduct (RFID, ReturnOrderID) values (?, ?)');
-          products.forEach(item=>{
-            stmt.run(item.RFID, this.lastID);
-            console.log(`RFID is ${item.RFID}`);
-          });
-          stmt.finalize();
+          if (products){
+            var stmt = db.prepare('insert into ReturnOrderProduct (RFID, ReturnOrderID) values (?, ?)');
+            products.forEach(item=>{
+              stmt.run(item.RFID, this.lastID);
+              console.log(`RFID is ${item.RFID}`);
+            });
+            stmt.finalize();
+          }
           resolve();
         }
       });
@@ -1258,6 +1260,29 @@ class DbHelper {
           return;
         }
         resolve();
+      });
+    });
+  }
+  //Here products are products, in PUT they are SKUItems
+  createInternalOrder(issueDate, products, customerID){
+    return new Promise((resolve, reject) => {
+      const db = this.dbConnection;
+      const sql = `insert into InternalOrder (IssueDate, CustomerID, State)
+      values ('${issueDate}', ${customerID}, 'ISSUED');`;
+      this.dbConnection.run(sql, function(err){
+        if (err) reject(err);
+        else{
+          console.log(`this.lastID is ${this.lastID}`);
+          if (products){
+            var stmt = db.prepare('insert into InternalOrderProduct (InternalOrderID, SKUID, QTY) values (?, ?, ?)');
+            products.forEach(item=>{
+              stmt.run(item.SKUId, this.lastID, item.qty);
+              console.log(`SKUID is ${item.SKUId}`);
+            });
+            stmt.finalize();
+          }
+          resolve();
+        }
       });
     });
   }

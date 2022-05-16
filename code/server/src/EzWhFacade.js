@@ -786,7 +786,17 @@ class EzWhFacade {
       console.log(err);
       throw EzWhException.InternalError;
     }
-  }  
+  }
+
+  async createInternalOrder(issueDate, products, customerID){
+    try {
+      await this.db.createInternalOrder(issueDate, products, customerID);
+      return;
+   } catch (err) {
+    console.log(err);
+    throw EzWhException.InternalError;
+   }
+  }
 }
 
 module.exports = EzWhFacade;
