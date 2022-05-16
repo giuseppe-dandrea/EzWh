@@ -797,6 +797,16 @@ class EzWhFacade {
     throw EzWhException.InternalError;
    }
   }
+
+  async getInternalOrders(){
+    try {
+      const returnOrders = await this.db.getInternalOrders();
+      return returnOrders;
+   } catch (err) {
+     console.log(err);
+     throw EzWhException.InternalError;
+   }
+  }
 }
 
 module.exports = EzWhFacade;

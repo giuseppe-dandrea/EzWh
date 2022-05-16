@@ -9,4 +9,4 @@ class InternalOrder{
     }
 }
 
-module.export = InternalOrder;
+module.exports = InternalOrder;

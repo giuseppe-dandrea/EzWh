@@ -1087,6 +1087,16 @@ app.post("/api/internalOrders",
   }
 });
 
+app.get("/api/internalOrders", async (req, res) => {
+  try{
+    const internalOrders = await facade.getInternalOrders();
+    return res.status(201).json(internalOrders);
+  } catch (err) {
+    console.log(err);
+    return res.status(503).end();
+  }
+});
+
 // activate the server
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);

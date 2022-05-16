@@ -6,6 +6,7 @@ const Item = require("./Item");
 const Position = require("./Position");
 const RestockOrder = require("./RestockOrder");
 const ReturnOrder = require("./ReturnOrder");
+const InternalOrder = require("./InternalOrder");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -969,19 +970,17 @@ class DbHelper {
           reject(err);
           return;
         }
-        console.log(rows);
+        // console.log(rows);
         const products=[];
         const SKUItems=[];
-        if (rows.length === 0){
-          const tds = [];
-        }
-        else{
-          const tds = rows.map(
+        let tds = [];
+        if (rows.length !== 0){
+          tds = rows.map(
             (r) =>
               new RestockOrder(r.RestockOrderID, r.IssueDate, r.State, products, r.SupplierID, r.TransportNode, SKUItems)
           );
-          console.log(tds)
         }
+        console.log(tds)
         resolve(tds);
       });
     });
@@ -1221,8 +1220,8 @@ class DbHelper {
             (r) =>
               new ReturnOrder(r.ReturnOrderID, r.ReturnDate, products, r.RestockOrderID)
           );
-          console.log(tds)
         }
+        console.log(tds)
         resolve(tds);
       });
     });
@@ -1283,6 +1282,33 @@ class DbHelper {
           }
           resolve();
         }
+      });
+    });
+  }
+
+  // shoould complete products and skuItems
+  getInternalOrders(){
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM InternalOrder;";
+      this.dbConnection.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        let tds = [];
+        if (rows.length !== 0){
+          const products=[];
+          const SKUItems=[];
+          tds = rows.map(
+            (r) =>
+              new InternalOrder(r.InternalOrderID, r.IssueDate, r.State, products, r.CustomerID, SKUItems)
+          );
+        }
+        console.log("internalOrders rows:");
+        console.log(rows);
+        console.log("internalOrders tds:");
+        console.log(tds)
+        resolve(tds);
       });
     });
   }
