@@ -378,15 +378,11 @@ class EzWhFacade {
   async modifyTestResult(RFID, id, newIdTestDescriptor, newDate, newResult) {
     //TODO
     try {
-      let skuItem = await this.getSKUItemByRfid(RFID);
-      console.log(skuItem);
-      if (skuItem == undefined) throw EzWhException.NotFound;
+      await this.getSKUItemByRfid(RFID);
       console.log(newIdTestDescriptor);
-      let td = await this.getTestDescriptorByID(newIdTestDescriptor);
-      console.log(td);
-      if (td == undefined) throw EzWhException.NotFound;
+      await this.getTestDescriptorByID(newIdTestDescriptor);
       let tr = await this.db.getTestResultByIDAndRFID(RFID, id);
-      console.log(tr);
+      if (tr === undefined) throw EzWhException.NotFound;
       tr.idTestDescriptor = newIdTestDescriptor;
       tr.date = newDate;
       tr.result = newResult;
@@ -394,7 +390,7 @@ class EzWhFacade {
     } catch (err) {
       console.log("Error in Facade: ModifyTestResult");
       console.log(err);
-      if (err == EzWhException.NotFound) throw err;
+      if (err === EzWhException.NotFound) throw err;
       throw EzWhException.InternalError;
     }
   }
