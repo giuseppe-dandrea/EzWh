@@ -6,7 +6,7 @@ const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 const EzWhException = require("./src/EzWhException.js");
 const EzWhFacade = require("./src/EzWhFacade");
-const { validationResult, param, check, type, body } = require("express-validator");
+const { validationResult, param, check, body } = require("express-validator");
 const { UserTypes, User } = require("./src/User");
 const facade = new EzWhFacade();
 
@@ -320,7 +320,7 @@ app.get('/api/testDescriptors', async (req, res) => {
   }
 });
 
-app.get('/api/testDescriptors/:id', [param('id').isInt({ min: 1 })],
+app.get('/api/testDescriptors/:id', param('id').isInt({ min: 1 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -337,8 +337,8 @@ app.get('/api/testDescriptors/:id', [param('id').isInt({ min: 1 })],
     }
   });
 
-app.post('/api/testDescriptor', [check('name').exists(), check('procedureDescription').exists(),
-check('idSKU').isInt({ min: 1 })],
+app.post('/api/testDescriptor', check('name').exists(), check('procedureDescription').exists(),
+check('idSKU').isInt({ min: 1 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -357,9 +357,9 @@ check('idSKU').isInt({ min: 1 })],
     }
   });
 
-app.put('/api/testDescriptor/:id', [param('id').isInt({ min: 1 }),
+app.put('/api/testDescriptor/:id', param('id').isInt({ min: 1 }),
 check('newName').exists(), check('newProcedureDescription').exists(),
-check('newIdSKU').isInt({ min: 1 })], async (req, res) => {
+check('newIdSKU').isInt({ min: 1 }), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty() || Object.keys(req.body) == 0) {
@@ -377,7 +377,7 @@ check('newIdSKU').isInt({ min: 1 })], async (req, res) => {
   }
 });
 
-app.delete('/api/testDescriptor/:id', [param('id').isInt({ min: 1 })],
+app.delete('/api/testDescriptor/:id', param('id').isInt({ min: 1 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -395,7 +395,7 @@ app.delete('/api/testDescriptor/:id', [param('id').isInt({ min: 1 })],
   });
 
 // TestResult 
-app.get('/api/skuitems/:rfid/testResults', [param('rfid').isNumeric().isLength({min: 32, max: 32})],
+app.get('/api/skuitems/:rfid/testResults', param('rfid').isNumeric().isLength({min: 32, max: 32}),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -412,8 +412,8 @@ app.get('/api/skuitems/:rfid/testResults', [param('rfid').isNumeric().isLength({
     }
   });
 
-app.get('/api/skuitems/:rfid/testResults/:id', [param('rfid').isNumeric().isLength({min: 32, max: 32}),
-param('id').isInt({ min: 1 })], async (req, res) => {
+app.get('/api/skuitems/:rfid/testResults/:id', param('rfid').isNumeric().isLength({min: 32, max: 32}),
+param('id').isInt({ min: 1 }), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -429,9 +429,9 @@ param('id').isInt({ min: 1 })], async (req, res) => {
   }
 });
 
-app.post('/api/skuitems/testResult', [check('rfid').isNumeric().isLength({min: 32, max: 32}),
+app.post('/api/skuitems/testResult', check('rfid').isNumeric().isLength({min: 32, max: 32}),
 check('idTestDescriptor').isInt({ min: 1 }),
-check('Date').exists(), check('Result').isBoolean()], async (req, res) => {
+check('Date').exists(), check('Result').isBoolean(), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty() || Object.keys(req.body) == 0 ||
@@ -450,9 +450,9 @@ check('Date').exists(), check('Result').isBoolean()], async (req, res) => {
   }
 });
 
-app.put('/api/skuitems/:rfid/testResult/:id', [param('rfid').isNumeric().isLength({min: 32, max: 32}),
+app.put('/api/skuitems/:rfid/testResult/:id', param('rfid').isNumeric().isLength({min: 32, max: 32}),
 param('id').isInt({ min: 1 }), check('newIdTestDescriptor').isInt({ min: 1 }),
-check('newDate').exists(), check('newResult').isBoolean()], async (req, res) => {
+check('newDate').exists(), check('newResult').isBoolean(), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty() || Object.keys(req.body) == 0 ||
@@ -471,8 +471,8 @@ check('newDate').exists(), check('newResult').isBoolean()], async (req, res) => 
   }
 });
 
-app.delete('/api/skuitems/:rfid/testResult/:id', [param('rfid').isNumeric().isLength({min: 32, max: 32}),
-param('id').isInt({ min: 1 })], async (req, res) => {
+app.delete('/api/skuitems/:rfid/testResult/:id', param('rfid').isNumeric().isLength({min: 32, max: 32}),
+param('id').isInt({ min: 1 }), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -516,8 +516,8 @@ app.get('/api/users', async (req, res) => {
 });
 
 app.post('/api/newUser',  // TODO
-  [check('username').isEmail(), check('name').exists(), check('surname').exists(),
-  check('password').isLength({ min: 8 }), check('type').exists()],
+  check('username').isEmail(), check('name').exists(), check('surname').exists(),
+  check('password').isLength({ min: 8 }), check('type').exists(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -539,7 +539,7 @@ app.post('/api/newUser',  // TODO
   });
 
 app.post('/api/managerSessions',
-  [check('username').isEmail(), check('password').isLength({ min: 8 })],
+  check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -558,7 +558,7 @@ app.post('/api/managerSessions',
   });
 
 app.post('/api/customerSessions',
-  [check('username').isEmail(), check('password').isLength({ min: 8 })],
+  check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -577,7 +577,7 @@ app.post('/api/customerSessions',
   });
 
 app.post('/api/supplierSessions',
-  [check('username').isEmail(), check('password').isLength({ min: 8 })],
+  check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -596,7 +596,7 @@ app.post('/api/supplierSessions',
   });
 
 app.post('/api/clerkSessions',
-  [check('username').isEmail(), check('password').isLength({ min: 8 })],
+  check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -615,7 +615,7 @@ app.post('/api/clerkSessions',
   });
 
 app.post('/api/qualityEmployeeSessions',
-  [check('username').isEmail(), check('password').isLength({ min: 8 })],
+  check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -634,7 +634,7 @@ app.post('/api/qualityEmployeeSessions',
   });
 
 app.post('/api/deliveryEmployeeSessions',
-  [check('username').isEmail(), check('password').isLength({ min: 8 })],
+  check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -657,7 +657,7 @@ app.post('/api/logout', (req, res) => { // TODO
 });
 
 app.put('/api/users/:username',
-  [param('username').isEmail(), check('oldType').exists(), check('newType').exists()],
+  param('username').isEmail(), check('oldType').exists(), check('newType').exists(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -680,7 +680,7 @@ app.put('/api/users/:username',
   });
 
 app.delete('/api/users/:username/:type',
-  [param('username').isEmail(), param('type').exists()],
+  param('username').isEmail(), param('type').exists(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -949,7 +949,7 @@ app.get("/api/restockOrdersIssued", async (req, res) => {
   }
 });
 
-app.get("/api/restockOrders/:ID", [param("ID")], async (req, res) => {
+app.get("/api/restockOrders/:ID", param("ID"), async (req, res) => {
   try {
     const restockOrder = await facade.getRestockOrderByID(req.params.ID);
     return res.status(200).json(restockOrder);
@@ -958,7 +958,7 @@ app.get("/api/restockOrders/:ID", [param("ID")], async (req, res) => {
   }
 });
 
-app.get("/api/restockOrders/:ID/returnItems", [param("ID")], async (req, res) => {
+app.get("/api/restockOrders/:ID/returnItems", param("ID"), async (req, res) => {
   try {
     const returnItems = await facade.getRestockOrderReturnItems(req.params.ID);
     return res.status(200).json(returnItems);
@@ -980,7 +980,7 @@ app.post("/api/restockOrder",
 });
 
 app.put("/api/restockOrder/:ID",
-  [param("ID")],
+  param("ID"),
   async (req, res) => {
   try {
     console.log(req.params.ID);
@@ -993,7 +993,7 @@ app.put("/api/restockOrder/:ID",
 });
 
 app.put("/api/restockOrder/:ID/skuItems",
-  [param("ID")],
+  param("ID"),
   async (req, res) => {
   try {
     console.log(req.body);
@@ -1006,7 +1006,7 @@ app.put("/api/restockOrder/:ID/skuItems",
 });
 
 app.put("/api/restockOrder/:ID/transportNote",
-  [param("ID")],
+  param("ID"),
   async (req, res) => {
   try {
     await facade.addTransportNoteToRestockOrder(req.params.ID, req.body.transportNote);
@@ -1019,7 +1019,7 @@ app.put("/api/restockOrder/:ID/transportNote",
 
 app.delete(
   "/api/restockOrder/:ID",
-  [param("ID").isInt({ min: 1 })],
+  param("ID").isInt({ min: 1 }),
   async (req, res) => {
     try {
       await facade.deleteRestockOrder(req.params.ID);
@@ -1051,7 +1051,7 @@ app.get("/api/returnOrders", async (req, res) => {
   }
 });
 
-app.get("/api/returnOrders/:ID", [param("ID")], async (req, res) => {
+app.get("/api/returnOrders/:ID", param("ID"), async (req, res) => {
   try {
     const returnOrder = await facade.getReturnOrderByID(req.params.ID);
     return res.status(200).json(returnOrder);
@@ -1063,7 +1063,7 @@ app.get("/api/returnOrders/:ID", [param("ID")], async (req, res) => {
 
 app.delete(
   "/api/returnOrder/:ID",
-  [param("ID").isInt({ min: 1 })],
+  param("ID").isInt({ min: 1 }),
   async (req, res) => {
     try {
       await facade.deleteReturnOrder(req.params.ID);
@@ -1117,7 +1117,7 @@ app.get("/api/internalOrdersAccepted", async (req, res) => {
   }
 });
 
-app.get("/api/internalOrders/:ID", [param("ID")], async (req, res) => {
+app.get("/api/internalOrders/:ID", param("ID"), async (req, res) => {
   try {
     const internalOrder = await facade.getInternalOrderByID(req.params.ID);
     return res.status(200).json(internalOrder);
@@ -1128,7 +1128,7 @@ app.get("/api/internalOrders/:ID", [param("ID")], async (req, res) => {
 });
 
 app.put("/api/internalOrders/:ID",
-  [param("ID")],
+  param("ID"),
   async (req, res) => {
   try {
     await facade.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);
@@ -1141,7 +1141,7 @@ app.put("/api/internalOrders/:ID",
 
 app.delete(
   "/api/InternalOrders/:ID",
-  [param("ID").isInt({ min: 1 })],
+  param("ID").isInt({ min: 1 }),
   async (req, res) => {
     try {
       await facade.deleteInternalOrder(req.params.ID);
