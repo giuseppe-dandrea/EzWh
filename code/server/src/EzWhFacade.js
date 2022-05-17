@@ -98,18 +98,25 @@ class EzWhFacade {
         throw EzWhException.PositionFull;
       await this.db.modifySKU(id, newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity);
       if (sku.position)
-        await this.modifyPosition(
+        await this.modifySKUPosition(
           sku.position.positionId,
-          sku.position.aisleId,
-          sku.position.row,
-          sku.position.col,
-          sku.position.maxWeight,
-          sku.position.maxVolume,
           newWeight * newAvailableQuantity,
-          newVolume * newAvailableQuantity
+          newVolume * newAvailableQuantity,
+          id
         );
     } catch (err) {
       if (err === EzWhException.PositionFull) throw EzWhException.PositionFull;
+      else throw EzWhException.InternalError;
+    }
+  }
+
+  async modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId) {
+    try {
+      let e = await this.getPositionByID(positionId);
+      return await this.db.modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId);
+    } catch (err) {
+      if (err === EzWhException.NotFound) throw EzWhException.NotFound;
+      if (err.code === "SQLITE_CONSTRAINT" && err.errno === 19) throw EzWhException.InternalError;
       else throw EzWhException.InternalError;
     }
   }
@@ -124,15 +131,11 @@ class EzWhFacade {
       )
         throw EzWhException.PositionFull;
       await this.db.addSKUPosition(id, positionId);
-      await this.modifyPosition(
-        position.positionId,
-        position.aisleId,
-        position.row,
-        position.col,
-        position.maxWeight,
-        position.maxVolume,
+      await this.db.modifySKUPosition(
+        positionId,
         sku.weight * sku.availableQuantity,
-        sku.volume * sku.availableQuantity
+        sku.volume * sku.availableQuantity,
+        id
       );
     } catch (err) {
       if (err === EzWhException.NotFound) throw EzWhException.NotFound;
@@ -225,308 +228,309 @@ class EzWhFacade {
   }
 
   //TestDescriptor
-	async getTestDescriptors() {
-		try {
-			let TestDescriptorList = await this.db.getTestDescriptors();
-			return TestDescriptorList.map((td) => {
-				return {
-					id: td.id,
-					name: td.name,
-					procedureDescription: td.procedureDescription,
-					idSKU: td.idSKU
-				}
-			});
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			throw EzWhException.InternalError;
-		}
-	}
+  async getTestDescriptors() {
+    try {
+      let TestDescriptorList = await this.db.getTestDescriptors();
+      return TestDescriptorList.map((td) => {
+        return {
+          id: td.id,
+          name: td.name,
+          procedureDescription: td.procedureDescription,
+          idSKU: td.idSKU,
+        };
+      });
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async getTestDescriptorByID(id) {
-		try {
-			let TestDescriptorList = await this.db.getTestDescriptors();
-			let td = TestDescriptorList.filter((testD) => testD.id == id)[0];
-			console.log(td);
-			if (td == undefined) throw EzWhException.NotFound;
-			return {
-				id: td.id,
-				name: td.name,
-				procedureDescription: td.procedureDescription,
-				idSKU: td.idSKU
-			};
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.NotFound) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async getTestDescriptorByID(id) {
+    try {
+      let TestDescriptorList = await this.db.getTestDescriptors();
+      let td = TestDescriptorList.filter((testD) => testD.id == id)[0];
+      console.log(td);
+      if (td == undefined) throw EzWhException.NotFound;
+      return {
+        id: td.id,
+        name: td.name,
+        procedureDescription: td.procedureDescription,
+        idSKU: td.idSKU,
+      };
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.NotFound) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async createTestDescriptor(name, procedureDescription, idSKU) { // TODO
-		try {
-			let sku = await this.db.getSKUById(idSKU);
-			console.log(sku);
-			if(sku==undefined) throw EzWhException.NotFound;
-			await this.db.createTestDescriptor(name, procedureDescription, idSKU);
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.NotFound) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async createTestDescriptor(name, procedureDescription, idSKU) {
+    // TODO
+    try {
+      let sku = await this.db.getSKUById(idSKU);
+      console.log(sku);
+      if (sku == undefined) throw EzWhException.NotFound;
+      await this.db.createTestDescriptor(name, procedureDescription, idSKU);
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.NotFound) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async modifyTestDescriptor(id, newName, newProcedureDescription, newIdSKU) {
-		try {
-			let sku = await this.db.getSKUById(newIdSKU);
-			console.log(sku);
-			if(sku==undefined) throw EzWhException.NotFound;
-			let td = await this.getTestDescriptorByID(id);
-			if (td == undefined) throw EzWhException.NotFound;
-			td.name = newName;
-			td.procedureDescription = newProcedureDescription;
-			td.idSKU = newIdSKU;
-			console.log(td);
-			await this.db.modifyTestDescriptor(td);
-		}
-		catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.NotFound) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async modifyTestDescriptor(id, newName, newProcedureDescription, newIdSKU) {
+    try {
+      let sku = await this.db.getSKUById(newIdSKU);
+      console.log(sku);
+      if (sku == undefined) throw EzWhException.NotFound;
+      let td = await this.getTestDescriptorByID(id);
+      if (td == undefined) throw EzWhException.NotFound;
+      td.name = newName;
+      td.procedureDescription = newProcedureDescription;
+      td.idSKU = newIdSKU;
+      console.log(td);
+      await this.db.modifyTestDescriptor(td);
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.NotFound) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async deleteTestDescriptor(id) {
-		try {
-			await this.db.deleteTestDescriptor(id);
-		}
-		catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			throw EzWhException.InternalError;
-		}
-	}
+  async deleteTestDescriptor(id) {
+    try {
+      await this.db.deleteTestDescriptor(id);
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
 
   // TestResult
-	async getTestResultsByRFID(RFID) { // TODO
-		try {
-			let skuItem = await this.db.getSKUItemByRfid(RFID);
-			console.log(skuItem);
-			console.log(RFID);
-			if(skuItem==undefined) throw EzWhException.NotFound;
-			let TestResultList = await this.db.getTestResultsByRFID(RFID);
-			console.log(TestResultList);
-			return TestResultList.map((tr) => {
-				return {
-					id: tr.id,
-					idTestDescriptor: tr.idTestDescriptor,
-					Date: tr.date,
-					Result: (tr.result?true:false)
-				}
-			});
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.NotFound) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async getTestResultsByRFID(RFID) {
+    // TODO
+    try {
+      let skuItem = await this.db.getSKUItemByRfid(RFID);
+      console.log(skuItem);
+      console.log(RFID);
+      if (skuItem == undefined) throw EzWhException.NotFound;
+      let TestResultList = await this.db.getTestResultsByRFID(RFID);
+      console.log(TestResultList);
+      return TestResultList.map((tr) => {
+        return {
+          id: tr.id,
+          idTestDescriptor: tr.idTestDescriptor,
+          Date: tr.date,
+          Result: tr.result ? true : false,
+        };
+      });
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.NotFound) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async getTestResultByIDAndRFID(RFID, id) { // TODO
-		try {
-			let td = await this.db.getTestResultByIDAndRFID(RFID, id);
-			if (td == undefined) throw EzWhException.NotFound;
-			else return {
-				id: td.id,
-				idTestDescriptor: td.idTestDescriptor,
-				Date: td.date,
-				Result: (td.result?true:false)
-			};
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.NotFound) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async getTestResultByIDAndRFID(RFID, id) {
+    // TODO
+    try {
+      let td = await this.db.getTestResultByIDAndRFID(RFID, id);
+      if (td == undefined) throw EzWhException.NotFound;
+      else
+        return {
+          id: td.id,
+          idTestDescriptor: td.idTestDescriptor,
+          Date: td.date,
+          Result: td.result ? true : false,
+        };
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.NotFound) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async addTestResult(RFID, idTestDescriptor, date, result) { // TODO
-		try {
-			let skuItem = await this.db.getSKUItemByRfid(RFID);
-			console.log(RFID)
-			console.log(skuItem);
-			if(skuItem==undefined) throw EzWhException.NotFound;
-			let tr = await this.getTestDescriptorByID(idTestDescriptor);
-			console.log(idTestDescriptor);
-			console.log(tr);
-			if (tr == undefined) throw EzWhException.NotFound;
-			await this.db.addTestResult(RFID, idTestDescriptor, date, result);
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.NotFound) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async addTestResult(RFID, idTestDescriptor, date, result) {
+    // TODO
+    try {
+      let skuItem = await this.db.getSKUItemByRfid(RFID);
+      console.log(RFID);
+      console.log(skuItem);
+      if (skuItem == undefined) throw EzWhException.NotFound;
+      let tr = await this.getTestDescriptorByID(idTestDescriptor);
+      console.log(idTestDescriptor);
+      console.log(tr);
+      if (tr == undefined) throw EzWhException.NotFound;
+      await this.db.addTestResult(RFID, idTestDescriptor, date, result);
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.NotFound) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async modifyTestResult(RFID, id, newIdTestDescriptor, newDate, newResult) { //TODO
-		try {
-			let skuItem = await this.db.getSKUItemByRfid(RFID);
-			console.log(skuItem);
-			if(skuItem==undefined) throw EzWhException.NotFound;
-			console.log(newIdTestDescriptor);
-			let td = await this.getTestDescriptorByID(newIdTestDescriptor);
-			console.log(td);
-			if (td == undefined) throw EzWhException.NotFound;
-			let tr = await this.db.getTestResultByIDAndRFID(RFID, id);
-			console.log(tr);
-			tr.idTestDescriptor = newIdTestDescriptor;
-			tr.date = newDate;
-			tr.result = newResult;
-			await this.db.modifyTestResult(tr);
-		}
-		catch (err) {
-			console.log("Error in Facade: ModifyTestResult");
-			console.log(err);
-			if (err == EzWhException.NotFound) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async modifyTestResult(RFID, id, newIdTestDescriptor, newDate, newResult) {
+    //TODO
+    try {
+      let skuItem = await this.db.getSKUItemByRfid(RFID);
+      console.log(skuItem);
+      if (skuItem == undefined) throw EzWhException.NotFound;
+      console.log(newIdTestDescriptor);
+      let td = await this.getTestDescriptorByID(newIdTestDescriptor);
+      console.log(td);
+      if (td == undefined) throw EzWhException.NotFound;
+      let tr = await this.db.getTestResultByIDAndRFID(RFID, id);
+      console.log(tr);
+      tr.idTestDescriptor = newIdTestDescriptor;
+      tr.date = newDate;
+      tr.result = newResult;
+      await this.db.modifyTestResult(tr);
+    } catch (err) {
+      console.log("Error in Facade: ModifyTestResult");
+      console.log(err);
+      if (err == EzWhException.NotFound) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async deleteTestResult(RFID, id) {
-		try {
-			await this.db.deleteTestResult(RFID, id);
-		}
-		catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			throw EzWhException.InternalError;
-		}
-	}
+  async deleteTestResult(RFID, id) {
+    try {
+      await this.db.deleteTestResult(RFID, id);
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
 
-  	// User
-	getUserInfo(id) { } // TODO
+  // User
+  getUserInfo(id) {} // TODO
 
-	async getSuppliers() {
-		try {
-			let suppliers = await this.db.getSuppliers();
-			return suppliers.map((s) => {
-				return {
-					id: s.id,
-					name: s.name,
-					surname: s.surname,
-					email: s.email
-				}
-			});
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			throw EzWhException.InternalError;
-		}
-	}
+  async getSuppliers() {
+    try {
+      let suppliers = await this.db.getSuppliers();
+      return suppliers.map((s) => {
+        return {
+          id: s.id,
+          name: s.name,
+          surname: s.surname,
+          email: s.email,
+        };
+      });
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async getUsers() {
-		try {
-			let users = await this.db.getUsers();
-			return users.map((u) => {
-				return {
-					id: u.id,
-					name: u.name,
-					surname: u.surname,
-					email: u.email,
-					type: u.type
-				}
-			});
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			throw EzWhException.InternalError;
-		}
-	}
+  async getUsers() {
+    try {
+      let users = await this.db.getUsers();
+      return users.map((u) => {
+        return {
+          id: u.id,
+          name: u.name,
+          surname: u.surname,
+          email: u.email,
+          type: u.type,
+        };
+      });
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async createUser(email, name, surname, password, type) { //TODO
-		try {
-			let u = await this.db.getUserByEmail(email, type);
-			console.log(u);
-			if (u != undefined) throw EzWhException.Conflict;
-			let my_pwd = User.storePassword(password);
-			await this.db.createUser(email, name, surname, my_pwd, type);
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.Conflict) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async createUser(email, name, surname, password, type) {
+    //TODO
+    try {
+      let u = await this.db.getUserByEmail(email, type);
+      console.log(u);
+      if (u != undefined) throw EzWhException.Conflict;
+      let my_pwd = User.storePassword(password);
+      await this.db.createUser(email, name, surname, my_pwd, type);
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.Conflict) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async login(email, password, type) { // TODO
-		try {
-			let u = await this.db.getUserByEmail(email, type);
-			if (u == undefined) throw EzWhException.Unauthorized;
-			else {
-				if (u.verifyPassword(password)) {
-					return {
-						id: u.id,
+  async login(email, password, type) {
+    // TODO
+    try {
+      let u = await this.db.getUserByEmail(email, type);
+      if (u == undefined) throw EzWhException.Unauthorized;
+      else {
+        if (u.verifyPassword(password)) {
+          return {
+            id: u.id,
             username: u.email,
-						name: u.name,
-						surname: u.surname
-					};
-				}
-				else
-					throw EzWhException.Unauthorized;
-			}
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.Unauthorized) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+            name: u.name,
+            surname: u.surname,
+          };
+        } else throw EzWhException.Unauthorized;
+      }
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.Unauthorized) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	logout(id) { } // TODO
+  logout(id) {} // TODO
 
-	async modifyUserRights(email, oldType, newType) {
-		try {
-			let u = await this.db.getUserByEmail(email, oldType);
-			if (u == undefined) throw EzWhException.NotFound;
-			await this.db.modifyUserRights(email, oldType, newType);
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.NotFound) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async modifyUserRights(email, oldType, newType) {
+    try {
+      let u = await this.db.getUserByEmail(email, oldType);
+      if (u == undefined) throw EzWhException.NotFound;
+      await this.db.modifyUserRights(email, oldType, newType);
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.NotFound) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async deleteUser(email, type) {
-		try {
-			await this.db.deleteUser(email, type);
-		}
-		catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			throw EzWhException.InternalError;
-		}
-	}
+  async deleteUser(email, type) {
+    try {
+      await this.db.deleteUser(email, type);
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
 
-	async getUserByEmail(email, type) {
-		try {
-			let u = await this.db.getUserByEmail(email, type);
-			if (u == undefined) throw EzWhException.NotFound;
-			return {
-				id: u.id,
-				name: u.name,
-				surname: u.surname
-			};
-		} catch (err) {
-			console.log("Error in Facade");
-			console.log(err);
-			if (err == EzWhException.NotFound) throw err;
-			throw EzWhException.InternalError;
-		}
-	}
+  async getUserByEmail(email, type) {
+    try {
+      let u = await this.db.getUserByEmail(email, type);
+      if (u == undefined) throw EzWhException.NotFound;
+      return {
+        id: u.id,
+        name: u.name,
+        surname: u.surname,
+      };
+    } catch (err) {
+      console.log("Error in Facade");
+      console.log(err);
+      if (err == EzWhException.NotFound) throw err;
+      throw EzWhException.InternalError;
+    }
+  }
 
   /***POSITION***/
 
@@ -662,7 +666,7 @@ class EzWhFacade {
     }
   }
 
-  async getRestockOrders(){
+  async getRestockOrders() {
     try {
       let restockOrders = await this.db.getRestockOrders();
       return restockOrders;
@@ -671,7 +675,7 @@ class EzWhFacade {
     }
   }
 
-  async getRestockOrdersIssued(){
+  async getRestockOrdersIssued() {
     try {
       let restockOrdersIssued = await this.db.getRestockOrdersIssued();
       return restockOrdersIssued;
@@ -680,7 +684,7 @@ class EzWhFacade {
     }
   }
 
-  async getRestockOrderByID(id){
+  async getRestockOrderByID(id) {
     try {
       let restockOrder = await this.db.getRestockOrderByID(id);
       return restockOrder;
@@ -688,27 +692,26 @@ class EzWhFacade {
       throw EzWhException.InternalError;
     }
   }
-  
 
-  async getRestockOrderReturnItems(id){
+  async getRestockOrderReturnItems(id) {
     try {
       let restockOrderReturnItems = await this.db.getRestockOrderReturnItems(id);
       return restockOrderReturnItems;
     } catch (err) {
       throw EzWhException.InternalError;
     }
-  }  
-  
-  async createRestockOrder(issueDate, products, supplierID){
+  }
+
+  async createRestockOrder(issueDate, products, supplierID) {
     try {
       await this.db.createRestockOrder(issueDate, products, supplierID);
       return;
     } catch (err) {
       throw EzWhException.InternalError;
     }
-  } 
+  }
 
-  async modifyRestockOrder(id, newState){
+  async modifyRestockOrder(id, newState) {
     try {
       await this.db.modifyRestockOrder(id, newState);
       return;
@@ -716,9 +719,9 @@ class EzWhFacade {
       console.log(err);
       throw EzWhException.InternalError;
     }
-  } 
+  }
 
-  async addSkuItemsToRestockOrder(ID, skuItems){
+  async addSkuItemsToRestockOrder(ID, skuItems) {
     try {
       await this.db.addSkuItemsToRestockOrder(ID, skuItems);
       return;
@@ -726,9 +729,9 @@ class EzWhFacade {
       console.log(err);
       throw EzWhException.InternalError;
     }
-  } 
+  }
 
-  async addTransportNoteToRestockOrder(ID, transportNote){
+  async addTransportNoteToRestockOrder(ID, transportNote) {
     try {
       await this.db.addTransportNoteToRestockOrder(ID, transportNote);
       return;
@@ -738,47 +741,7 @@ class EzWhFacade {
     }
   }
 
-  async deleteRestockOrder(ID){
-    try {
-       await this.db.deleteRestockOrder(ID);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
-  }  
-
-  async createReturnOrder(returnDate, products, restockOrderID){
-    try {
-      await this.db.createReturnOrder(returnDate, products, restockOrderID);
-      return;
-   } catch (err) {
-    console.log(err);
-    throw EzWhException.InternalError;
-   }
-  }
-
-  async getReturnOrders(){
-    try {
-      const returnOrders = await this.db.getReturnOrders();
-      return returnOrders;
-   } catch (err) {
-     console.log(err);
-     throw EzWhException.InternalError;
-   }
-  }
-
-  async getReturnOrderByID(ID){
-    try {
-      const returnOrder = await this.db.getReturnOrderByID(ID);
-      return returnOrder;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
-  }
-
-  async deleteReturnOrder(ID){
+  async deleteRestockOrder(ID) {
     try {
       await this.db.deleteRestockOrder(ID);
       return;
@@ -788,27 +751,67 @@ class EzWhFacade {
     }
   }
 
-  async createInternalOrder(issueDate, products, customerID){
+  async createReturnOrder(returnDate, products, restockOrderID) {
+    try {
+      await this.db.createReturnOrder(returnDate, products, restockOrderID);
+      return;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
+
+  async getReturnOrders() {
+    try {
+      const returnOrders = await this.db.getReturnOrders();
+      return returnOrders;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
+
+  async getReturnOrderByID(ID) {
+    try {
+      const returnOrder = await this.db.getReturnOrderByID(ID);
+      return returnOrder;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
+
+  async deleteReturnOrder(ID) {
+    try {
+      await this.db.deleteRestockOrder(ID);
+      return;
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
+  }
+
+  async createInternalOrder(issueDate, products, customerID) {
     try {
       await this.db.createInternalOrder(issueDate, products, customerID);
       return;
-   } catch (err) {
-    console.log(err);
-    throw EzWhException.InternalError;
-   }
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
   }
 
-  async getInternalOrders(state){
+  async getInternalOrders(state) {
     try {
       const internalOrders = await this.db.getInternalOrders(state);
       return internalOrders;
-   } catch (err) {
-     console.log(err);
-     throw EzWhException.InternalError;
-   }
+    } catch (err) {
+      console.log(err);
+      throw EzWhException.InternalError;
+    }
   }
 
-  async getInternalOrderByID(ID){
+  async getInternalOrderByID(ID) {
     try {
       const internalOrder = await this.db.getInternalOrderByID(ID);
       return internalOrder;
@@ -818,7 +821,7 @@ class EzWhFacade {
     }
   }
 
-  async modifyInternalOrder(ID, newState, products){
+  async modifyInternalOrder(ID, newState, products) {
     try {
       await this.db.modifyInternalOrder(ID, newState, products);
       return;
@@ -828,7 +831,7 @@ class EzWhFacade {
     }
   }
 
-  async deleteInternalOrder(ID){
+  async deleteInternalOrder(ID) {
     try {
       await this.db.deleteInternalOrder(ID);
       return;
@@ -838,6 +841,5 @@ class EzWhFacade {
     }
   }
 }
-
 
 module.exports = EzWhFacade;
