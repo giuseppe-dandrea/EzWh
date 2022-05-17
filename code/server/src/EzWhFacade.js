@@ -373,7 +373,7 @@ class EzWhFacade {
 
 	async modifyTestResult(RFID, id, newIdTestDescriptor, newDate, newResult) { //TODO
 		try {
-			let skuItem = await this.db.getSKUItemByRfid(RFID);
+			let skuItem = await this.getSKUItemByRfid(RFID);
 			console.log(skuItem);
 			if(skuItem==undefined) throw EzWhException.NotFound;
 			console.log(newIdTestDescriptor);
