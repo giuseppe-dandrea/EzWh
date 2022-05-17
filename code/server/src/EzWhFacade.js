@@ -117,7 +117,7 @@ class EzWhFacade {
   async addSKUPosition(id, positionId) {
     try {
       let sku = await this.getSKUById(id);
-      let position = await this.getPositionById(positionId);
+      let position = await this.db.getPositionByID(positionId);
       if (
         position.maxWeight < sku.weight * sku.availableQuantity ||
         position.maxVolume < sku.volume * sku.availableQuantity
