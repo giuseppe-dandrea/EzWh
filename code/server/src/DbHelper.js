@@ -7,6 +7,7 @@ const Position = require("./Position");
 const RestockOrder = require("./RestockOrder");
 const ReturnOrder = require("./ReturnOrder");
 const InternalOrder = require("./InternalOrder");
+const SKUItem = require("./SKUItem");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -129,8 +130,8 @@ class DbHelper {
 			TestResultID INTEGER NOT NULL,
 			RFID VARCHAR(20) NOT NULL,
 			TestDescriptorID INTEGER NOT NULL,
-			date VARCHAR(20) NOT NULL,
-			result BOOLEN NOT NULL,
+			Date VARCHAR(20) NOT NULL,
+			Result BOOLEN NOT NULL,
 			PRIMARY KEY (TestResultID, RFID),
 			FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
 			FOREIGN KEY (TestDescriptorID) REFERENCES TestDescriptor(TestDescriptorID)
@@ -1017,46 +1018,54 @@ class DbHelper {
         }
         const products=[];
         const SKUItems=[];
-        let tds = [];
+        let tds = undefined;
         if (rows.length !== 0){
           tds = rows.map(
             (r) =>
               new RestockOrder(r.RestockOrderID, r.IssueDate, r.State, products, r.SupplierID, r.TransportNode, SKUItems)
-          );
+          )[0];
         }
         resolve(tds);
       });
     });
   }
 
-  /* Should modify sql */
-  getRestockOrderReturnItems(id) {
+  getRestockOrderReturnItems(ID) {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT SKUID, RFID FROM SKUItem;`;
-/*    SELECT SKUID, RFID FROM SKUItem as s
-      JOIN SKUItemTestResult as r
-      JOIN RestockOrderProduct as p
-      JOIN Item as i
-      WHERE s.SKUItemID=r.SKUItemID and
-      s.SKUItemID=p.SKUItemID and
-      s.SKUItemID=i.SKUItemID and
-      p.RestockOrderID = ${id} and
-      it haven't passed at least one quality test` */
-      this.dbConnection.all(sql, [], (err, rows) => {
+      const sql1=`select RestockOrderID from RestockOrder where RestockOrderID=${ID}`
+      this.dbConnection.all(sql1, [], (err, rows) => {
         if (err) {
           reject(err);
           return;
         }
-        const products=[];
-        const SKUItems=[];
-        let tds = [];
-        if (rows.length !== 0){
-          tds = rows.map(
-            (r) =>
-              new SKUItem(r.RFID, r.SKUID)
-          );
+        else{
+          if (rows.length===0){
+            resolve(undefined);
+            return;
+          }
+          const sql = `select s.SKUID, s.RFID from ReturnOrder as ro
+          inner join ReturnOrderProduct as rop
+          inner join SKUItem as s
+          inner join TestResult as t
+          where ro.ReturnOrderID = rop.ReturnOrderID and
+          s.RFID = rop.RFID and
+          s.RFID = t.RFID and
+          ro.RestockOrderID=${ID} and
+          t.Result = 'false'
+          group by s.RFID
+          having count(*)>0;`;
+          this.dbConnection.all(sql, [], (err, rows) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            const tds = rows.map(
+              (r) =>
+                ({"SKUId" : r.SKUID, "rfid" : r.RFID})
+            );
+            resolve(tds);
+          });
         }
-        resolve(tds);
       });
     });
   }

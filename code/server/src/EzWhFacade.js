@@ -663,40 +663,26 @@ class EzWhFacade {
   }
 
   async getRestockOrders(){
-    try {
-      let restockOrders = await this.db.getRestockOrders();
-      return restockOrders;
-    } catch (err) {
-      throw EzWhException.InternalError;
-    }
+    let restockOrders = await this.db.getRestockOrders();
+    return restockOrders;
   }
 
   async getRestockOrdersIssued(){
-    try {
-      let restockOrdersIssued = await this.db.getRestockOrdersIssued();
-      return restockOrdersIssued;
-    } catch (err) {
-      throw EzWhException.InternalError;
-    }
+    let restockOrdersIssued = await this.db.getRestockOrdersIssued();
+    return restockOrdersIssued;
   }
 
   async getRestockOrderByID(id){
-    try {
-      let restockOrder = await this.db.getRestockOrderByID(id);
-      return restockOrder;
-    } catch (err) {
-      throw EzWhException.InternalError;
-    }
+    let restockOrder = await this.db.getRestockOrderByID(id);
+    if (restockOrder===undefined) throw EzWhException.NotFound;
+    else return restockOrder;
   }
   
 
   async getRestockOrderReturnItems(id){
-    try {
-      let restockOrderReturnItems = await this.db.getRestockOrderReturnItems(id);
-      return restockOrderReturnItems;
-    } catch (err) {
-      throw EzWhException.InternalError;
-    }
+    let restockOrderReturnItems = await this.db.getRestockOrderReturnItems(id);
+    if (restockOrderReturnItems===undefined) throw EzWhException.NotFound;
+    else return restockOrderReturnItems;
   }  
   
   async createRestockOrder(issueDate, products, supplierID){

@@ -947,7 +947,6 @@ app.delete("/api/items/:id", param("id").isInt({ min: 1 }), async (req, res) => 
 app.get("/api/restockOrders", async (req, res) => {
   try {
     const restockOrders = await facade.getRestockOrders();
-    // const restockOrders=[]
     return res.status(200).json(restockOrders);
   } catch (err) {
     return res.status(500).end();
@@ -963,21 +962,33 @@ app.get("/api/restockOrdersIssued", async (req, res) => {
   }
 });
 
-app.get("/api/restockOrders/:ID", param("ID"), async (req, res) => {
+app.get("/api/restockOrders/:ID", param("ID").isInt({ min: 1 }), async (req, res) => {
+  const validationErrors = validationResult(req);
+  if (!validationErrors.isEmpty()) {
+    return res.status(422).end();
+  }
   try {
     const restockOrder = await facade.getRestockOrderByID(req.params.ID);
     return res.status(200).json(restockOrder);
   } catch (err) {
-    return res.status(500).end();
+    console.log(err);
+    if (err === EzWhException.NotFound) return res.status(404).end();
+    else return res.status(500).end();
   }
 });
 
-app.get("/api/restockOrders/:ID/returnItems", param("ID"), async (req, res) => {
+app.get("/api/restockOrders/:ID/returnItems", param("ID").isInt({ min: 1 }), async (req, res) => {
+  const validationErrors = validationResult(req);
+  if (!validationErrors.isEmpty()) {
+    return res.status(422).end();
+  }
   try {
     const returnItems = await facade.getRestockOrderReturnItems(req.params.ID);
     return res.status(200).json(returnItems);
   } catch (err) {
-    return res.status(500).end();
+    console.log(err);
+    if (err === EzWhException.NotFound) return res.status(404).end();
+    else return res.status(500).end();
   }
 });
 
