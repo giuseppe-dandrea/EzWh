@@ -669,16 +669,15 @@ class DbHelper {
     return new Promise((resolve, reject) => {
       const sql = `INSERT INTO TestResult (TestResultID, RFID, TestDescriptorID, date, result)
       VALUES (?, ?, ?, ?, ?)`;
-      this.dbConnection.run(sql, [this.idTR, RFID, idTestDescriptor, date, result], function (err) {
+      this.dbConnection.run(sql, [this.idTR, RFID, idTestDescriptor, date, result], (err) => {
         if (err) {
           console.log("Error in DB");
           console.log(err);
           reject(err);
-          return;
         }
+        this.idTR++;
+        resolve();
       });
-      this.idTR++;
-      resolve();
     });
   }
 
