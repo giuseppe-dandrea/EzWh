@@ -841,8 +841,8 @@ class DbHelper {
   }
   getPositionByID(id) {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT * FROM Position WHERE PositionID = ${id};`;
-      this.dbConnection.all(sql, [], (err, rows) => {
+      const sql = `SELECT * FROM Position WHERE PositionID = ?`;
+      this.dbConnection.all(sql, [id], (err, rows) => {
         if (err) {
           reject(err);
           return;

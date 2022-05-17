@@ -37,9 +37,7 @@ class EzWhFacade {
             new TestDescriptor(t["TestDescriptorID"], t["Name"], t["ProcedureDescription"], t["SKUID"])
           )
         );
-        // TODO: Uncomment when position ready
-        // let positionJson = await this.db.getPositionById(s.position);
-        // s.position = new Position(positionJson["PositionID"], positionJson["AisleID"], positionJson["Row"], positionJson["Col"], positionJson["MaxWeight"], positionJson["MaxVolume"], positionJson["OccupiedWeight"], positionJson["OccupiedVolume"], positionJson["SKUID"]);
+        s.position = await this.getPositionByID(s.position);
       }
       return skus;
     } catch (err) {
@@ -77,9 +75,7 @@ class EzWhFacade {
           new TestDescriptor(t["TestDescriptorID"], t["Name"], t["ProcedureDescription"], t["SKUID"])
         )
       );
-      // TODO: Uncomment when position ready
-      // let positionJson = await this.db.getPositionById(s.position);
-      // sku.position = new Position(positionJson["PositionID"], positionJson["AisleID"], positionJson["Row"], positionJson["Col"], positionJson["MaxWeight"], positionJson["MaxVolume"], positionJson["OccupiedWeight"], positionJson["OccupiedVolume"], positionJson["SKUID"]);
+      sku.position = await this.getPositionByID(sku.position);
       return sku;
     } catch (err) {
       if (err === EzWhException.NotFound) throw EzWhException.NotFound;
@@ -96,7 +92,6 @@ class EzWhFacade {
           sku.position.maxVolume < newVolume * newAvailableQuantity)
       )
         throw EzWhException.PositionFull;
-      await this.db.modifySKU(id, newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity);
       if (sku.position)
         await this.modifySKUPosition(
           sku.position.positionId,
@@ -104,6 +99,7 @@ class EzWhFacade {
           newVolume * newAvailableQuantity,
           id
         );
+      await this.db.modifySKU(id, newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity);
     } catch (err) {
       if (err === EzWhException.PositionFull) throw EzWhException.PositionFull;
       else throw EzWhException.InternalError;
@@ -130,13 +126,13 @@ class EzWhFacade {
         position.maxVolume < sku.volume * sku.availableQuantity
       )
         throw EzWhException.PositionFull;
-      await this.db.addSKUPosition(id, positionId);
       await this.db.modifySKUPosition(
         positionId,
         sku.weight * sku.availableQuantity,
         sku.volume * sku.availableQuantity,
         id
       );
+      await this.db.addSKUPosition(id, positionId);
     } catch (err) {
       if (err === EzWhException.NotFound) throw EzWhException.NotFound;
       else if (err === EzWhException.PositionFull) throw EzWhException.PositionFull;
@@ -547,7 +543,7 @@ class EzWhFacade {
     try {
       let position = await this.db.getPositionByID(id);
       if (typeof position !== "undefined" && position.length === 0) throw EzWhException.NotFound;
-      else return position;
+      else return position[0];
     } catch (err) {
       if (err === EzWhException.NotFound) throw EzWhException.NotFound;
       else throw EzWhException.InternalError;

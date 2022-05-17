@@ -732,7 +732,7 @@ app.get("/api/positions/:id", param("id").isString().isNumeric().isLength({ min:
   }
   try {
     const position = await facade.getPositionByID(req.params.id);
-    return res.status(200).json(position[0]);
+    return res.status(200).json(position);
   } catch (err) {
     if (err === EzWhException.NotFound) return res.status(404).end();
     else res.status(500).end();
