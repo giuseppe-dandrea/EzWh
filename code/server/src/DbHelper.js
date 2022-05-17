@@ -8,6 +8,7 @@ const RestockOrder = require("./RestockOrder");
 const ReturnOrder = require("./ReturnOrder");
 const InternalOrder = require("./InternalOrder");
 const SKUItem = require("./SKUItem");
+const EzWhException = require("./EzWhException");
 
 class DbHelper {
   constructor(dbName = "./dev.db") {
@@ -962,10 +963,13 @@ class DbHelper {
     });
   }
 
-  getRestockOrders() {
+  // modify to get products and skuItems, join RestockOrderProduct and RestockOrderSKUItem?
+  getRestockOrders(state) {
     return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM RestockOrder;";
-      this.dbConnection.all(sql, [], (err, rows) => {
+      let sql = ``;
+      if (state) sql = `SELECT * FROM RestockOrder WHERE state='${state}';`
+      else sql = `SELECT * FROM RestockOrder;`;
+      this.dbConnection.all(sql, function(err, rows){
         if (err) {
           reject(err);
           return;
@@ -986,32 +990,11 @@ class DbHelper {
     });
   }
 
-  getRestockOrdersIssued() {
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM RestockOrder WHERE state='ISSUED';";
-      this.dbConnection.all(sql, [], (err, rows) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        const products=[];
-        const SKUItems=[];
-        let tds = [];
-        if (rows.length !== 0){
-          tds = rows.map(
-            (r) =>
-              new RestockOrder(r.RestockOrderID, r.IssueDate, r.State, products, r.SupplierID, r.TransportNode, SKUItems)
-          );
-        }
-        resolve(tds);
-      });
-    });
-  }
-
   getRestockOrderByID(id) {
     return new Promise((resolve, reject) => {
       const sql = `SELECT * FROM RestockOrder WHERE RestockOrderID= ${id};`;
-      this.dbConnection.all(sql, [], (err, rows) => {
+      this.dbConnection.all(sql, function(err, rows){
+        console.log(rows);
         if (err) {
           reject(err);
           return;
@@ -1032,8 +1015,8 @@ class DbHelper {
 
   getRestockOrderReturnItems(ID) {
     return new Promise((resolve, reject) => {
-      const sql1=`select RestockOrderID from RestockOrder where RestockOrderID=${ID}`
-      this.dbConnection.all(sql1, [], (err, rows) => {
+      const select_sql=`select RestockOrderID from RestockOrder where RestockOrderID=${ID}`
+      this.dbConnection.all(select_sql, function(err, rows){
         if (err) {
           reject(err);
           return;
@@ -1054,7 +1037,7 @@ class DbHelper {
           t.Result = 'false'
           group by s.RFID
           having count(*)>0;`;
-          this.dbConnection.all(sql, [], (err, rows) => {
+          this.dbConnection.all(sql, function(err, rows){
             if (err) {
               reject(err);
               return;
@@ -1070,19 +1053,57 @@ class DbHelper {
     });
   }
 
-  // products array doesn't pass ItemID
   createRestockOrder(issueDate, products, supplierID) {
     return new Promise((resolve, reject) => {
+      const db = this.dbConnection;
+      let restockOrderID = undefined;
       const sql = `INSERT INTO RestockOrder
       (IssueDate, SupplierID, State, TransportNote)
       values
       ('${issueDate}', ${supplierID}, 'ISSUED', 'ISSUED'); `;
-      this.dbConnection.all(sql, [], (err, rows) => {
+      db.run(sql, function(err){
         if (err) {
           reject(err);
           return;
         }
-        resolve();
+        restockOrderID = this.lastID;
+        products.forEach(function(product, idx, array){
+          console.log(`product SKUID is ${product.SKUId}`);
+          const get_ItemID_sql = `select ItemID from Item
+          where SKUID=${product.SKUId} and
+          SupplierID=${supplierID}`;
+          db.all(get_ItemID_sql, function(err, rows){
+            // console.log("inside get_ItemID_sql callback!")
+            if (err) {
+              console.log(`err get_ItemID_sql: ${err}`);
+              reject(err);
+              return;
+            }
+            // console.log(`rows is ${rows}`);
+            if (rows.length===0){
+              console.log(`ItemID does not exist for SupplierID=${supplierID} and SKUID=${product.SKUId}`);
+              reject(EzWhException.EntryNotAllowed);
+            }
+            else{
+              const row = rows[0];
+              const insert_ItemID_sql = `insert into RestockOrderProduct (ItemID, RestockOrderID, QTY)
+              values (${row.ItemID}, ${restockOrderID}, ${product.qty})`
+              db.run(insert_ItemID_sql, function(err){
+                if (err) {
+                  reject(err);
+                  return;
+                }
+                console.log(`ItemID ${row.ItemID} inserted in RestockOrderProduct!`);
+                // check if it's the last item
+                if (idx === array.length - 1){ 
+                  console.log(`resolved!`);
+                  resolve(); 
+                }
+              });
+            }
+          });
+        });
+        // resolve();
       });
     });
   }
@@ -1092,7 +1113,7 @@ class DbHelper {
       const sql = `UPDATE RestockOrder
       SET State='${newState}'
       WHERE RestockOrderID=${id}`;
-      this.dbConnection.all(sql, [], (err, rows) => {
+      this.dbConnection.run(sql, function(err, rows){
         if (err) {
           reject(err);
           return;
@@ -1116,7 +1137,7 @@ class DbHelper {
       //end of creating sql statement
 
       console.log(sql);
-      this.dbConnection.all(sql, [], (err, rows) => {
+      this.dbConnection.run(sql, function(err, rows){
         if (err) {
           reject(err);
           return;
@@ -1130,7 +1151,7 @@ class DbHelper {
     return new Promise((resolve, reject) => {
       const sql=`update RestockOrder set TransportNote='${transportNote}' where RestockOrderID=${ID}`
       console.log(sql);
-      this.dbConnection.all(sql, [], (err, rows) => {
+      this.dbConnection.run(sql, function(err, rows){
         if (err) {
           reject(err);
           return;
@@ -1144,7 +1165,7 @@ class DbHelper {
     return new Promise((resolve, reject) => {
       const sql=`delete from RestockOrder where RestockOrderID=${ID}`
       console.log(sql);
-      this.dbConnection.all(sql, [], (err, rows) => {
+      this.dbConnection.run(sql, function(err, rows){
         if (err) {
           reject(err);
           return;

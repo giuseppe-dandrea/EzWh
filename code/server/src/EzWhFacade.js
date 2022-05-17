@@ -662,14 +662,9 @@ class EzWhFacade {
     }
   }
 
-  async getRestockOrders(){
-    let restockOrders = await this.db.getRestockOrders();
+  async getRestockOrders(state){
+    let restockOrders = await this.db.getRestockOrders(state);
     return restockOrders;
-  }
-
-  async getRestockOrdersIssued(){
-    let restockOrdersIssued = await this.db.getRestockOrdersIssued();
-    return restockOrdersIssued;
   }
 
   async getRestockOrderByID(id){
@@ -686,12 +681,13 @@ class EzWhFacade {
   }  
   
   async createRestockOrder(issueDate, products, supplierID){
-    try {
-      await this.db.createRestockOrder(issueDate, products, supplierID);
-      return;
-    } catch (err) {
-      throw EzWhException.InternalError;
-    }
+    // try{
+    await this.db.createRestockOrder(issueDate, products, supplierID);
+    return;
+    // return;
+  // } catch(err){
+  //   console.log(`inside facade: ${err}`)
+  // }
   } 
 
   async modifyRestockOrder(id, newState){
