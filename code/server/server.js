@@ -42,10 +42,17 @@ app.get("/api/hello", (req, res) => {
 app.get("/api/skus", async (req, res) => {
   try {
     let skus = await facade.getSKUs();
-    for (let s of skus) {
-      if (s.position) s.position = s.position.id;
-      s.testDescriptors = s.testDescriptors.map((t) => t.id);
-    }
+    skus.map((s) => {return {
+        id: s.id,
+        description: s.description,
+        weight: s.weight,
+        volume: s.volume,
+        notes: s.notes,
+        position: s.position ? s.position.id : s.position,
+        availableQuantity: s.availableQuantity,
+        price: s.price,
+        testDescriptors: s.testDescriptors.map((t) => t.id)
+    }});
     return res.status(200).json(skus);
   } catch (err) {
     if (err === EzWhException.InternalError) return res.status(500).end();
@@ -61,10 +68,17 @@ app.get("/api/skus/:id", param("id").isInt({min : 1}),
 	}
 	try {
 		let sku = await facade.getSKUById(req.params.id);
-		if (sku.position)
-			sku.position = sku.position.id;
-		sku.testDescriptors = sku.testDescriptors.map((t) => t.id);
-		return res.status(200).json(sku);
+		return res.status(200).json({
+            id: sku.id,
+            description: sku.description,
+            weight: sku.weight,
+            volume: sku.volume,
+            notes: sku.notes,
+            position: sku.position ? sku.position.id : sku.position,
+            availableQuantity: sku.availableQuantity,
+            price: sku.price,
+            testDescriptors: sku.testDescriptors.map((t) => t.id)
+        });
 	} catch (err) {
 		if (err === EzWhException.InternalError)
 			return res.status(500).end();
