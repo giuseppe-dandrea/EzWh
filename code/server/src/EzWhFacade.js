@@ -37,7 +37,8 @@ class EzWhFacade {
             new TestDescriptor(t["TestDescriptorID"], t["Name"], t["ProcedureDescription"], t["SKUID"])
           )
         );
-        s.position = await this.getPositionByID(s.position);
+        if (s.position)
+          s.position = await this.getPositionByID(s.position);
       }
       return skus;
     } catch (err) {
@@ -75,7 +76,8 @@ class EzWhFacade {
           new TestDescriptor(t["TestDescriptorID"], t["Name"], t["ProcedureDescription"], t["SKUID"])
         )
       );
-      sku.position = await this.getPositionByID(sku.position);
+      if (sku.position)
+        sku.position = await this.getPositionByID(sku.position);
       return sku;
     } catch (err) {
       if (err === EzWhException.NotFound) throw EzWhException.NotFound;
@@ -356,7 +358,7 @@ class EzWhFacade {
   async addTestResult(RFID, idTestDescriptor, date, result) {
     // TODO
     try {
-      let skuItem = await this.db.getSKUItemByRfid(RFID);
+      let skuItem = await this.getSKUItemByRfid(RFID);
       console.log(RFID);
       console.log(skuItem);
       if (skuItem == undefined) throw EzWhException.NotFound;
