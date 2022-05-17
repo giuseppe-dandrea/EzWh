@@ -63,7 +63,7 @@ class DbHelper {
     });
 
     const createSKUItemTable = `CREATE TABLE IF NOT EXISTS SKUItem (
-    		RFID VARCHAR(20) NOT NULL,
+    		RFID VARCHAR(33) NOT NULL,
     		SKUID INTEGER NOT NULL,
     		Available INTEGER NOT NULL,
     		DateOfStock VARCHAR(11),

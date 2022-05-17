@@ -219,7 +219,7 @@ app.get("/api/skuitems/sku/:id", param("id").isInt({min : 1}),
 });
 
 //GET /api/skuitems/:rfid
-app.get("/api/skuitems/:rfid", param("rfid").exists(),
+app.get("/api/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, max: 32}),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
 		if (!validationErrors.isEmpty()) {
@@ -243,7 +243,7 @@ app.get("/api/skuitems/:rfid", param("rfid").exists(),
 //POST /api/skuitem
 app.post(
   "/api/skuitem",
-  body("RFID").exists(),
+  body("RFID").isNumeric().isLength({min: 32, max: 32}),
   body("SKUId").isInt({ min: 1 }),
   body("DateOfStock").custom((value) => {
     if (value !== null && !dayjs(value, ["YYYY/MM/DD", "YYYY/MM/DD H:m"], true).isValid()) {
@@ -269,7 +269,7 @@ app.post(
 //PUT /api/skuitems/:rfid
 app.put(
     "/api/skuitems/:rfid",
-    param("rfid").exists(),
+    param("rfid").isNumeric().isLength({min: 32, max: 32}),
 	body("newRFID").exists(),
 	body("newAvailable").isInt({min : 0, max: 1}),
 	body("newDateOfStock").custom((value) => {
@@ -294,7 +294,7 @@ app.put(
 );
 
 //DELETE /api/skuitems/:rfid
-app.delete("/api/skuitems/:rfid", param("rfid").exists(),
+app.delete("/api/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, max: 32}),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
 		if (!validationErrors.isEmpty()) {
@@ -395,7 +395,7 @@ app.delete('/api/testDescriptor/:id', [param('id').isInt({ min: 1 })],
   });
 
 // TestResult 
-app.get('/api/skuitems/:rfid/testResults', [param('rfid').isLength({ min: 32, max: 32 })],
+app.get('/api/skuitems/:rfid/testResults', [param('rfid').isNumeric().isLength({min: 32, max: 32})],
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -412,7 +412,7 @@ app.get('/api/skuitems/:rfid/testResults', [param('rfid').isLength({ min: 32, ma
     }
   });
 
-app.get('/api/skuitems/:rfid/testResults/:id', [param('rfid').isLength({ min: 32, max: 32 }),
+app.get('/api/skuitems/:rfid/testResults/:id', [param('rfid').isNumeric().isLength({min: 32, max: 32}),
 param('id').isInt({ min: 1 })], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -429,7 +429,7 @@ param('id').isInt({ min: 1 })], async (req, res) => {
   }
 });
 
-app.post('/api/skuitems/testResult', [check('rfid').isLength({ min: 32, max: 32 }),
+app.post('/api/skuitems/testResult', [check('rfid').isNumeric().isLength({min: 32, max: 32}),
 check('idTestDescriptor').isInt({ min: 1 }),
 check('Date').exists(), check('Result').isBoolean()], async (req, res) => {
   try {
@@ -450,7 +450,7 @@ check('Date').exists(), check('Result').isBoolean()], async (req, res) => {
   }
 });
 
-app.put('/api/skuitems/:rfid/testResult/:id', [param('rfid').isLength({ min: 32, max: 32 }),
+app.put('/api/skuitems/:rfid/testResult/:id', [param('rfid').isNumeric().isLength({min: 32, max: 32}),
 param('id').isInt({ min: 1 }), check('newIdTestDescriptor').isInt({ min: 1 }),
 check('newDate').exists(), check('newResult').isBoolean()], async (req, res) => {
   try {
@@ -471,7 +471,7 @@ check('newDate').exists(), check('newResult').isBoolean()], async (req, res) => 
   }
 });
 
-app.delete('/api/skuitems/:rfid/testResult/:id', [param('rfid').isLength({ min: 32, max: 32 }),
+app.delete('/api/skuitems/:rfid/testResult/:id', [param('rfid').isNumeric().isLength({min: 32, max: 32}),
 param('id').isInt({ min: 1 })], async (req, res) => {
   try {
     const errors = validationResult(req);
