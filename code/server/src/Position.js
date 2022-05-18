@@ -1,7 +1,7 @@
 class Position {
   constructor(
-    positionId,
-    aisleId,
+    positionID,
+    aisleID,
     row,
     col,
     maxWeight,
@@ -10,8 +10,8 @@ class Position {
     occupiedVolume = 0,
     sku = undefined
   ) {
-    this.positionId = positionId;
-    this.aisleId = aisleId;
+    this.positionID = positionID;
+    this.aisleID = aisleID;
     this.row = row;
     this.col = col;
     this.maxWeight = maxWeight;

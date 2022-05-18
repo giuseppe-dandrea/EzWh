@@ -871,7 +871,7 @@ class DbHelper {
       VALUES (?, ?, ?, ?, ?, ?);`;
       this.dbConnection.run(
         sql,
-        [position.positionId, position.aisleId, position.row, position.col, position.maxWeight, position.maxVolume],
+        [position.positionID, position.aisleID, position.row, position.col, position.maxWeight, position.maxVolume],
         (err) => {
           if (err) {
             reject(err);
@@ -937,6 +937,18 @@ class DbHelper {
         else resolve();
       });
     });
+  }
+
+  //USED ONLY FOR TESTING
+  deleteAllPositions(){
+    return new Promise((resolve, reject) => {
+    const sql = `DELETE FROM Position `;
+    this.dbConnection.run(sql, [], (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+
   }
 
   /***ITEMS***/
