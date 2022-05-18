@@ -18,7 +18,21 @@ try{
         values ("None", 1,1,1,1);`,
 
         `insert into SKUItem ("RFID", "SKUID", "Available", "DateOfStock")
-        values ("1", "1", True, "1999-12-30");`
+        values ("123456789", "1", True, "1999-12-30");`,
+        
+        `insert into ReturnOrder ("ReturnDate", "RestockOrderID")
+        values ("2020-02-02", "1");`,
+
+        `insert into ReturnOrderProduct ("RFID", "ReturnOrderID")
+        values ("123456789", 1)`,
+
+        `INSERT INTO "main"."TestDescriptor"
+        ("TestDescriptorID", "Name", "ProcedureDescription", "SKUID")
+        VALUES (1, 'test1', 'blah blah', 1);`,
+
+        `INSERT INTO "main"."TestResult"
+        ("TestResultID", "RFID", "TestDescriptorID", "date", "result")
+        VALUES (1, '123456789', 1, '2020-05-05', 'false');`
         ]
         dummy_data.forEach(q=>{
             db.runSQL(q);
