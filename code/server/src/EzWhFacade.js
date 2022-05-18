@@ -703,33 +703,18 @@ class EzWhFacade {
   }  
 
   async createReturnOrder(returnDate, products, restockOrderID) {
-    try {
-      await this.db.createReturnOrder(returnDate, products, restockOrderID);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    await this.db.createReturnOrder(returnDate, products, restockOrderID);
+    return;
   }
 
   async getReturnOrders() {
-    try {
-      const returnOrders = await this.db.getReturnOrders();
-      return returnOrders;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    const returnOrders = await this.db.getReturnOrders();
+    return returnOrders;
   }
 
   async getReturnOrderByID(ID) {
-    try {
-      const returnOrder = await this.db.getReturnOrderByID(ID);
-      return returnOrder;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    const returnOrder = await this.db.getReturnOrderByID(ID);
+    return returnOrder;
   }
 
   async deleteReturnOrder(ID) {
