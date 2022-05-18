@@ -123,10 +123,10 @@ app.post(
 app.put(
     "/api/sku/:id",
     param("id").isInt({min : 1}),
-	body("newDescription").exists(),
+	body("newDescription").isString(),
 	body("newWeight").isFloat({min : 0}),
 	body("newVolume").isFloat({min : 0}),
-	body("newNotes").exists(),
+	body("newNotes").isString(),
 	body("newPrice").isFloat({min : 0}),
 	body("newAvailableQuantity").isInt({min : 0}),
 	async (req, res) => {
@@ -144,6 +144,9 @@ app.put(
         return res.status(422).end();
       } else if (err === EzWhException.InternalError) {
         return res.status(503).end();
+      }
+      else if (err === EzWhException.NotFound) {
+          return res.status(404).end();
       }
     }
   }

@@ -104,6 +104,7 @@ class EzWhFacade {
       await this.db.modifySKU(id, newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity);
     } catch (err) {
       if (err === EzWhException.PositionFull) throw EzWhException.PositionFull;
+      else if (err === EzWhException.NotFound) throw EzWhException.NotFound;
       else throw EzWhException.InternalError;
     }
   }
