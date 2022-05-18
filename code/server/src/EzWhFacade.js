@@ -612,6 +612,16 @@ class EzWhFacade {
     }
   }
 
+  //USED ONLY FOR TESTING
+  async deleteAllPositions() {
+    try {
+      return await this.db.deleteAllPositions();
+    } catch (err) {
+      if (err === EzWhException.NotFound) throw EzWhException.NotFound;
+      else throw EzWhException.InternalError;
+    }
+  }
+
   /***ITEMS***/
   async getItems() {
     try {

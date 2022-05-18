@@ -745,12 +745,12 @@ app.get("/api/positions/:id", param("id").isString().isNumeric().isLength({ min:
 //POST /api/position
 app.post(
   "/api/position",
-  body("positionID").isString().isNumeric().isLength({ min: 12, max: 12 }),
-  body("aisleID").isString().isNumeric().isLength({ min: 4, max: 4 }),
-  body("row").isString().isNumeric().isLength({ min: 4, max: 4 }),
-  body("col").isString().isNumeric().isLength({ min: 4, max: 4 }),
-  body("maxWeight").isInt(),
-  body("maxVolume").isInt(),
+  body("positionID").exists().isString().isNumeric().isLength({ min: 12, max: 12 }),
+  body("aisleID").exists().isString().isNumeric().isLength({ min: 4, max: 4 }),
+  body("row").exists().isString().isNumeric().isLength({ min: 4, max: 4 }),
+  body("col").exists().isString().isNumeric().isLength({ min: 4, max: 4 }),
+  body("maxWeight").exists().isInt(),
+  body("maxVolume").exists().isInt(),
   async (req, res) => {
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty()) {
@@ -857,6 +857,20 @@ app.delete(
       else if (err === EzWhException.InternalError) return res.status(503).end();
     }
   }
+);
+
+//USED ONLY FOR TESTING
+app.delete(
+    "/api/position/",
+    async (req, res) => {
+        try {
+            await facade.deleteAllPositions();
+            return res.status(204).end();
+        } catch (err) {
+            if (err === EzWhException.NotFound) return res.status(404).end();
+            else if (err === EzWhException.InternalError) return res.status(503).end();
+        }
+    }
 );
 
 /***ITEMS***/
