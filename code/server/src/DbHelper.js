@@ -1067,43 +1067,50 @@ class DbHelper {
           return;
         }
         restockOrderID = this.lastID;
-        products.forEach(function(product, idx, array){
-          console.log(`product SKUID is ${product.SKUId}`);
-          const get_ItemID_sql = `select ItemID from Item
-          where SKUID=${product.SKUId} and
-          SupplierID=${supplierID}`;
-          db.all(get_ItemID_sql, function(err, rows){
-            // console.log("inside get_ItemID_sql callback!")
-            if (err) {
-              console.log(`err get_ItemID_sql: ${err}`);
-              reject(err);
-              return;
-            }
-            // console.log(`rows is ${rows}`);
-            if (rows.length===0){
-              console.log(`ItemID does not exist for SupplierID=${supplierID} and SKUID=${product.SKUId}`);
-              reject(EzWhException.EntryNotAllowed);
-            }
-            else{
-              const row = rows[0];
-              const insert_ItemID_sql = `insert into RestockOrderProduct (ItemID, RestockOrderID, QTY)
-              values (${row.ItemID}, ${restockOrderID}, ${product.qty})`
-              db.run(insert_ItemID_sql, function(err){
-                if (err) {
-                  reject(err);
-                  return;
-                }
-                console.log(`ItemID ${row.ItemID} inserted in RestockOrderProduct!`);
-                // check if it's the last item
-                if (idx === array.length - 1){ 
-                  console.log(`resolved!`);
-                  resolve(); 
-                }
-              });
-            }
+        let product;
+        let promises=[];
+        let new_promise;
+        for (product of products){
+          new_promise = new Promise((resolve, reject)=>{
+            console.log(`product SKUID is ${product.SKUId}`);
+            const get_ItemID_sql = `select ItemID from Item
+            where SKUID=${product.SKUId} and
+            SupplierID=${supplierID}`;
+            db.all(get_ItemID_sql, function(err, rows){
+              // console.log("inside get_ItemID_sql callback!")
+              if (err) {
+                console.log(`err get_ItemID_sql: ${err}`);
+                reject(err);
+                return;
+              }
+              // console.log(`rows is ${rows}`);
+              if (rows.length===0){
+                console.log(`ItemID does not exist for SupplierID=${supplierID} and SKUID=${product.SKUId}`);
+                reject(EzWhException.EntryNotAllowed);
+              }
+              else{
+                const row = rows[0];
+                const insert_ItemID_sql = `insert into RestockOrderProduct (ItemID, RestockOrderID, QTY)
+                values (${row.ItemID}, ${restockOrderID}, ${product.qty})`
+                db.run(insert_ItemID_sql, function(err){
+                  if (err) {
+                    reject(err);
+                    return;
+                  }
+                  console.log(`ItemID ${row.ItemID} inserted in RestockOrderProduct!`);
+                  resolve();
+                });
+              }
+            });
           });
+          promises.push(new_promise);
+        }
+        Promise.all(promises).then(()=>{
+          console.log("all product promises resolved!");
+          resolve();
+        }).catch((err)=>{
+          reject(err)
         });
-        // resolve();
       });
     });
   }
@@ -1113,50 +1120,117 @@ class DbHelper {
       const sql = `UPDATE RestockOrder
       SET State='${newState}'
       WHERE RestockOrderID=${id}`;
-      this.dbConnection.run(sql, function(err, rows){
+      this.dbConnection.run(sql, function(err){
         if (err) {
           reject(err);
           return;
         }
+        if (this.changes===0){
+          reject(EzWhException.NotFound);
+          return;
+        }
         resolve();
+      });
+    });
+  }
+
+  check_404_422(ID){
+    return new Promise((resolve, reject)=>{
+      // if id not in db return 404
+      const select_id_sql = `select RestockOrderID from RestockOrder
+      where RestockOrderID=${ID}`
+      this.dbConnection.all(select_id_sql, function(err, rows){
+        if (err) {
+          reject(err);
+          return;
+        }
+        if (rows.length===0){
+          reject(EzWhException.NotFound);
+          return;
+        }
+        else{
+          resolve();
+        }
+      });
+    })
+    .then(()=>{
+      return new Promise((resolve, reject)=>{
+        // if order state != delivered return 422
+        const select_state_sql = `select RestockOrderID from RestockOrder
+        where RestockOrderID=${ID} and
+        State='DELIVERED'`
+        this.dbConnection.all(select_state_sql, function(err, rows){
+          if (err) {
+            reject(err);
+            return;
+          }
+          console.log(`select_state_sql rows: ${rows}`)
+          if (rows.length===0){
+            reject(EzWhException.EntryNotAllowed);
+            return;
+          }
+          else{
+            resolve();
+          }
+        });
       });
     });
   }
 
   addSkuItemsToRestockOrder(ID, skuItems){
     return new Promise((resolve, reject) => {
-
-      //create insert statement for multiple SKUItems
-      let sql = `INSERT INTO RestockOrderSkuItem
-      (RFID, RestockOrderID)
-      values `;
-      skuItems.forEach(item => {
-        sql+=`('${item.RFID}', ${ID}),`
-      });
-      sql=sql.slice(0, -1)+`;`;  //remove last , and add ;
-      //end of creating sql statement
-
-      console.log(sql);
-      this.dbConnection.run(sql, function(err, rows){
-        if (err) {
-          reject(err);
-          return;
-        }
+      this.check_404_422(ID)
+      .then(()=>{
+        return new Promise((resolve, reject)=>{
+          //create insert statement for multiple SKUItems
+          let sql = `INSERT INTO RestockOrderSkuItem
+          (RFID, RestockOrderID)
+          values `;
+          skuItems.forEach(item => {
+            sql+=`('${item.RFID}', ${ID}),`
+          });
+          sql=sql.slice(0, -1)+`;`;  //remove last , and add ;
+          //end of creating sql statement
+    
+          console.log(sql);
+          this.dbConnection.run(sql, function(err, rows){
+            if (err) {
+              reject(err);
+              return;
+            }
+            resolve();
+          });
+        });
+      })
+      .then(()=>{
         resolve();
+      }).catch((err)=>{
+        reject(err);
       });
+
     });
   }
 
   addTransportNoteToRestockOrder(ID, transportNote){
     return new Promise((resolve, reject) => {
-      const sql=`update RestockOrder set TransportNote='${transportNote}' where RestockOrderID=${ID}`
-      console.log(sql);
-      this.dbConnection.run(sql, function(err, rows){
-        if (err) {
-          reject(err);
-          return;
-        }
+      this.check_404_422(ID)
+      .then(()=>{
+        return new Promise((resolve, reject)=>{
+          const sql=`update RestockOrder set TransportNote='${transportNote}' where RestockOrderID=${ID}`
+          console.log(sql);
+          this.dbConnection.run(sql, function(err, rows){
+            if (err) {
+              reject(err);
+              return;
+            }
+            resolve();
+          });
+        });
+      })
+      .then(()=>{
         resolve();
+      }).catch((err)=>{
+        reject(err);
       });
     });
   }
@@ -1165,7 +1239,8 @@ class DbHelper {
     return new Promise((resolve, reject) => {
       const sql=`delete from RestockOrder where RestockOrderID=${ID}`
       console.log(sql);
-      this.dbConnection.run(sql, function(err, rows){
+      this.dbConnection.run(sql, function(err){
+        console.log("deleted!")
         if (err) {
           reject(err);
           return;
@@ -1278,7 +1353,7 @@ class DbHelper {
     });
   }
 
-  deleteRestockOrder(ID){
+  deleteReturnOrder(ID){
     return new Promise((resolve, reject) => {
       const sql=`delete from ReturnOrder where ReturnOrderID=${ID}`
       console.log(sql);

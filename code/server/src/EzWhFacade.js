@@ -691,43 +691,43 @@ class EzWhFacade {
   } 
 
   async modifyRestockOrder(id, newState){
-    try {
+    // try {
       await this.db.modifyRestockOrder(id, newState);
       return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    // } catch (err) {
+    //   console.log(err);
+    //   throw EzWhException.InternalError;
+    // }
   } 
 
   async addSkuItemsToRestockOrder(ID, skuItems){
-    try {
+    // try {
       await this.db.addSkuItemsToRestockOrder(ID, skuItems);
       return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    // } catch (err) {
+    //   console.log(err);
+    //   throw EzWhException.InternalError;
+    // }
   } 
 
   async addTransportNoteToRestockOrder(ID, transportNote){
-    try {
+    // try {
       await this.db.addTransportNoteToRestockOrder(ID, transportNote);
       return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    // } catch (err) {
+    //   console.log(err);
+    //   throw EzWhException.InternalError;
+    // }
   }
 
   async deleteRestockOrder(ID){
-    try {
+    // try {
        await this.db.deleteRestockOrder(ID);
       return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    // } catch (err) {
+    //   console.log(err);
+    //   throw EzWhException.InternalError;
+    // }
   }  
 
   async createReturnOrder(returnDate, products, restockOrderID){
@@ -762,7 +762,7 @@ class EzWhFacade {
 
   async deleteReturnOrder(ID){
     try {
-      await this.db.deleteRestockOrder(ID);
+      await this.db.deleteReturnOrder(ID);
       return;
     } catch (err) {
       console.log(err);
