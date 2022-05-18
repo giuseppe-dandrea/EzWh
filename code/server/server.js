@@ -153,7 +153,7 @@ app.put(
 app.put(
     "/api/sku/:id/position",
     param("id").isInt({min : 1}),
-	body("position").exists(),
+	body("position").exists().isString().isNumeric().isLength({ min: 12, max: 12 }),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
 		if (!validationErrors.isEmpty()) {

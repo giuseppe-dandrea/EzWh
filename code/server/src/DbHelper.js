@@ -857,7 +857,8 @@ class DbHelper {
               r.MaxWeight,
               r.MaxVolume,
               r.OccupiedWeight,
-              r.OccupiedVolume
+              r.OccupiedVolume,
+                r.SKUID
             )
         );
         resolve(p);

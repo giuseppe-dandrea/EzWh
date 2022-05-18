@@ -128,6 +128,7 @@ class EzWhFacade {
         position.maxVolume < sku.volume * sku.availableQuantity
       )
         throw EzWhException.PositionFull;
+      if (position.sku !== null)   throw EzWhException.PositionFull;
       await this.db.modifySKUPosition(
         positionId,
         sku.weight * sku.availableQuantity,
