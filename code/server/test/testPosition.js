@@ -278,9 +278,9 @@ describe("Testing PUT APIs" ,function (){
     testModifyPosition(422 , "938567476736273", putPositions[1]);//ID Wrong Composition
     testModifyPosition(422 , "asas", putPositions[1]);//ID not validated
 
-    testModifyPosition(422 , "777788889999", falsePostPositions[0]);//Missing Field
-    testModifyPosition(422 , "777788889999", falsePostPositions[1]);//Empty Object
-    testModifyPosition(422 , "777788889999", falsePostPositions[2]);//Wrong Values
+    testModifyPosition(422 , "777788889999", falsePutPositions[0]);//Missing Field
+    testModifyPosition(422 , "777788889999", falsePutPositions[1]);//Empty Object
+    testModifyPosition(422 , "777788889999", falsePutPositions[2]);//Wrong Values
 
     //Correct ID Edit
     testModifyPositionID(200, "777788889999", {newPositionID : "676792928484"});
