@@ -5,7 +5,9 @@ class InternalOrder{
         this.state = state;
         this.products = products;
         this.customerId = customerId;
-        this.skuItems = skuItems;
+    }
+    addProduct(product){
+        this.products.push(product);
     }
 }
 

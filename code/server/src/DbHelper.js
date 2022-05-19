@@ -180,6 +180,7 @@ class DbHelper {
 		CustomerID INTEGER NOT NULL,
 		PRIMARY KEY(InternalOrderID),
 		FOREIGN KEY (CustomerID) REFERENCES User(UserID)
+    on delete cascade
 	);`;
     this.dbConnection.run(createInternalOrderTable, (err) => {
       if (err) {
@@ -192,8 +193,10 @@ class DbHelper {
 		InternalOrderID INTEGER NOT NULL,
 		QTY INTEGER NOT NULL,
 		PRIMARY KEY(SKUID, InternalOrderID),
-		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
+		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)
+    on delete cascade,
 		FOREIGN KEY (InternalOrderID) REFERENCES InternalOrder(InternalOrderID)
+    on delete cascade
 	);`;
     this.dbConnection.run(createInternalOrderProductTable, (err) => {
       if (err) {
@@ -205,8 +208,10 @@ class DbHelper {
 		RFID INTEGER NOT NULL,
 		InternalOrderID INTEGER NOT NULL,
 		PRIMARY KEY(RFID, InternalOrderID),
-		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
+		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
+    on delete cascade,
 		FOREIGN KEY (InternalOrderID) REFERENCES InternalOrder(InternalOrderID)
+    on delete cascade
 	);`;
     this.dbConnection.run(createInternalOrderSKUItemTable, (err) => {
       if (err) {
@@ -1393,6 +1398,9 @@ class DbHelper {
           }
         }
         tds = Array.from(r_map.values());
+        if (ID!==undefined){
+          tds = tds[0];
+        }
         console.log(tds);
         resolve(tds);
       });
@@ -1417,100 +1425,131 @@ class DbHelper {
     });
   }
 
-  //Here products are products, in PUT they are SKUItems
-  createInternalOrder(issueDate, products, customerID) {
+  CreateInternalOrderProduct(internalOrderID, SKUID, QTY){
     return new Promise((resolve, reject) => {
-      const db = this.dbConnection;
-      const sql = `insert into InternalOrder (IssueDate, CustomerID, State)
-      values ('${issueDate}', ${customerID}, 'ISSUED');`;
-      console.log(sql);
-      this.dbConnection.run(sql, function (err) {
-        if (err) reject(err);
-        else {
-          console.log(`this.lastID is ${this.lastID}`);
-          if (products) {
-            var stmt = db.prepare("insert into InternalOrderProduct (InternalOrderID, SKUID, QTY) values (?, ?, ?)");
-            products.forEach((item) => {
-              stmt.run(item.SKUId, this.lastID, item.qty);
-              console.log(`SKUID is ${item.SKUId}`);
-            });
-            stmt.finalize();
-          }
+      const sql = `insert into InternalOrderProduct (InternalOrderID, SKUID, QTY)
+      values (${internalOrderID}, ${SKUID}, ${QTY});`;
+      this.dbConnection.run(sql, function (err){
+        if (err) {
+          reject(err.toString());
+        } else {
           resolve();
         }
       });
     });
   }
 
-  // shoould complete products and skuItems
-  getInternalOrders(state) {
+  createInternalOrder(issueDate, customerID) {
     return new Promise((resolve, reject) => {
-      let sql = `SELECT * FROM InternalOrder`;
-      if (state !== undefined) {
-        sql += ` where State='${state}'`;
-      }
-      sql += `;`;
-      this.dbConnection.all(sql, [], (err, rows) => {
+      const sql = `insert into InternalOrder (IssueDate, CustomerID, State)
+      values ('${issueDate}', ${customerID}, 'ISSUED');`;
+      this.dbConnection.run(sql, function (err){
         if (err) {
           reject(err);
-          return;
+        } else {
+          resolve(this.lastID);
         }
-        let tds = [];
-        if (rows.length !== 0) {
-          const products = [];
-          const SKUItems = [];
-          tds = rows.map(
-            (r) => new InternalOrder(r.InternalOrderID, r.IssueDate, r.State, products, r.CustomerID, SKUItems)
-          );
+      });
+    });
+  }
+
+  getInternalOrders(state) {
+    return new Promise((resolve, reject) => {
+      let sql = `SELECT InternalOrderID FROM InternalOrder`;
+      if (state) sql+=` where State = '${state}'`;
+      sql+=`;`;
+      this.dbConnection.all(sql, function (err, rows){
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
         }
-        console.log("internalOrders rows:");
-        console.log(rows);
-        console.log("internalOrders tds:");
-        console.log(tds);
-        resolve(tds);
       });
     });
   }
 
   getInternalOrderByID(ID) {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT * FROM InternalOrder WHERE InternalOrderID= ${ID};`;
-      this.dbConnection.all(sql, [], (err, rows) => {
+      const sql = `SELECT * FROM InternalOrder where InternalOrderID=${ID};`;
+      this.dbConnection.get(sql, function (err, rows){
         if (err) {
-          reject(err);
-          return;
+          reject(err.toString());
+        } else {
+          // console.log(rows);
+          resolve(rows);
         }
-        const products = [];
-        const SKUItems = [];
-        let tds = [];
-        if (rows.length !== 0) {
-          tds = rows.map(
-            (r) => new InternalOrder(r.InternalOrderID, r.IssueDate, r.State, products, r.CustomerID, SKUItems)
-          );
-        }
-        resolve(tds);
       });
     });
   }
 
-  modifyInternalOrder(ID, newState, products) {
+  getInternalOrderProductByInternalOrderID(ID){
     return new Promise((resolve, reject) => {
-      if (newState) {
-        const sql = `update InternalOrder
-        SET State='${newState}'
-        where InternalOrderID=${ID}`;
-        this.dbConnection.all(sql, [], (err, rows) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          if (products) {
-            // add update for products
-          }
-          console.log(`newState is ${newState}`);
+      const sql = `SELECT * FROM InternalOrderProduct where InternalOrderID=${ID};`;
+      this.dbConnection.all(sql, function (err, rows){
+        if (err) {
+          reject(err.toString());
+        } else {
+          resolve(rows);
+        }
+      });
+    });
+  }
+
+  getInternalOrderSKUItemByInternalOrderID(ID){
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM InternalOrderSKUItem where InternalOrderID=${ID};`;
+      this.dbConnection.all(sql, function (err, rows){
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+    });
+  }
+
+  deleteInternalOrderSKUItemByInternalOrderID(ID){
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM InternalOrderSKUItem where InternalOrderID=${ID};`;
+      this.dbConnection.run(sql, function (err){
+        if (err) {
+          reject(err);
+        } else {
           resolve();
-        });
-      }
+        }
+      });
+    });
+  }
+
+  createInternalOrderSKUItem(ID, RFID){
+    return new Promise((resolve, reject) => {
+      const sql = `
+      insert into InternalOrderSKUItem
+      (RFID, InternalOrderID)
+      values ('${RFID}', ${ID})`;
+      this.dbConnection.run(sql, function (err){
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  modifyInternalOrderState(ID, newState) {
+    return new Promise((resolve, reject) => {
+      const sql = `
+      update InternalOrder
+      SET State='${newState}'
+      where InternalOrderID=${ID}`;
+      this.dbConnection.run(sql, function (err){
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
   }
 

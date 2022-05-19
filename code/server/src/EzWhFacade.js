@@ -7,6 +7,7 @@ const SKUItem = require("./SKUItem");
 const Item = require("./Item.js");
 const { User } = require("./User");
 const TestResult = require("./TestResult.js");
+const InternalOrder = require("./InternalOrder.js");
 
 class EzWhFacade {
   constructor() {
@@ -718,63 +719,108 @@ class EzWhFacade {
   }
 
   async deleteReturnOrder(ID) {
-    try {
-      await this.db.deleteReturnOrder(ID);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    await this.db.deleteReturnOrder(ID);
+    return;
   }
 
   async createInternalOrder(issueDate, products, customerID) {
-    try {
-      await this.db.createInternalOrder(issueDate, products, customerID);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
+    const lastID = await this.db.createInternalOrder(issueDate, customerID);
+    for (let product of products){
+      await this.db.CreateInternalOrderProduct(lastID, product.SKUId, product.qty)
     }
+    return;
   }
 
   async getInternalOrders(state) {
-    try {
-      const internalOrders = await this.db.getInternalOrders(state);
-      return internalOrders;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
+    let internalOrders=[];
+    const internalOrderIDs = await this.db.getInternalOrders(state);
+    console.log(internalOrderIDs)
+    for (let i of internalOrderIDs){
+      const id = i.InternalOrderID;
+      const internalOrder = await this.getInternalOrderByID(id);
+      internalOrders.push(internalOrder);
     }
+    return internalOrders;
+  }
+
+  async getInternalOrdersIssued(){
+    return this.getInternalOrders("ISSUED");
+  }
+
+  async getInternalOrdersAccepted(){
+    return this.getInternalOrders("ACCEPTED");
   }
 
   async getInternalOrderByID(ID) {
-    try {
-      const internalOrder = await this.db.getInternalOrderByID(ID);
-      return internalOrder;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
+    const internalOrderJson = await this.db.getInternalOrderByID(ID);
+    if (internalOrderJson===undefined){
+      return undefined;
     }
+    console.log(internalOrderJson)
+    const internalOrder = new InternalOrder(
+      internalOrderJson.InternalOrderID,
+      internalOrderJson.IssueDate,
+      internalOrderJson.State,
+      [],
+      internalOrderJson.CustomerID
+    );
+    const state = internalOrder.state;
+    let internalOrderProducts;
+    if (state==="COMPLETED"){
+      internalOrderProducts = await this.db.getInternalOrderSKUItemByInternalOrderID(internalOrder.id);
+      for (let internalProduct of internalOrderProducts){
+        let RFID = internalProduct.RFID;
+        let SKU = await this.db.getSKUItemByRfid(RFID);
+        if (SKU!==undefined){
+          let RFID = internalProduct.RFID;
+          let product = {
+            "SKUId": SKU.SKUID,
+            "description": SKU.Description,
+            "price": SKU.Price,
+            "RFID": RFID,
+          }
+          internalOrder.addProduct(product);
+        }
+      }
+    }
+    else{
+      internalOrderProducts = await this.db.getInternalOrderProductByInternalOrderID(internalOrder.id);
+      for (let internalProduct of internalOrderProducts){
+        let SKUID = internalProduct.SKUID;
+        let SKU = await this.db.getSKUById(SKUID);
+        if (SKU!==undefined){
+          let QTY = internalProduct.QTY;
+          let product = {
+            "SKUId": SKU.SKUID,
+            "description": SKU.Description,
+            "price": SKU.Price,
+            "qty": QTY,
+          }
+          internalOrder.addProduct(product);
+        }
+      }
+    }
+    return internalOrder;
   }
 
   async modifyInternalOrder(ID, newState, products) {
-    try {
-      await this.db.modifyInternalOrder(ID, newState, products);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
+    const internalOrder = await this.getInternalOrderByID(ID);
+    if (internalOrder===undefined){
+      return undefined;
     }
+    await this.db.modifyInternalOrderState(ID, newState);
+    if (products && newState==="COMPLETED"){
+      await this.db.deleteInternalOrderSKUItemByInternalOrderID(ID);
+      for (let p of products){
+        await this.db.createInternalOrderSKUItem(ID, p.RFID);
+      }
+    }
+    return true;
   }
 
   async deleteInternalOrder(ID) {
-    try {
-      await this.db.deleteInternalOrder(ID);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    await this.db.deleteInternalOrder(ID);
+    return;
   }
 }
 

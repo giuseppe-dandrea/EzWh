@@ -1161,51 +1161,64 @@ app.delete(
 );
 
 app.post("/api/internalOrders",
+  body("issueDate").isDate(),
+  body("products").isArray(),
+  body("customerId").isInt({ min: 1 }),
   async (req, res) => {
-  try {
-    console.log(req.body)
-    await facade.createInternalOrder(req.body.issueDate, req.body.products, req.body.customerId);
-    return res.status(201).end();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).end();
-  }
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      return res.status(422).end();
+    }
+    try {
+      // console.log(req.body)
+      await facade.createInternalOrder(req.body.issueDate, req.body.products, req.body.customerId);
+      return res.status(201).end();
+    } catch (err) {
+      console.log(err);
+      return res.status(503).end();
+    }
 });
 
-app.get("/api/internalOrders", async (req, res) => {
-  try{
-    const internalOrders = await facade.getInternalOrders();
-    return res.status(201).json(internalOrders);
-  } catch (err) {
-    console.log(err);
-    return res.status(503).end();
-  }
+app.get("/api/internalOrders",
+  async (req, res) => {
+    try{
+      const internalOrders = await facade.getInternalOrders();
+      return res.status(201).json(internalOrders);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).end();
+    }
 });
 
-app.get("/api/internalOrdersIssued", async (req, res) => {
-  try{
-    const internalOrdersIssued = await facade.getInternalOrders("ISSUED");
-    return res.status(201).json(internalOrdersIssued);
-  } catch (err) {
-    console.log(err);
-    return res.status(503).end();
-  }
+app.get("/api/internalOrdersIssued",
+  async (req, res) => {
+    try{
+      const internalOrders = await facade.getInternalOrdersIssued();
+      return res.status(201).json(internalOrders);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).end();
+    }
 });
 
-app.get("/api/internalOrdersAccepted", async (req, res) => {
-  try{
-    const internalOrdersAccepted = await facade.getInternalOrders("ACCEPTED");
-    return res.status(201).json(internalOrdersAccepted);
-  } catch (err) {
-    console.log(err);
-    return res.status(503).end();
-  }
+app.get("/api/internalOrdersAccepted",
+  async (req, res) => {
+    try{
+      const internalOrders = await facade.getInternalOrdersAccepted();
+      return res.status(201).json(internalOrders);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).end();
+    }
 });
 
 app.get("/api/internalOrders/:ID", param("ID"), async (req, res) => {
   try {
     const internalOrder = await facade.getInternalOrderByID(req.params.ID);
-    return res.status(200).json(internalOrder);
+    if (internalOrder===undefined)
+      return res.status(404).end();
+    else
+      return res.status(200).json(internalOrder);
   } catch (err) {
     console.log(err);
     return res.status(500).end();
@@ -1216,8 +1229,11 @@ app.put("/api/internalOrders/:ID",
   param("ID"),
   async (req, res) => {
   try {
-    await facade.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);
-    return res.status(200).end();
+    const internalOrder = await facade.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);
+    if (internalOrder===undefined)
+      return res.status(404).end();
+    else
+      return res.status(200).end();
   } catch (err) {
     console.log(err);
     return res.status(500).end();
@@ -1230,7 +1246,7 @@ app.delete(
   async (req, res) => {
     try {
       await facade.deleteInternalOrder(req.params.ID);
-      return res.status(201).end();
+      return res.status(204).end();
     } catch (err) {
       console.log(err);
       return res.status(503).end();
