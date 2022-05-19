@@ -1039,7 +1039,7 @@ app.put("/api/restockOrder/:ID",
     }
     try {
       // console.log(req.params.ID);
-      await facade.modifyRestockOrder(req.params.ID, req.body.newState);
+      await facade.modifyRestockOrderState(req.params.ID, req.body.newState);
       return res.status(200).end();
     } catch (err) {
       console.log(err);

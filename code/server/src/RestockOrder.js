@@ -3,17 +3,17 @@ class RestockOrder {
     id,
     issueDate,
     state,
-    products,
     supplierId,
     transportNote,
-    skuItems
+    products = [],
+    skuItems = []
   ) {
     this.id = id;
     this.issueDate = issueDate;
     this.state = state;
-    this.products = products;
     this.supplierId = supplierId;
     this.transportNote = transportNote;
+    this.products = products;
     this.skuItems = skuItems;
   }
 
@@ -21,8 +21,16 @@ class RestockOrder {
     this.products.push(product);
   }
 
+  concatProducts(products){
+    this.products = this.products.concat(products);
+  }
+
   addSKUItem(SKUItem){
     this.skuItems.push(SKUItem);
+  }
+
+  concatSKUItems(SKUItems){
+    this.skuItems = this.skuItems.concat(SKUItems);
   }
 }
 
