@@ -16,6 +16,14 @@ class RestockOrder {
     this.transportNote = transportNote;
     this.skuItems = skuItems;
   }
+
+  addProduct(product){
+    this.products.push(product);
+  }
+
+  addSKUItem(SKUItem){
+    this.skuItems.push(SKUItem);
+  }
 }
 
 module.exports = RestockOrder;

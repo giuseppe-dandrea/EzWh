@@ -951,6 +951,7 @@ app.get(
       const restockOrders = await facade.getRestockOrders();
       return res.status(200).json(restockOrders);
     } catch (err) {
+      console.log(err);
       return res.status(500).end();
     }
   }
@@ -978,7 +979,10 @@ app.get(
     }
     try {
       const restockOrder = await facade.getRestockOrderByID(req.params.ID);
-      return res.status(200).json(restockOrder);
+      if (restockOrder===undefined)
+        return res.status(404).end();
+      else
+        return res.status(200).json(restockOrder);
     } catch (err) {
       console.log(err);
       if (err === EzWhException.NotFound) return res.status(404).end();

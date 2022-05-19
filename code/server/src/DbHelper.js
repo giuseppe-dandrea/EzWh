@@ -973,61 +973,58 @@ class DbHelper {
     });
   }
 
-  // modify to get products and skuItems, join RestockOrderProduct and RestockOrderSKUItem?
+  /***RestockOrder***/
   getRestockOrders(state) {
     return new Promise((resolve, reject) => {
-      let sql = ``;
-      if (state) sql = `SELECT * FROM RestockOrder WHERE state='${state}';`
-      else sql = `SELECT * FROM RestockOrder;`;
-      this.dbConnection.all(sql, function(err, rows){
+      let sql = `SELECT RestockOrderID FROM RestockOrder`;
+      if (state) sql+=` where State = '${state}'`;
+      sql+=`;`;
+      this.dbConnection.all(sql, function (err, rows){
         if (err) {
           reject(err);
-          return;
+        } else {
+          resolve(rows);
         }
-        // console.log(rows);
-        const products = [];
-        const SKUItems = [];
-        let tds = [];
-        if (rows.length !== 0) {
-          tds = rows.map(
-            (r) =>
-              new RestockOrder(
-                r.RestockOrderID,
-                r.IssueDate,
-                r.State,
-                products,
-                r.SupplierID,
-                r.TransportNode,
-                SKUItems
-              )
-          );
-        }
-        console.log(tds);
-        resolve(tds);
       });
     });
   }
 
-  //get products and skuItems
   getRestockOrderByID(id) {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT * FROM RestockOrder WHERE RestockOrderID= ${id};`;
-      this.dbConnection.all(sql, function(err, rows){
-        console.log(rows);
+      let sql = `SELECT * FROM RestockOrder WHERE RestockOrderID= ${id};`;
+      this.dbConnection.get(sql, function (err, row){
         if (err) {
           reject(err);
-          return;
+        } else {
+          resolve(row);
         }
-        const products=[];
-        const SKUItems=[];
-        let tds = undefined;
-        if (rows.length !== 0){
-          tds = rows.map(
-            (r) =>
-              new RestockOrder(r.RestockOrderID, r.IssueDate, r.State, products, r.SupplierID, r.TransportNode, SKUItems)
-          )[0];
+      });
+    });
+  }
+
+  getRestockOrderProductsByRestockOrderID(ID){
+    return new Promise((resolve, reject) => {
+      let sql = `SELECT * FROM RestockOrderProduct where RestockOrderID=${ID}`;
+      this.dbConnection.all(sql, function (err, rows){
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
         }
-        resolve(tds);
+      });
+    });
+  }
+
+  getRestockOrderSKUItemsByRestockOrderID(ID){
+    return new Promise((resolve, reject) => {
+      let sql = `SELECT * FROM RestockOrderSKUItem where RestockOrderID=${ID}`;
+      this.dbConnection.all(sql, function (err, rows){
+        if (err) {
+          reject(err);
+        } else {
+          console.log(rows);
+          resolve(rows);
+        }
       });
     });
   }
@@ -1271,6 +1268,7 @@ class DbHelper {
     });
   }
 
+  /***Item***/
   createItem(item) {
     return new Promise((resolve, reject) => {
       const sql = `INSERT INTO Item(ItemID, Description, Price, SKUID, SupplierID) 
@@ -1305,6 +1303,7 @@ class DbHelper {
     });
   }
 
+  /***ReturnOrder***/
   createReturnOrder(returnDate, products, restockOrderID) {
     return new Promise((resolve, reject) => {
       this.check_404_RestockOrder(restockOrderID)
@@ -1453,6 +1452,7 @@ class DbHelper {
     });
   }
 
+  /***InternalOrder***/
   getInternalOrders(state) {
     return new Promise((resolve, reject) => {
       let sql = `SELECT InternalOrderID FROM InternalOrder`;
@@ -1471,12 +1471,12 @@ class DbHelper {
   getInternalOrderByID(ID) {
     return new Promise((resolve, reject) => {
       const sql = `SELECT * FROM InternalOrder where InternalOrderID=${ID};`;
-      this.dbConnection.get(sql, function (err, rows){
+      this.dbConnection.get(sql, function (err, row){
         if (err) {
           reject(err.toString());
         } else {
           // console.log(rows);
-          resolve(rows);
+          resolve(row);
         }
       });
     });

@@ -8,6 +8,7 @@ const Item = require("./Item.js");
 const { User } = require("./User");
 const TestResult = require("./TestResult.js");
 const InternalOrder = require("./InternalOrder.js");
+const RestockOrder = require("./RestockOrder.js");
 
 class EzWhFacade {
   constructor() {
@@ -661,15 +662,60 @@ class EzWhFacade {
     }
   }
 
+  /***RestockOrder***/
+
   async getRestockOrders(state){
-    let restockOrders = await this.db.getRestockOrders(state);
+    let restockOrderIDs = await this.db.getRestockOrders(state);
+    let restockOrders = [];
+    // console.log(restockOrderIDs[0])
+    for (let r of restockOrderIDs){
+      const id = r.RestockOrderID;
+      // console.log(id);
+      const restockOrder = await this.getRestockOrderByID(id);
+      restockOrders.push(restockOrder);
+    }
     return restockOrders;
   }
 
   async getRestockOrderByID(id){
-    let restockOrder = await this.db.getRestockOrderByID(id);
-    if (restockOrder===undefined) throw EzWhException.NotFound;
-    else return restockOrder;
+    const r = await this.db.getRestockOrderByID(id);
+    if (r===undefined){
+      return undefined;
+    }
+    const productsJson = await this.db.getRestockOrderProductsByRestockOrderID(id);
+    const skuItemsJson = await this.db.getRestockOrderSKUItemsByRestockOrderID(id);
+    let skuItems = [];
+    for (let s of skuItemsJson){
+      const RFID = s.RFID;
+      const SKU = await this.db.getSKUItemByRfid(RFID);
+      const SKUID = SKU.SKUID;
+      const skuItem = {"RFID": RFID,"SKUId": SKUID}
+      skuItems.push(skuItem);
+    }
+    let products = []
+    for (let p of productsJson){
+      const itemID = p.ItemID;
+      let item = await this.db.getItemByID(itemID);
+      item = item[0];
+      // console.log(`item is ${JSON.stringify(item)}`);
+      const product = {
+        "SKUId": item.id,
+        "description": item.description,
+        "price": item.price,
+        "qty": p.QTY,
+      }
+      products.push(product);
+    }
+    let restockOrder = new RestockOrder(
+      r.RestockOrderID,
+      r.IssueDate,
+      r.State,
+      products,
+      r.SupplierID,
+      r.TransportNote,
+      skuItems
+    );
+    return restockOrder;
   }
 
   async getRestockOrderReturnItems(id){
@@ -703,6 +749,8 @@ class EzWhFacade {
     return;
   }  
 
+  /***ReturnOrder***/
+
   async createReturnOrder(returnDate, products, restockOrderID) {
     await this.db.createReturnOrder(returnDate, products, restockOrderID);
     return;
@@ -730,6 +778,8 @@ class EzWhFacade {
     }
     return;
   }
+
+  /***InternalOrder***/
 
   async getInternalOrders(state) {
     let internalOrders=[];
