@@ -3,7 +3,7 @@ class ReturnOrder {
         this.id = id;
         this.returnDate = returnDate;
         this.products = products;
-        this.restockOrderId;
+        this.restockOrderId=restockOrderId;
     }
 }
 
