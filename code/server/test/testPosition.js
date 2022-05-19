@@ -111,7 +111,7 @@ let falsePutPositions = [
 
 
 /***GET***/
-function testGetAllPositions(expectedStatus) {
+function testGetAllPositions(expectedStatus, expectedNumber) {
   describe(`get /api/positions`, function () {
     it(`Getting /api/positions`, function (done) {
       agent.get(`/api/positions`).end(function (err, res) {
@@ -121,6 +121,7 @@ function testGetAllPositions(expectedStatus) {
         res.should.have.status(expectedStatus);
         res.should.be.json;
         res.body.should.be.a("array");
+          res.body.should.have.lengthOf(expectedNumber);
         for (let i = 0; i < res.body.length; i++) {
           let p = res.body[i];
           p.should.haveOwnProperty("positionID");
@@ -257,7 +258,7 @@ describe("Testing GET APIs",function (){
     testCreatePosition(201, postPositions[1]);
     testCreatePosition(201, postPositions[2]);
 
-    testGetAllPositions(200);
+    testGetAllPositions(200,3);
 })
 
 describe("Testing PUT APIs" ,function (){

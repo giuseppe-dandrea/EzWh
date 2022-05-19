@@ -212,7 +212,8 @@ function testGetSKUById(expectedStatus, id) {
         if (err) {
           done(err);
         }
-        if (res.body.status === 200) {
+        res.should.have.status(expectedStatus);
+        if (res.status === 200) {
           res.should.be.json;
           res.body.should.be.an("object");
           res.body.should.haveOwnProperty("description");
