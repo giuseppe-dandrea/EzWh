@@ -1,9 +1,13 @@
 class ReturnOrder {
-    constructor(id, returnDate, products, restockOrderId){
+    constructor(id, returnDate, restockOrderId, products=[]){
         this.id = id;
         this.returnDate = returnDate;
+        this.restockOrderId = restockOrderId;
         this.products = products;
-        this.restockOrderId=restockOrderId;
+    }
+
+    addProduct(product){
+        this.products.push(product);
     }
 }
 

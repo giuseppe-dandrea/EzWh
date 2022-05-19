@@ -752,17 +752,53 @@ class EzWhFacade {
   /***ReturnOrder***/
 
   async createReturnOrder(returnDate, products, restockOrderID) {
-    await this.db.createReturnOrder(returnDate, products, restockOrderID);
+    const returnOrderID = await this.db.createReturnOrder(returnDate, restockOrderID);
+    for (let product of products){
+      await this.db.createReturnOrderProduct(returnOrderID, product.RFID)
+    }
     return;
+  }
+
+  async getReturnOrderProducts(returnOrderID){
+    let returnProducts = [];
+    const products = await this.db.getReturnOrderProducts(returnOrderID);
+    console.log(`products: ${products}`)
+    for (let product of products){
+      const SKUItem = await this.db.getSKUItemByRfid(product.RFID);
+      console.log(`SKUItem: ${SKUItem}`)
+      const SKU = await this.db.getSKUById(SKUItem.SKUID)
+      console.log(`SKUs: ${SKU}`)
+      const returnProduct =
+        {
+          "SKUId": SKUItem.SKUID,
+          "description": SKU.Description,
+          "price": SKU.Price,
+          "RFID": product.RFID,
+        }
+        returnProducts.push(returnProduct);
+    }
+    return returnProducts;
   }
 
   async getReturnOrders() {
     const returnOrders = await this.db.getReturnOrders();
+    console.log(returnOrders);
+    for (let returnOrder of returnOrders){
+      const products = await this.getReturnOrderProducts(returnOrder.id);
+      console.log(products);
+      for (let p of products){
+        returnOrder.addProduct(p);
+      }
+    }
     return returnOrders;
   }
 
   async getReturnOrderByID(ID) {
     const returnOrder = await this.db.getReturnOrderByID(ID);
+    const products = await this.getReturnOrderProducts(ID);
+    for (let p of products){
+      returnOrder.addProduct(p);
+    }
     return returnOrder;
   }
 

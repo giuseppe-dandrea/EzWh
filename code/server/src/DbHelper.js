@@ -1022,7 +1022,7 @@ class DbHelper {
         if (err) {
           reject(err);
         } else {
-          console.log(rows);
+          // console.log(rows);
           resolve(rows);
         }
       });
@@ -1304,126 +1304,105 @@ class DbHelper {
   }
 
   /***ReturnOrder***/
-  createReturnOrder(returnDate, products, restockOrderID) {
+  createReturnOrder(returnDate, restockOrderID) {
     return new Promise((resolve, reject) => {
-      this.check_404_RestockOrder(restockOrderID)
-      .then(()=>{
-        const db = this.dbConnection;
-        const sql = `insert into ReturnOrder (ReturnDate, RestockOrderId)
-        values ('${returnDate}', ${restockOrderID});`;
-        this.dbConnection.run(sql, function (err) {
-          if (err){
-            reject(err);
-            return;
-          }
-          else {
-            console.log(`this.lastID is ${this.lastID}`);
-            if (products) {
-              var stmt = db.prepare("insert into ReturnOrderProduct (RFID, ReturnOrderID) values (?, ?)");
-              products.forEach((item) => {
-                stmt.run(item.RFID, this.lastID);
-                console.log(`RFID is ${item.RFID}`);
-              });
-              stmt.finalize();
-            }
-            resolve();
-          }
-        });
-      }).catch((err)=>{
-        reject(err);
+      const sql = `insert into ReturnOrder (ReturnDate, RestockOrderId)
+      values ('${returnDate}', ${restockOrderID});`;
+      this.dbConnection.run(sql, function (err){
+        if (err) {
+          reject(err);
+        } else {
+          resolve(this.lastID);
+        }
       });
     });
   }
 
-  getReturnOrders(ID) {
+  createReturnOrderProducts(ID, RFID){
     return new Promise((resolve, reject) => {
-      let sql = `SELECT
-        r.ReturnOrderID,
-        r.ReturnDate,
-        r.RestockOrderID,
-        si.RFID,
-        s.SKUID,
-        s.Description,
-        s.Price
-      FROM ReturnOrder as r
-      inner join ReturnOrderProduct as rp
-      inner join SKUItem si
-      inner join SKU s
-      where r.ReturnOrderID = rp.ReturnOrderID and
-      rp.RFID = si.RFID and
-      si.SKUID = s.SKUID`;
-      if (ID!==undefined){
-        sql+=` and r.ReturnOrderID = ${ID}`
-      }
-      sql+=`;`;
-      this.dbConnection.all(sql, [], (err, rows) => {
+      const sql = `insert into ReturnOrderProduct (RFID, ReturnOrderID)
+      values ('${RFID}', ${ID});`;
+      this.dbConnection.run(sql, function (err){
         if (err) {
           reject(err);
-          return;
+        } else {
+          resolve(this.lastID);
         }
-        let r_map=new Map();
-        let tds = [];
-        if (rows.length === 0) {
-          resolve([]);
+      });
+    });
+  }
+
+  getReturnOrderProducts(ID){
+    return new Promise((resolve, reject) => {
+      const sql = `select * from ReturnOrderProduct where ReturnOrderID=${ID};`;
+      this.dbConnection.all(sql, function (err, rows){
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
         }
-        else{
-          let row;
-          let r;
-          for (row of rows){
-            // get this ReturnOrderID from map
-            r=r_map.get(row.ReturnOrderID);
-            // If not in map, create a new one and store in r
-            if (r===undefined){
-              r =
-                new ReturnOrder(
-                  row.ReturnOrderID,
-                  row.ReturnDate,
-                  [],
-                  row.RestockOrderID
-                );
-            }
-            // r is a new ReturnOrder or we got from map, push the new product
-            r.products.push(
-              {
-                "SKUId": row.SKUID,
-                "description": row.Description,
-                "price": row.Price,
-                "RFID": row.RFID
-              }
-            );
-            //update map
-            r_map.set(row.ReturnOrderID, r);
-            
-          }
+      });
+    });
+  }
+
+  getReturnOrders() {
+    return new Promise((resolve, reject) => {
+      const sql = `select * from ReturnOrder;`;
+      this.dbConnection.all(sql, function (err, rows){
+        if (err) {
+          reject(err);
+        } else {
+          const tds = rows.map( (r) => new ReturnOrder(
+            r.ReturnOrderID,
+            r.ReturnDate,
+            r.RestockOrderID
+          ));
+          resolve(tds);
         }
-        tds = Array.from(r_map.values());
-        if (ID!==undefined){
-          tds = tds[0];
-        }
-        console.log(tds);
-        resolve(tds);
       });
     });
   }
 
   getReturnOrderByID(ID) {
-    return this.getReturnOrders(ID);
+    return new Promise((resolve, reject) => {
+      const sql = `select * from ReturnOrder where ReturnOrderID=${ID};`;
+      this.dbConnection.get(sql, function (err, row){
+        if (err) {
+          reject(err);
+        } 
+        else {
+          if (row===undefined){
+            resolve(undefined);
+          }
+          else{
+            const tds = new ReturnOrder(
+              row.ReturnOrderID,
+              row.ReturnDate,
+              row.RestockOrderID
+            );
+            resolve(tds);
+          }
+          
+        }
+      });
+    });
   }
 
   deleteReturnOrder(ID) {
     return new Promise((resolve, reject) => {
       const sql = `delete from ReturnOrder where ReturnOrderID=${ID}`;
       console.log(sql);
-      this.dbConnection.all(sql, [], (err, rows) => {
+      this.dbConnection.run(sql, [], (err) => {
         if (err) {
           reject(err);
-          return;
+        } else{
+          resolve();
         }
-        resolve();
       });
     });
   }
 
+  /***InternalOrder***/
   CreateInternalOrderProduct(internalOrderID, SKUID, QTY){
     return new Promise((resolve, reject) => {
       const sql = `insert into InternalOrderProduct (InternalOrderID, SKUID, QTY)
@@ -1452,7 +1431,7 @@ class DbHelper {
     });
   }
 
-  /***InternalOrder***/
+  
   getInternalOrders(state) {
     return new Promise((resolve, reject) => {
       let sql = `SELECT InternalOrderID FROM InternalOrder`;
