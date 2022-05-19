@@ -251,6 +251,9 @@ describe("Add new items", function () {
     testCreateItem(items[0], 422);
     testCreateItem({...items[0], id: 10}, 422);
     testCreateItem({...items[0], id: 10, SKUId: 50}, 404);
+    testCreateItem({...items[0], id: 10, SKUId: 0}, 422);
+    testCreateItem({...items[0], id: 10, SKUId: -1}, 422);
+    testCreateItem({...items[0], id: 10, SKUId: "asd"}, 422);
     testGetItems(200, items.length, items);
     for (let item of items) {
         testGetItemById(item.id, 200, item);
