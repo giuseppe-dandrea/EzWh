@@ -214,7 +214,6 @@ function testGetTestResultsByIDAndRFID(id, rfid, expectedStatus, expectedTestRes
             .end(function (err, res) {
                 if (err)
                     done(err);
-                console.log("ASDAD", res.body);
                 res.should.have.status(expectedStatus);
                 if (expectedStatus === 200) {
                     res.should.be.json;
