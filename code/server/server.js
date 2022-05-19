@@ -505,6 +505,20 @@ param('id').isInt({ min: 1 }), async (req, res) => {
   }
 });
 
+//USED ONLY FOR TESTING
+app.delete(
+    "/api/skuitems/",
+    async (req, res) => {
+        try {
+            await facade.deleteAllSKUItems();
+            return res.status(204).end();
+        } catch (err) {
+            if (err === EzWhException.NotFound) return res.status(404).end();
+            else if (err === EzWhException.InternalError) return res.status(503).end();
+        }
+    }
+);
+
 // User
 app.get('/api/userinfo', (req, res) => {  //TODO
   return res.status(500).end();

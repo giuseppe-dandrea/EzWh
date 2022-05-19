@@ -203,6 +203,14 @@ class EzWhFacade {
       throw EzWhException.InternalError;
     }
   }
+  //USED ONLY FOR TESTING
+  async deleteAllSKUItems() {
+    try {
+      return await this.db.deleteAllSKUItems();
+    } catch (err) {
+      throw EzWhException.InternalError;
+    }
+  }
 
   async modifySKUItem(rfid, newRfid, newAvailable, newDateOfStock) {
     try {
@@ -617,8 +625,7 @@ class EzWhFacade {
     try {
       return await this.db.deleteAllPositions();
     } catch (err) {
-      if (err === EzWhException.NotFound) throw EzWhException.NotFound;
-      else throw EzWhException.InternalError;
+      throw EzWhException.InternalError;
     }
   }
 
