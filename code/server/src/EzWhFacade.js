@@ -645,10 +645,14 @@ class EzWhFacade {
 
   async createItem(ItemID, Description, Price, SKUID, SupplierID) {
     try {
+      let SKU = await this.getSKUById(SKUID);
+      let suppliers = await this.getSuppliers();
+      let supplier = suppliers.find( ({ id }) => id === SupplierID );
+      if (supplier === undefined) throw EzWhException.InternalError;
       const item = new Item(ItemID, Description, Price, SKUID, SupplierID);
       return await this.db.createItem(item);
     } catch (err) {
-      if (err.code === "SQLITE_CONSTRAINT" && err.errno === 19) throw EzWhException.EntryNotAllowed;
+      if (err.code === "SQLITE_CONSTRAINT" && err.errno === 19) throw EzWhException.EntryNotAllowed; //ItemID already exists
       else throw EzWhException.InternalError;
     }
   }
