@@ -645,7 +645,7 @@ class EzWhFacade {
 
   async createItem(ItemID, Description, Price, SKUID, SupplierID) {
     try {
-      let SKU = await this.getSKUById(SKUID);
+      let sku = await this.getSKUById(SKUID);
       let suppliers = await this.getSuppliers();
       let supplier = suppliers.find( ({ id }) => id === SupplierID );
       if (supplier === undefined) throw EzWhException.InternalError;
@@ -653,6 +653,7 @@ class EzWhFacade {
       return await this.db.createItem(item);
     } catch (err) {
       if (err.code === "SQLITE_CONSTRAINT" && err.errno === 19) throw EzWhException.EntryNotAllowed; //ItemID already exists
+      else if (err === EzWhException.NotFound) throw EzWhException.NotFound;
       else throw EzWhException.InternalError;
     }
   }
@@ -668,11 +669,9 @@ class EzWhFacade {
   }
   async deleteItem(id) {
     try {
-      await this.getItemByID(id);
       return await this.db.deleteItem(id);
     } catch (err) {
-      if (err === EzWhException.NotFound) throw EzWhException.NotFound;
-      else throw EzWhException.InternalError;
+      throw EzWhException.InternalError;
     }
   }
 

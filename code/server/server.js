@@ -879,7 +879,17 @@ app.delete(
 app.get("/api/items", async (req, res) => {
   try {
     const items = await facade.getItems();
-    return res.status(200).json(items);
+    return res.status(200).json(
+        items.map((i) => {
+            return {
+                id: i.id,
+                description: i.description,
+                price: i.price,
+                SKUId: i.skuId,
+                supplierId: i.supplierId,
+            };
+        })
+    );
   } catch (err) {
     return res.status(500).end();
   }
@@ -892,8 +902,18 @@ app.get("/api/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
     return res.status(422).end();
   }
   try {
-    const item = await facade.getItemByID(req.params.id);
-    return res.status(200).json(item[0]);
+    const items = await facade.getItemByID(req.params.id);
+    return res.status(200).json(
+        items.map((i) => {
+            return {
+                id: i.id,
+                description: i.description,
+                price: i.price,
+                SKUId: i.skuId,
+                supplierId: i.supplierId,
+            };
+        })
+    );
   } catch (err) {
     if (err === EzWhException.NotFound) return res.status(404).end();
     else res.status(500).end();
