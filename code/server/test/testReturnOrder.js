@@ -12,13 +12,15 @@ function newReturnOrder(expectedHTTPStatus, returnOrder) {
     it('adding a new return order', function (done) {
         if (returnOrder !== undefined) {
             agent.post('/api/returnOrder').send(returnOrder)
-                .then(function (res) {
+                .end(function (err, res) {
+                    if (err) done(err);
                     res.should.have.status(expectedHTTPStatus);
                     done();
                 });
         } else {
             agent.post('/api/returnOrder')
-                .then(function (res) {
+                .end(function (err, res) {
+                    if (err) done(err);
                     res.should.have.status(expectedHTTPStatus);
                     done();
                 });
@@ -28,7 +30,8 @@ function newReturnOrder(expectedHTTPStatus, returnOrder) {
 function deleteReturnOrder(expectedHTTPStatus, id) {
     it(`deleting a return order with id=${id}`, function (done) {
         agent.delete(`/api/returnOrder/${id}`)
-            .then(function (res) {
+            .end(function (err, res) {
+                if (err) done(err);
                 res.should.have.status(expectedHTTPStatus);
                 done();
             });
@@ -37,23 +40,26 @@ function deleteReturnOrder(expectedHTTPStatus, id) {
 function getReturnOrders(expectedHTTPStatus, expectedLength, expectedReturnOrders) {
     it('getting all restock orders', function (done) {
         agent.get('/api/returnOrders')
-            .then(function (res) {
+            .end(function (err, res) {
+                if (err) done(err);
                 res.should.have.status(expectedHTTPStatus);
-                res.body.should.be.json;
-                res.body.should.be.an('array');
-                res.body.should.have.lengthOf(expectedLength);
-                for (let i = 0; i < expectedLength; i++) {
-                    let ro = res.body[i];
-                    ro.should.haveOwnProperty("id");
-                    ro.shoudl.haveOwnProperty("returnDate");
-                    ro.should.haveOwnProperty("products");
-                    ro.should.haveOwnProperty("restockOrderId");
-                    ro.products.should.be.an('array');
-                    expectedReturnOrders.some((retOrd) => {
-                        compareReturnOrder(retOrd, ro)
-                    }).should.be.equal(true);
-                    done();
+                if (expectedHTTPStatus === 200) {
+                    res.should.be.json;
+                    res.body.should.be.an('array');
+                    res.body.should.have.lengthOf(expectedLength);
+                    for (let i = 0; i < expectedLength; i++) {
+                        let ro = res.body[i];
+                        ro.should.haveOwnProperty("id");
+                        ro.should.haveOwnProperty("returnDate");
+                        ro.should.haveOwnProperty("products");
+                        ro.should.haveOwnProperty("restockOrderId");
+                        ro.products.should.be.an('array');
+                        expectedReturnOrders.some((retOrd) => {
+                            compareReturnOrder(retOrd, ro)
+                        }).should.be.equal(true);
+                    }
                 }
+                done();
             });
     });
 }
@@ -61,20 +67,24 @@ function getReturnOrder(expectedHTTPStatus, id, expectedReturnOrder) {
     it(`getting a return order with id = ${id}`, function (done) {
         if (expectedReturnOrder !== undefined) {
             agent.get(`/api/returnOrders/${id}`)
-                .then(function (res) {
+                .end(function (err, res) {
+                    if (err) done(err);
                     res.should.have.status(expectedHTTPStatus);
-                    res.body.should.be.json;
-                    ro = res.body;
-                    ro.shoudl.haveOwnProperty("returnDate");
-                    ro.should.haveOwnProperty("products");
-                    ro.should.haveOwnProperty("restockOrderId");
-                    ro.products.should.be.an('array');
-                    compareReturnOrder(expectedReturnOrder, ro).should.be.equal(true);
+                    if (expectedHTTPStatus === 200) {
+                        res.should.be.json;
+                        console.log(res.body);
+                        res.body.should.haveOwnProperty("returnDate");
+                        res.body.should.haveOwnProperty("products");
+                        res.body.should.haveOwnProperty("restockOrderId");
+                        res.body.products.should.be.an('array');
+                        compareReturnOrder(expectedReturnOrder, res.body).should.be.equal(true);
+                    }
                     done();
                 });
         } else {
             agent.get(`/api/restockOrders/${id}`)
-                .then(function (res) {
+                .end(function (err, res) {
+                    if (err) done(err);
                     res.should.have.status(expectedHTTPStatus);
                     done();
                 });
@@ -152,7 +162,7 @@ function newSKU(expectedHTTPStatus, SKU) {
     });
 }
 function deleteSKU(expectedHTTPStatus, id) {
-    it('deleting a SKU', function (done) {
+    it(`deleting a SKU with id=${id}`, function (done) {
         agent.delete(`/api/skus/${id}`)
             .end(function (err, res) {
                 if (err) done(err);
@@ -183,7 +193,7 @@ function newSKUItem(expectedHTTPStatus, SKUItem) {
     });
 }
 function deleteSKUItem(expectedHTTPStatus, rfid) {
-    it('deleting a skuitem', function (done) {
+    it(`deleting a skuitem with rfid=${rfid}`, function (done) {
         agent.delete(`/api/skuitems/${rfid}`)
             .end(function (err, res) {
                 if (err) done(err);
@@ -214,7 +224,7 @@ function newUser(expectedHTTPStatus, user) {
     });
 }
 function deleteUser(expectedHTTPStatus, username, type) {
-    it('deleting a user', function (done) {
+    it(`deleting a user with username=${username} and type=${type}`, function (done) {
         agent.delete(`/api/users/${username}/${type}`)
             .end(function (err, res) {
                 if (err) done(err);
@@ -245,7 +255,7 @@ function newItem(expectedHTTPStatus, item) {
     });
 }
 function deleteItem(expectedHTTPStatus, id) {
-    it('deleting an item', function (done) {
+    it(`deleting an item with id=${id}`, function (done) {
         agent.delete(`/api/items/${id}`)
             .end(function (err, res) {
                 if (err) done(err);
@@ -285,8 +295,6 @@ function addSKUItemList(expectedHTTPStatus, id, SKUItemList) {
                     if (err) done(err);
                     res.should.have.status(expectedHTTPStatus);
                     done();
-                }).catch(function (err) {
-                    done(err);
                 });
         } else {
             agent.post(`/api/restockOrder/${id}/skuItems`)
@@ -570,40 +578,43 @@ function clean() {
     });
 }
 
-prepare();
+describe('API Test: ReturnOrder', function () {
+    prepare();
 
-describe('test returnOrder api - success', () => {
-    newReturnOrder(201, returnOrder1);
-    newReturnOrder(201, returnOrder2);
-    getReturnOrders(200, 2, [returnOrder1, returnOrder2]);
-    getReturnOrder(200, 1, returnOrder1);
-    getReturnOrder(200, 1, returnOrder2);
-    deleteReturnOrder(204, 1);
-    deleteReturnOrder(204, 2);
-    getReturnOrder(404, 1);
-    getReturnOrder(404, 2);
-    getReturnOrders(404, 0, []);
+    describe('test returnOrder api - success', () => {
+        newReturnOrder(201, returnOrder1);
+        newReturnOrder(201, returnOrder2);
+        getReturnOrders(200, 2, [returnOrder1, returnOrder2]);
+        getReturnOrder(200, 1, returnOrder1);
+        getReturnOrder(200, 1, returnOrder2);
+        deleteReturnOrder(204, 1);
+        deleteReturnOrder(204, 2);
+        getReturnOrder(404, 1);
+        getReturnOrder(404, 2);
+        getReturnOrders(404, 0, []);
+    });
+
+    describe('test returnOrder api - failure', () => {
+        newReturnOrder(422, returnOrderError1);
+        newReturnOrder(422, returnOrderError2);
+        newReturnOrder(422, returnOrderError3);
+        newReturnOrder(422, returnOrderError4);
+        newReturnOrder(422, returnOrderError5);
+        newReturnOrder(422, returnOrderError6);
+        newReturnOrder(404, returnOrderError7);
+        newReturnOrder(422, returnOrderError8);
+        newReturnOrder(422, returnOrderError9);
+        newReturnOrder(422, returnOrderError10);
+        newReturnOrder(422, returnOrderError11);
+        newReturnOrder(422, returnOrderError12)
+        newReturnOrder(422, returnOrderError13);
+        newReturnOrder(422, returnOrderError14);
+        newReturnOrder(422, returnOrderError15);
+        newReturnOrder(422, returnOrderError16);
+        deleteReturnOrder(422, "abcd");
+        deleteReturnOrder(422, false);
+    });
+
+    clean();
 });
 
-describe('test returnOrder api - failure', () => {
-    newReturnOrder(422, returnOrderError1);
-    newReturnOrder(422, returnOrderError2);
-    newReturnOrder(422, returnOrderError3);
-    newReturnOrder(422, returnOrderError4);
-    newReturnOrder(422, returnOrderError5);
-    newReturnOrder(422, returnOrderError6);
-    newReturnOrder(404, returnOrderError7);
-    newReturnOrder(422, returnOrderError8);
-    newReturnOrder(422, returnOrderError9);
-    newReturnOrder(422, returnOrderError10);
-    newReturnOrder(422, returnOrderError11);
-    newReturnOrder(422, returnOrderError12)
-    newReturnOrder(422, returnOrderError13);
-    newReturnOrder(422, returnOrderError14);
-    newReturnOrder(422, returnOrderError15);
-    newReturnOrder(422, returnOrderError16);
-    deleteReturnOrder(422, "abcd");
-    deleteReturnOrder(422, false);
-});
-
-clean();
