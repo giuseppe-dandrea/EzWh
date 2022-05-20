@@ -11,7 +11,20 @@ const TestResult = require("./TestResult.js");
 class EzWhFacade {
   constructor() {
     this.db = new DbHelper("./dev.db");
-    this.db.createTables();
+    this.db.createTables().then(() => this.createHardcodedUsers());
+  }
+
+  async createHardcodedUsers() {
+    try {
+      await this.createUser("manager1@ezwh.com", "Michael", "Scott", "testpassword", "manager");
+      await this.createUser("supplier1@ezwh.com", "Best", "Supplier", "testpassword", "supplier");
+      await this.createUser("deliveryEmployee1@ezwh.com", "UPS", "Guy", "testpassword", "deliveryEmployee");
+      await this.createUser("clerk1@ezwh.com", "Michael", "Reeves", "testpassword", "clerk");
+      await this.createUser("qualityEmployee1@ezwh.com", "Creed", "Bratton", "testpassword", "qualityEmployee");
+      await this.createUser("user1@ezwh.com", "John", "Doe", "testpassword", "customer");
+    } catch (err) {
+      console.log("Hardcoded users already added");
+    }
   }
 
   async getSKUs() {
