@@ -577,6 +577,16 @@ class DbHelper {
       });
     });
   }
+  //USED ONLY FOR TESTING
+  deleteAllSKUItems() {
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM SKUItem `;
+      this.dbConnection.run(sql, [], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
 
   // TestDescriptor
   getTestDescriptors() {

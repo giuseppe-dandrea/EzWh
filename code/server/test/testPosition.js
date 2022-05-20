@@ -111,7 +111,7 @@ let falsePutPositions = [
 
 
 /***GET***/
-function testGetAllPositions(expectedStatus) {
+function testGetAllPositions(expectedStatus, expectedNumber) {
   describe(`get /api/positions`, function () {
     it(`Getting /api/positions`, function (done) {
       agent.get(`/api/positions`).end(function (err, res) {
@@ -121,6 +121,7 @@ function testGetAllPositions(expectedStatus) {
         res.should.have.status(expectedStatus);
         res.should.be.json;
         res.body.should.be.a("array");
+          res.body.should.have.lengthOf(expectedNumber);
         for (let i = 0; i < res.body.length; i++) {
           let p = res.body[i];
           p.should.haveOwnProperty("positionID");
@@ -257,7 +258,7 @@ describe("Testing GET APIs",function (){
     testCreatePosition(201, postPositions[1]);
     testCreatePosition(201, postPositions[2]);
 
-    testGetAllPositions(200);
+    testGetAllPositions(200,3);
 })
 
 describe("Testing PUT APIs" ,function (){
@@ -277,9 +278,9 @@ describe("Testing PUT APIs" ,function (){
     testModifyPosition(422 , "938567476736273", putPositions[1]);//ID Wrong Composition
     testModifyPosition(422 , "asas", putPositions[1]);//ID not validated
 
-    testModifyPosition(422 , "777788889999", falsePostPositions[0]);//Missing Field
-    testModifyPosition(422 , "777788889999", falsePostPositions[1]);//Empty Object
-    testModifyPosition(422 , "777788889999", falsePostPositions[2]);//Wrong Values
+    testModifyPosition(422 , "777788889999", falsePutPositions[0]);//Missing Field
+    testModifyPosition(422 , "777788889999", falsePutPositions[1]);//Empty Object
+    testModifyPosition(422 , "777788889999", falsePutPositions[2]);//Wrong Values
 
     //Correct ID Edit
     testModifyPositionID(200, "777788889999", {newPositionID : "676792928484"});

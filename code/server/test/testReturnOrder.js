@@ -413,19 +413,113 @@ let item4 = {
     "supplierId": 2
 };
 let returnOrder1 = {
-    "returnDate":"2021/12/29 09:33",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 30, "RFID":"12345678901234567890123456789015"},
-    {"SKUId": 2, "description": "second sku", "price": 10.99, "qty": 20, "RFID":"12345678901234567890123456789025"}],
-    "restockOrderId" : 1
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 30, "RFID": "12345678901234567890123456789015" },
+    { "SKUId": 2, "description": "second sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789025" }],
+    "restockOrderId": 1
 };
 let returnOrder2 = {
-    "returnDate":"2021/12/29 09:33",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID":"12345678901234567890123456789016"},
-    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID":"12345678901234567890123456789017"}],
-    "restockOrderId" : 2
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
 };
-let SKUItemList1 = [{"SKUId": 1, "rfid":"12345678901234567890123456789015" }, {"SKUId": 2, "rfid":"12345678901234567890123456789025"}];
-let SKUItemList2 = [{"SKUId": 1, "rfid":"12345678901234567890123456789016" }, {"SKUId": 1, "rfid":"12345678901234567890123456789017"}]
+let returnOrderError1 = {
+    "returnDate": "2021/12/40 00:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError2 = {
+    "returnDate": "",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError3 = {
+    "returnDate": 1,
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError4 = {
+    "return": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError5 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 15, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError6 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789040" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError7 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 4
+};
+let returnOrderError8 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    "restockOrderId": 2
+};
+let returnOrderError9 = {
+    "returnDate": "2021/12/29 09:33",
+    "product": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError10 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrder": 2
+};
+let returnOrderError11 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [],
+    "restockOrderId": 2
+};
+let returnOrderError12 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError13 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": true, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError14 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": 2
+};
+let returnOrderError15 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": true
+};
+let returnOrderError16 = {
+    "returnDate": "2021/12/29 09:33",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "restockOrderId": "abcd"
+};
+let SKUItemList1 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789015" }, { "SKUId": 2, "rfid": "12345678901234567890123456789025" }];
+let SKUItemList2 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789016" }, { "SKUId": 1, "rfid": "12345678901234567890123456789017" }];
 
 function prepare() {
     describe('preparing environment', () => {
@@ -447,10 +541,10 @@ function prepare() {
         newItem(201, item4);
         newRestockOrder(201, restockOrderIssued1);
         newRestockOrder(201, restockOrderIssued2);
-        modifyRestockOrderStatus(200, 1, {"newState": "DELIVERED"});
-        modifyRestockOrderStatus(200, 2, {"newState": "DELIVERED"});
-        addSKUItemList(200, 1, {"skuItems":SKUItemList1});
-        addSKUItemList(200, 2, {"skuItems":SKUItemList2});
+        modifyRestockOrderStatus(200, 1, { "newState": "DELIVERED" });
+        modifyRestockOrderStatus(200, 2, { "newState": "DELIVERED" });
+        addSKUItemList(200, 1, { "skuItems": SKUItemList1 });
+        addSKUItemList(200, 2, { "skuItems": SKUItemList2 });
     });
 }
 function clean() {
@@ -489,6 +583,27 @@ describe('test returnOrder api - success', () => {
     getReturnOrder(404, 1);
     getReturnOrder(404, 2);
     getReturnOrders(404, 0, []);
+});
+
+describe('test returnOrder api - failure', () => {
+    newReturnOrder(422, returnOrderError1);
+    newReturnOrder(422, returnOrderError2);
+    newReturnOrder(422, returnOrderError3);
+    newReturnOrder(422, returnOrderError4);
+    newReturnOrder(422, returnOrderError5);
+    newReturnOrder(422, returnOrderError6);
+    newReturnOrder(404, returnOrderError7);
+    newReturnOrder(422, returnOrderError8);
+    newReturnOrder(422, returnOrderError9);
+    newReturnOrder(422, returnOrderError10);
+    newReturnOrder(422, returnOrderError11);
+    newReturnOrder(422, returnOrderError12)
+    newReturnOrder(422, returnOrderError13);
+    newReturnOrder(422, returnOrderError14);
+    newReturnOrder(422, returnOrderError15);
+    newReturnOrder(422, returnOrderError16);
+    deleteReturnOrder(422, "abcd");
+    deleteReturnOrder(422, false);
 });
 
 clean();
