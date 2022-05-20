@@ -11,8 +11,8 @@ class User {
     }
 
     static storePassword(password) {
-        let salt = crypto.randomInt(8192);
-        let hashPassword = crypto.createHash("sha256").update(password, "utf8").update(salt.toString(), 'utf8').digest('hex');
+        let salt = crypto.randomBytes(16).toString('hex');
+        let hashPassword = crypto.createHash("sha256").update(password, "utf8").update(salt, 'utf8').digest('hex');
         return `${salt}:${hashPassword}`;
     }
 
