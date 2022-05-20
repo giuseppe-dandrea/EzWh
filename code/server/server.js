@@ -917,18 +917,14 @@ app.get("/api/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
     return res.status(422).end();
   }
   try {
-    const items = await facade.getItemByID(req.params.id);
-    return res.status(200).json(
-        items.map((i) => {
-            return {
-                id: i.id,
-                description: i.description,
-                price: i.price,
-                SKUId: i.skuId,
-                supplierId: i.supplierId,
-            };
-        })
-    );
+    const item = await facade.getItemByID(req.params.id);
+    return res.status(200).json({
+        id: item.id,
+        description: item.description,
+        price: item.price,
+        SKUId: item.skuId,
+        supplierId: item.supplierId
+    });
   } catch (err) {
     if (err === EzWhException.NotFound) return res.status(404).end();
     else res.status(500).end();

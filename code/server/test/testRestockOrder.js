@@ -358,7 +358,8 @@ function compareRestockOrder(expectedRO, actualRO) {
         if (!cmp_flag) return false;
     }
     if (expectedRO.supplierId !== actualRO.supplierId) return false;
-    if (expectedRO !== undefined && expectedRO.transportNote !== actualRO.transportNote)
+    if (expectedRO.transportNote !== undefined && 
+        expectedRO.transportNote.deliveryDate !== actualRO.transportNote.deliveryDate)
         return false;
     if (!compareReturnItems(expectedRO.skuItems, actualRO.skuItems))
         return false;
@@ -413,36 +414,76 @@ let restockOrderIssued2 = {
     { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 2
 };
+
 let restockOrderError1 = {
-    "issueDate": "11/23 09:56",
-    "products": [{ "SKUId": 17, "description": "a product", "price": 10.99, "qty": 70 },
-    { "SKUId": 40, "description": "another product", "price": 11.99, "qty": 30 },
-    { "SKUId": 56, "description": "a third product", "price": 11.99, "qty": 50 }],
+    "issueDate": "2021/11/23 99:70",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 2
 };
+
 let restockOrderError2 = {
-    "products": [{ "SKUId": 17, "description": "a product", "price": 10.99, "qty": 70 },
-    { "SKUId": 40, "description": "another product", "price": 11.99, "qty": 30 },
-    { "SKUId": 56, "description": "a third product", "price": 11.99, "qty": 50 }],
+    "issueDate": "2021/11",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 2
 };
+
 let restockOrderError3 = {
-    "issueDate": "2021/11/23 09:56",
+    "issueDate": "",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 2
 };
+
 let restockOrderError4 = {
-    "issueDate": "2021/11/23 09:56",
-    "products": [{ "SKUId": 17, "description": "a product", "price": 10.99, "qty": 70 },
-    { "SKUId": 40, "description": "another product", "price": 11.99, "qty": 30 },
-    { "SKUId": 56, "description": "a third product", "price": 11.99, "qty": 50 }],
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "supplierId": 2
 };
+
 let restockOrderError5 = {
-    "issueDate": "2021/11/23 09:56",
-    "products": [{ "SKUId": 17, "description": "a product", "price": 10.99, "qty": 70 },
-    { "SKUId": 40, "description": "another product", "price": 11.99, "qty": 30 },
-    { "SKUId": 56, "description": "a third product", "price": 11.99, "qty": 50 }],
+    "issueDate": "2021/11/23",
+    "products": [{ "SKUId": 4, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "supplierId": 2
+};
+
+let restockOrderError6 = {
+    "issueDate": "2021/11/23",
+    "products": [{ "SKUId": "abc", "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "supplierId": 2
+};
+
+let restockOrderError7 = {
+    "issueDate": "2021/11/23",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "supplierId": 2
+};
+
+let restockOrderError8 = {
+    "issueDate": "2021/11/23",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": "abc"
 };
+
+let restockOrderError9 = {
+    "issueDate": "2021/11/23",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "supplierId": ""
+};
+
+let restockOrderError10 = {
+    "issueDate": "2021/11/23",
+    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "supplierId": 4
+};
+
 let restockOrder1 = {
     ...restockOrderIssued1,
     "state": "ISSUED",
@@ -554,6 +595,16 @@ let item4 = {
     "SKUId": 3,
     "supplierId": 2
 };
+let transportNote1 = {"deliveryDate":"2021/12/29"};
+let transportNote2 = {"deliveryDate":"2021/11/29"};
+let skuItems1 =  [{"SKUId":1,"rfid":"12345678901234567890123456789015"},{"SKUId":1,"rfid":"12345678901234567890123456789016"}];
+let skuItems2 =  [{"SKUId":1,"rfid":"12345678901234567890123456789017"},{"SKUId":1,"rfid":"12345678901234567890123456789018"}];
+let skuItemsError1 =  [{"SKUId": "abc","rfid":"12345678901234567890123456789017"},{"SKUId":1,"rfid":"12345678901234567890123456789018"}];
+let skuItemsError2 =  [{"SKUId":1,"rfid":"123453"},{"SKUId":1,"rfid":"12345678901234567890123456789018"}];
+let skuItemsError3 =  [{"SKUId":1,"rfid":true},{"SKUId":1,"rfid":"12345678901234567890123456789018"}];
+let skuItemsError4 =  [{"SKUId":1,"rfid":12345678901234567890123456789017n},{"SKUId":1,"rfid":"12345678901234567890123456789018"}];
+let skuItemsError5 =  [{"SKUId":5,"rfid":"12345678901234567890123456789017"},{"SKUId":1,"rfid":"12345678901234567890123456789018"}];
+let skuItemsError6 =  [{"SKUId":1,"rfid":"12345678901234567890123456789030"},{"SKUId":1,"rfid":"12345678901234567890123456789018"}];
 
 function prepare() {
     describe('preparing environment', () => {
@@ -599,8 +650,8 @@ function clean() {
 prepare();
 
 describe('test insert/get/delete restockOrder api', () => {
-    newRestockOrder(201, restockOrder1);
-    newRestockOrder(201, restockOrder2);
+    newRestockOrder(201, restockOrderIssued1);
+    newRestockOrder(201, restockOrderIssued2);
     getRestockOrders(200, 2, [restockOrder1, restockOrder2]);
     getRestockOrdersIssued(200, 2, [restockOrder1, restockOrder2]);
     getRestockOrder(200, 1, restockOrder1);
@@ -609,21 +660,6 @@ describe('test insert/get/delete restockOrder api', () => {
     deleteRestockOrder(204, 2);
     getRestockOrders(200, 0, []);
 });
-
-/*
-describe('test not enough SKUs', () => {
-    prepare();
-    newRestockOrder(201, restockOrder1);
-    newRestockOrder(201, restockOrder2);
-    getRestockOrders(200, 2, [restockOrder1, restockOrder2]);
-    getRestockOrdersIssued(200, 2, [restockOrder1, restockOrder2]);
-    getRestockOrder(200, 1, restockOrder1);
-    getRestockOrder(200, 2, restockOrder2);
-    deleteRestockOrder(204, 1);
-    deleteRestockOrder(204, 2);
-    getRestockOrders(200, 0, []);
-    clean();
-}); */
 
 describe('test error in insert/delete restockOrder api', () => {
     newRestockOrder(422);
@@ -632,14 +668,24 @@ describe('test error in insert/delete restockOrder api', () => {
     newRestockOrder(422, restockOrderError3);
     newRestockOrder(422, restockOrderError4);
     newRestockOrder(422, restockOrderError5);
+    newRestockOrder(422, restockOrderError6);
+    newRestockOrder(422, restockOrderError7);
+    newRestockOrder(422, restockOrderError8);
+    newRestockOrder(422, restockOrderError9);
+    newRestockOrder(422, restockOrderError10);
+    getRestockOrder(404, 3);
+    getRestockOrder(422, "abc");
+    getRestockOrder(422, true);
     deleteRestockOrder(422, "abc");
     deleteRestockOrder(422, true);
     deleteRestockOrder(204, 3);
 });
 
 describe('test modification of restockOrder status api', () => {
-    newRestockOrder(201, restockOrder1);
-    modifyRestockOrderStatus(404, 2, { "newState": states[2] });
+    newRestockOrder(201, restockOrderIssued1);
+    newRestockOrder(201, restockOrderIssued2);
+    modifyRestockOrderStatus(404, 3, { "newState": states[3] });
+    modifyRestockOrderStatus(422, 3);
     modifyRestockOrderStatus(422, "abc", { "newState": states[3] });
     modifyRestockOrderStatus(422, 1, { "newState": "abcd" });
     modifyRestockOrderStatus(422, 1, { "newState": 1 });
@@ -647,11 +693,67 @@ describe('test modification of restockOrder status api', () => {
     modifyRestockOrderStatus(422, 1);
     modifyRestockOrderStatus(422, 1, { "new": states[1] });
     modifyRestockOrderStatus(422, 1, {});
-    modifyRestockOrderStatus(422, 1, { "newState": states[2] });
-    modifyRestockOrderStatus(401, 1, { "newState": states[1] });
-    modifyRestockOrderStatus(401, 1, { "newState": states[2] });
-    modifyRestockOrderStatus(422, 1, { "newState": states[1] });
+    modifyRestockOrderStatus(200, 1, { "newState": states[1] });
+    getRestockOrder(200, 1, { ...restockOrderIssued1, "state": states[1], "skuItems": [] });
+    modifyRestockOrderStatus(200, 1, { "newState": states[2] });
+    getRestockOrder(200, 1, { ...restockOrderIssued1, "state": states[2], "skuItems": [] });
+    getRestockOrdersIssued(200, 1, [restockOrder2]);
     deleteRestockOrder(204, 1);
+    deleteRestockOrder(204, 2);
 });
+
+describe('test transport note', ()=>{
+    newRestockOrder(201, restockOrderIssued1);
+    newRestockOrder(201, restockOrderIssued2);
+    addTransportNote(422, 1, {"transportNote": transportNote1});
+    addTransportNote(404, 3, {"transportNote": transportNote1});
+    modifyRestockOrderStatus(200, 1, { "newState": states[1] });
+    addTransportNote(200, 1, {"transportNote": transportNote1});
+    getRestockOrder(200, 1, {...restockOrderIssued1, "state": states[1],
+        "skuItems": [], "transportNote": transportNote1});
+    addTransportNote(200,1, {"transportNote": transportNote2});
+    getRestockOrder(200, 1, {...restockOrderIssued1, "state": states[1],
+    "skuItems": [], "transportNote": transportNote2});
+    addTransportNote(422, 1, {"transportNote":1});
+    addTransportNote(422, 1, {"transportNote":"abc"});
+    addTransportNote(422, 1, {"transport":1});
+    addTransportNote(422, 1, {"transport":transportNote1});
+    addTransportNote(422, 1, {"transportNote":{"deliveryDate": "abc"}});
+    addTransportNote(422, 1, {"transportNote":{"deliveryDate": 1}});
+    addTransportNote(422, 1, {"transportNote":{"deliveryDate": ""}});
+    addTransportNote(422, 1, {"transportNote":{"delive":"2021/12/30"}});
+    addTransportNote(422, 1, {"transportNote":{"deliveryDate": "abc"}});
+    addTransportNote(422, 1, {"transportNote":{"deliveryDate": "2021/11/28"}});
+    modifyRestockOrderStatus(200, 1, {"newState": states[2]});
+    getRestockOrder(200, 1, {...restockOrderIssued1, "state": states[2],
+    "skuItems": [], "transportNote": transportNote2});
+    deleteRestockOrder(204, 1);
+    deleteRestockOrder(204, 2);
+});
+
+describe('test return item of restock order', ()=>{
+    newRestockOrder(201, restockOrderIssued1);
+    newRestockOrder(201, restockOrderIssued2);
+    addSKUItemList(422, 1, {"skuItems": skuItems1});
+    addSKUItemList(404, 3, {"skuItems": skuItems1});
+    modifyRestockOrderStatus(200, 1, {"newState": states[2]});
+    addSKUItemList(422, 1, {"skuItems": skuItemsError1});
+    addSKUItemList(422, 1, {"skuItems": skuItemsError2});
+    addSKUItemList(422, 1, {"skuItems": skuItemsError3});
+    addSKUItemList(422, 1, {"skuItems": skuItemsError4});
+    addSKUItemList(422, 1, {"skuItems": skuItemsError5});
+    addSKUItemList(422, 1, {"skuItems": skuItemsError6});
+    addSKUItemList(200, 1, {"skuItems": skuItems1});
+    getRestockOrders(200, 2, [{...restockOrderIssued1, "state": states[2], 
+        "skuItems": skuItems1}, restockOrder2]);
+    getReturnItems(404, 3);
+    getReturnItems(422, 1);
+    modifyRestockOrderStatus(200, 1, {"newState": states[4]});
+    getReturnItems(200, 1, skuItems1);
+    getReturnItems(422, true);
+    getReturnItems(422, "abc");
+    deleteRestockOrder(204, 1);
+    deleteRestockOrder(204, 2);
+})
 
 clean();

@@ -650,7 +650,7 @@ class DbHelper {
           reject(err);
           return;
         }
-        const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, r.date, r.result));
+        const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, r.Date, r.Result));
         resolve(trs);
       });
     });
@@ -667,7 +667,7 @@ class DbHelper {
           reject(err);
           return;
         }
-        const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, r.date, r.result));
+        const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, r.Date, r.Result));
         resolve(trs[0]);
       });
     });
@@ -675,7 +675,7 @@ class DbHelper {
 
   addTestResult(RFID, idTestDescriptor, date, result) {
     return new Promise((resolve, reject) => {
-      const sql = `INSERT INTO TestResult (TestResultID, RFID, TestDescriptorID, date, result)
+      const sql = `INSERT INTO TestResult (TestResultID, RFID, TestDescriptorID, Date, Result)
       VALUES (?, ?, ?, ?, ?)`;
       this.dbConnection.run(sql, [this.idTR, RFID, idTestDescriptor, date, result], (err) => {
         if (err) {
@@ -692,8 +692,8 @@ class DbHelper {
   modifyTestResult(testResult) {
     return new Promise((resolve, reject) => {
       const sql = `UPDATE TestResult SET
-         TestDescriptorID=?, date=?,
-         result=? WHERE TestResultID=?AND RFID=?`;
+         TestDescriptorID=?, Date=?,
+         Result=? WHERE TestResultID=?AND RFID=?`;
       this.dbConnection.run(
         sql,
         [testResult.idTestDescriptor, testResult.date, testResult.result, testResult.id, testResult.rfid],

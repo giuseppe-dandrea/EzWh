@@ -643,7 +643,7 @@ class EzWhFacade {
     try {
       let item = await this.db.getItemByID(id);
       if (typeof item !== "undefined" && item.length === 0) throw EzWhException.NotFound;
-      else return item;
+      else return item[0];
     } catch (err) {
       if (err === EzWhException.NotFound) throw EzWhException.NotFound;
       else throw EzWhException.InternalError;
