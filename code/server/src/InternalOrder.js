@@ -1,11 +1,16 @@
 class InternalOrder{
-    constructor(id, issueDate, state, products, customerId, skuItems){
+    constructor(id, issueDate, state, customerId, products = []){
         this.id = id;
         this.issueDate = issueDate;
         this.state = state;
-        this.products = products;
         this.customerId = customerId;
-        this.skuItems = skuItems;
+        this.products = products;
+    }
+    addProduct(product){
+        this.products.push(product);
+    }
+    concatProducts(products){
+        this.products = this.products.concat(products);
     }
 }
 

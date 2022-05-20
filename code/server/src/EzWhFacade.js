@@ -7,6 +7,8 @@ const SKUItem = require("./SKUItem");
 const Item = require("./Item.js");
 const { User } = require("./User");
 const TestResult = require("./TestResult.js");
+const InternalOrder = require("./InternalOrder.js");
+const RestockOrder = require("./RestockOrder.js");
 
 class EzWhFacade {
   constructor() {
@@ -697,15 +699,62 @@ class EzWhFacade {
     }
   }
 
+  /***RestockOrder***/
+
+  async getRestockOrderProducts(ID){
+    const productsJson = await this.db.getRestockOrderProductsByRestockOrderID(ID);
+    let products = []
+    for (let p of productsJson){
+      const itemID = p.ItemID;
+      let item = await this.db.getItemByID(itemID);
+      item = item[0];
+      const product = {
+        "SKUId": item.id,
+        "description": item.description,
+        "price": item.price,
+        "qty": p.QTY,
+      }
+      products.push(product);
+    }
+    return products;
+  }
+
+  async getRestockOrderSKUItems(ID){
+    const skuItemsJson = await this.db.getRestockOrderSKUItemsByRestockOrderID(ID);
+    let skuItems = [];
+    for (let s of skuItemsJson){
+      const RFID = s.RFID;
+      const SKU = await this.db.getSKUItemByRfid(RFID);
+      const SKUID = SKU.SKUID;
+      const skuItem = {"RFID": RFID,"SKUId": SKUID}
+      skuItems.push(skuItem);
+    }
+    return skuItems;
+  }
+
   async getRestockOrders(state){
-    let restockOrders = await this.db.getRestockOrders(state);
+    let restockOrderIDs = await this.db.getRestockOrders(state);
+    let restockOrders = [];
+    for (let r of restockOrderIDs){
+      const id = r.RestockOrderID;
+      const restockOrder = await this.getRestockOrderByID(id);
+      restockOrders.push(restockOrder);
+    }
     return restockOrders;
   }
 
   async getRestockOrderByID(id){
-    let restockOrder = await this.db.getRestockOrderByID(id);
-    if (restockOrder===undefined) throw EzWhException.NotFound;
-    else return restockOrder;
+    const restockOrder = await this.db.getRestockOrderByID(id);
+    if (restockOrder===undefined){
+      return undefined;
+    }
+    const products = await this.getRestockOrderProducts(id);
+    const skuItems = await this.getRestockOrderSKUItems(id);
+    console.log(products)
+    restockOrder.concatProducts(products);
+    restockOrder.concatSKUItems(skuItems);
+    console.log(restockOrder)
+    return restockOrder;
   }
 
   async getRestockOrderReturnItems(id){
@@ -715,22 +764,44 @@ class EzWhFacade {
   }  
   
   async createRestockOrder(issueDate, products, supplierID){
-    await this.db.createRestockOrder(issueDate, products, supplierID);
+    const restockOrderID = await this.db.createRestockOrder(issueDate, supplierID);
+    console.log(restockOrderID);
+    for (let product of products){
+      const item = await this.db.getItemBySKUIDAndSupplierID(product.SKUId, supplierID);
+      console.log(item);
+      if (item===undefined){
+        throw EzWhException.EntryNotAllowed;
+      }
+      await this.db.createRestockOrderProduct(item.id, restockOrderID, product.qty);
+    }
     return;
   } 
 
-  async modifyRestockOrder(id, newState){
-    await this.db.modifyRestockOrder(id, newState);
+  async modifyRestockOrderState(id, newState){
+    const rowChanges = await this.db.modifyRestockOrderState(id, newState);
+    if (rowChanges===0){
+      throw EzWhException.NotFound;
+    }
     return;
   } 
 
   async addSkuItemsToRestockOrder(ID, skuItems){
-    await this.db.addSkuItemsToRestockOrder(ID, skuItems);
+    console.log("inside facade addSkuItemsToRestockOrder")
+    const restockOrder = await this.db.getRestockOrderByID(ID);
+    console.log(restockOrder);
+    if (restockOrder===undefined) throw EzWhException.NotFound;
+    if (restockOrder.state!=="DELIVERED") throw EzWhException.EntryNotAllowed;
+    for (let skuItem of skuItems){
+      await this.db.addSkuItemToRestockOrder(ID, skuItem.rfid);
+    }
     return;
   } 
 
   async addTransportNoteToRestockOrder(ID, transportNote){
-    await this.db.addTransportNoteToRestockOrder(ID, transportNote);
+    const restockOrder = await this.db.getRestockOrderByID(ID);
+    if (restockOrder===undefined) throw EzWhException.NotFound;
+    if (restockOrder.state!=="DELIVERED") throw EzWhException.EntryNotAllowed;
+    await this.db.addTransportNoteToRestockOrder(ID, JSON.stringify(transportNote));
     return;
   }
 
@@ -739,79 +810,173 @@ class EzWhFacade {
     return;
   }  
 
+  /***ReturnOrder***/
+
   async createReturnOrder(returnDate, products, restockOrderID) {
-    await this.db.createReturnOrder(returnDate, products, restockOrderID);
+    const returnOrderID = await this.db.createReturnOrder(returnDate, restockOrderID);
+    for (let product of products){
+      await this.db.createReturnOrderProduct(returnOrderID, product.RFID)
+    }
     return;
+  }
+
+  async getReturnOrderProducts(returnOrderID){
+    let returnProducts = [];
+    const products = await this.db.getReturnOrderProducts(returnOrderID);
+    console.log(`products: ${products}`)
+    for (let product of products){
+      const SKUItem = await this.db.getSKUItemByRfid(product.RFID);
+      console.log(`SKUItem: ${SKUItem}`)
+      const SKU = await this.db.getSKUById(SKUItem.SKUID)
+      console.log(`SKUs: ${SKU}`)
+      const returnProduct =
+        {
+          "SKUId": SKUItem.SKUID,
+          "description": SKU.Description,
+          "price": SKU.Price,
+          "RFID": product.RFID,
+        }
+        returnProducts.push(returnProduct);
+    }
+    return returnProducts;
   }
 
   async getReturnOrders() {
     const returnOrders = await this.db.getReturnOrders();
+    console.log(returnOrders);
+    for (let returnOrder of returnOrders){
+      const products = await this.getReturnOrderProducts(returnOrder.id);
+      console.log(products);
+      for (let p of products){
+        returnOrder.addProduct(p);
+      }
+    }
     return returnOrders;
   }
 
   async getReturnOrderByID(ID) {
     const returnOrder = await this.db.getReturnOrderByID(ID);
+    const products = await this.getReturnOrderProducts(ID);
+    for (let p of products){
+      returnOrder.addProduct(p);
+    }
     return returnOrder;
   }
 
   async deleteReturnOrder(ID) {
-    try {
-      await this.db.deleteReturnOrder(ID);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    await this.db.deleteReturnOrder(ID);
+    return;
   }
 
+  /***InternalOrder***/
   async createInternalOrder(issueDate, products, customerID) {
-    try {
-      await this.db.createInternalOrder(issueDate, products, customerID);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
+    const lastID = await this.db.createInternalOrder(issueDate, customerID);
+    for (let product of products){
+      await this.db.CreateInternalOrderProduct(lastID, product.SKUId, product.qty)
     }
+    return;
   }
 
   async getInternalOrders(state) {
-    try {
-      const internalOrders = await this.db.getInternalOrders(state);
-      return internalOrders;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
+    const internalOrders = await this.db.getInternalOrders(state);
+    for (let internalOrder of internalOrders){
+      const state = internalOrder.state;
+      let products = [];
+      if (state==="COMPLETED"){
+        products = await this.getInternalOrderProducts(internalOrder.id);
+      }
+      else{
+        products = await this.getInternalOrderSKUItems(internalOrder.id);
+      }
+      internalOrder.concatProducts(products)
     }
+    return internalOrders;
+  }
+
+  async getInternalOrdersIssued(){
+    return this.getInternalOrders("ISSUED");
+  }
+
+  async getInternalOrdersAccepted(){
+    return this.getInternalOrders("ACCEPTED");
+  }
+
+  async getInternalOrderProducts(ID){
+    let products = []
+    let internalOrderProducts = await this.db.getInternalOrderSKUItemByInternalOrderID(ID);
+    for (let internalProduct of internalOrderProducts){
+      let RFID = internalProduct.RFID;
+      let SKU = await this.db.getSKUItemByRfid(RFID);
+      if (SKU!==undefined){
+        let RFID = internalProduct.RFID;
+        let product = {
+          "SKUId": SKU.SKUID,
+          "description": SKU.Description,
+          "price": SKU.Price,
+          "RFID": RFID,
+        }
+        products.push(product);
+      }
+    }
+    return products;
+  }
+
+  async getInternalOrderSKUItems(ID){
+    let products = []
+    let internalOrderProducts = await this.db.getInternalOrderProductByInternalOrderID(ID);
+    for (let internalProduct of internalOrderProducts){
+      let SKUID = internalProduct.SKUID;
+      let SKU = await this.db.getSKUById(SKUID);
+      if (SKU!==undefined){
+        let QTY = internalProduct.QTY;
+        let product = {
+          "SKUId": SKU.SKUID,
+          "description": SKU.Description,
+          "price": SKU.Price,
+          "qty": QTY,
+        }
+        products.push(product);
+      }
+    }
+    return products;
   }
 
   async getInternalOrderByID(ID) {
-    try {
-      const internalOrder = await this.db.getInternalOrderByID(ID);
-      return internalOrder;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
+    const internalOrder = await this.db.getInternalOrderByID(ID);
+    if (internalOrder===undefined){
+      return undefined;
     }
+    const state = internalOrder.state;
+    let products = [];
+    if (state==="COMPLETED"){
+      products = await this.getInternalOrderProducts(internalOrder.id);
+      
+    }
+    else{
+      products = await this.getInternalOrderSKUItems(internalOrder.id);
+    }
+    internalOrder.concatProducts(products)
+    return internalOrder;
   }
 
   async modifyInternalOrder(ID, newState, products) {
-    try {
-      await this.db.modifyInternalOrder(ID, newState, products);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
+    const internalOrder = await this.getInternalOrderByID(ID);
+    if (internalOrder===undefined){
+      return undefined;
     }
+    await this.db.modifyInternalOrderState(ID, newState);
+    if (products && newState==="COMPLETED"){
+      // await this.db.deleteInternalOrderSKUItemByInternalOrderID(ID);
+      for (let p of products){
+        await this.db.createInternalOrderSKUItem(ID, p.RFID);
+      }
+    }
+    return true;
   }
 
   async deleteInternalOrder(ID) {
-    try {
-      await this.db.deleteInternalOrder(ID);
-      return;
-    } catch (err) {
-      console.log(err);
-      throw EzWhException.InternalError;
-    }
+    await this.db.deleteInternalOrder(ID);
+    return;
   }
 }
 
