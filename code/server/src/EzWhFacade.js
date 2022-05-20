@@ -11,6 +11,8 @@ const TestResult = require("./TestResult.js");
 class EzWhFacade {
   constructor() {
     this.db = new DbHelper("./dev.db");
+    // FIXME: createHardcoded users is called before create tables are complete
+    // Like this for now because we have to separate in DAOs
     this.db.createTables().then(() => this.createHardcodedUsers());
   }
 

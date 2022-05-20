@@ -45,7 +45,8 @@ class DbHelper {
   }
 
   async createTables() {
-    const createSKUTable = `CREATE TABLE IF NOT EXISTS SKU (
+    return new Promise((resolve, reject) => {
+      const createSKUTable = `CREATE TABLE IF NOT EXISTS SKU (
     		SKUID INTEGER NOT NULL,
     		Description VARCHAR(100) NOT NULL,
     		Weight DOUBLE NOT NULL,
@@ -57,13 +58,14 @@ class DbHelper {
     		PRIMARY KEY(SKUID),
     		FOREIGN KEY (Position) REFERENCES Position(PositionID)
 		);`;
-    this.dbConnection.run(createSKUTable, (err) => {
-      if (err) {
-        console.log("Error creating SKU table", err);
-      }
-    });
+      this.dbConnection.run(createSKUTable, (err) => {
+        if (err) {
+          console.log("Error creating SKU table", err);
+          reject(err);
+        }
+      });
 
-    const createSKUItemTable = `CREATE TABLE IF NOT EXISTS SKUItem (
+      const createSKUItemTable = `CREATE TABLE IF NOT EXISTS SKUItem (
     		RFID VARCHAR(33) NOT NULL,
     		SKUID INTEGER NOT NULL,
     		Available INTEGER NOT NULL,
@@ -71,13 +73,14 @@ class DbHelper {
     		PRIMARY KEY (RFID),
     		FOREIGN KEY (SKUID) references SKU(SKUID)
 		);`;
-    this.dbConnection.run(createSKUItemTable, (err) => {
-      if (err) {
-        console.log("Error creating SKUItem table", err);
-      }
-    });
+      this.dbConnection.run(createSKUItemTable, (err) => {
+        if (err) {
+          console.log("Error creating SKUItem table", err);
+          reject(err);
+        }
+      });
 
-    const createPositionTable = `CREATE TABLE IF NOT EXISTS Position (
+      const createPositionTable = `CREATE TABLE IF NOT EXISTS Position (
     		PositionID VARCHAR(20) NOT NULL,
     		AisleID VARCHAR(20) NOT NULL,
     		Row VARCHAR(20) NOT NULL,
@@ -90,13 +93,14 @@ class DbHelper {
     		PRIMARY KEY (PositionID),
     		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)
 		);`;
-    this.dbConnection.run(createPositionTable, (err) => {
-      if (err) {
-        console.log("Error creating Position table", err);
-      }
-    });
+      this.dbConnection.run(createPositionTable, (err) => {
+        if (err) {
+          console.log("Error creating Position table", err);
+          reject(err);
+        }
+      });
 
-    const createUserTable = `CREATE TABLE IF NOT EXISTS User (
+      const createUserTable = `CREATE TABLE IF NOT EXISTS User (
 			UserID INTEGER NOT NULL,
 			Name VARCHAR(50) NOT NULL,
 			Surname VARCHAR(50) NOT NULL,
@@ -106,13 +110,14 @@ class DbHelper {
 			PRIMARY KEY (UserID),
       UNIQUE (Email, Type)
 		);`;
-    this.dbConnection.run(createUserTable, (err) => {
-      if (err) {
-        console.log("Error creating User table", err);
-      }
-    });
+      this.dbConnection.run(createUserTable, (err) => {
+        if (err) {
+          console.log("Error creating User table", err);
+          reject(err);
+        }
+      });
 
-    const createTestDescriptorTable = `CREATE TABLE IF NOT EXISTS TestDescriptor (
+      const createTestDescriptorTable = `CREATE TABLE IF NOT EXISTS TestDescriptor (
 			TestDescriptorID INTEGER NOT NULL,
 			Name VARCHAR(20) NOT NULL,
 			ProcedureDescription VARCHAR(20) NOT NULL,
@@ -120,13 +125,14 @@ class DbHelper {
 			PRIMARY KEY (TestDescriptorID),
 			FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)
 		);`;
-    this.dbConnection.run(createTestDescriptorTable, (err) => {
-      if (err) {
-        console.log("Error creating TestDescriptor table", err);
-      }
-    });
+      this.dbConnection.run(createTestDescriptorTable, (err) => {
+        if (err) {
+          console.log("Error creating TestDescriptor table", err);
+          reject(err);
+        }
+      });
 
-    const createTestResultTable = `CREATE TABLE IF NOT EXISTS TestResult (
+      const createTestResultTable = `CREATE TABLE IF NOT EXISTS TestResult (
 			TestResultID INTEGER NOT NULL,
 			RFID VARCHAR(20) NOT NULL,
 			TestDescriptorID INTEGER NOT NULL,
@@ -136,13 +142,14 @@ class DbHelper {
 			FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
 			FOREIGN KEY (TestDescriptorID) REFERENCES TestDescriptor(TestDescriptorID)
 		);`;
-    this.dbConnection.run(createTestResultTable, (err) => {
-      if (err) {
-        console.log("Error creating TestResult table", err);
-      }
-    });
+      this.dbConnection.run(createTestResultTable, (err) => {
+        if (err) {
+          console.log("Error creating TestResult table", err);
+          reject(err);
+        }
+      });
 
-    const createItemTable = `CREATE TABLE IF NOT EXISTS Item (
+      const createItemTable = `CREATE TABLE IF NOT EXISTS Item (
     		ItemID INTEGER NOT NULL,
     		Description VARCHAR(200) ,
     		Price DOUBLE NOT NULL,
@@ -154,26 +161,28 @@ class DbHelper {
     		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
     		);`;
 
-    /**/
-    this.dbConnection.run(createItemTable, (err) => {
-      if (err) {
-        console.log("Error creating Item table", err);
-      }
-    });
+      /**/
+      this.dbConnection.run(createItemTable, (err) => {
+        if (err) {
+          console.log("Error creating Item table", err);
+          reject(err);
+        }
+      });
 
-    //date format ?
-    const createTransportNoteTable = `CREATE TABLE IF NOT EXISTS TransportNote (
+      //date format ?
+      const createTransportNoteTable = `CREATE TABLE IF NOT EXISTS TransportNote (
     		ShipmentDate VARCHAR(100) NOT NULL, 
     		RestockOrderID INTEGER NOT NULL ,
     		PRIMARY KEY (RestockOrderID),
 			  FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
 		);`;
-    this.dbConnection.run(createTransportNoteTable, (err) => {
-      if (err) {
-        console.log("Error creating TransportNote table", err);
-      }
-    });
-    const createInternalOrderTable = `CREATE TABLE IF NOT EXISTS InternalOrder (
+      this.dbConnection.run(createTransportNoteTable, (err) => {
+        if (err) {
+          console.log("Error creating TransportNote table", err);
+          reject(err);
+        }
+      });
+      const createInternalOrderTable = `CREATE TABLE IF NOT EXISTS InternalOrder (
 		InternalOrderID INTEGER NOT NULL,
 		IssueDate VARCHAR(20) NOT NULL,
 		State VARCHAR(20) NOT NULL,
@@ -181,13 +190,14 @@ class DbHelper {
 		PRIMARY KEY(InternalOrderID),
 		FOREIGN KEY (CustomerID) REFERENCES User(UserID)
 	);`;
-    this.dbConnection.run(createInternalOrderTable, (err) => {
-      if (err) {
-        console.log("Error creating InternalOrder table", err);
-      }
-    });
+      this.dbConnection.run(createInternalOrderTable, (err) => {
+        if (err) {
+          console.log("Error creating InternalOrder table", err);
+          reject(err);
+        }
+      });
 
-    const createInternalOrderProductTable = `CREATE TABLE IF NOT EXISTS InternalOrderProduct (
+      const createInternalOrderProductTable = `CREATE TABLE IF NOT EXISTS InternalOrderProduct (
 		SKUID INTEGER NOT NULL,
 		InternalOrderID INTEGER NOT NULL,
 		QTY INTEGER NOT NULL,
@@ -195,26 +205,28 @@ class DbHelper {
 		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
 		FOREIGN KEY (InternalOrderID) REFERENCES InternalOrder(InternalOrderID)
 	);`;
-    this.dbConnection.run(createInternalOrderProductTable, (err) => {
-      if (err) {
-        console.log("Error creating InternalOrderProduct table", err);
-      }
-    });
+      this.dbConnection.run(createInternalOrderProductTable, (err) => {
+        if (err) {
+          console.log("Error creating InternalOrderProduct table", err);
+          reject(err);
+        }
+      });
 
-    const createInternalOrderSKUItemTable = `CREATE TABLE IF NOT EXISTS InternalOrderSKUItem (
+      const createInternalOrderSKUItemTable = `CREATE TABLE IF NOT EXISTS InternalOrderSKUItem (
 		RFID INTEGER NOT NULL,
 		InternalOrderID INTEGER NOT NULL,
 		PRIMARY KEY(RFID, InternalOrderID),
 		FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
 		FOREIGN KEY (InternalOrderID) REFERENCES InternalOrder(InternalOrderID)
 	);`;
-    this.dbConnection.run(createInternalOrderSKUItemTable, (err) => {
-      if (err) {
-        console.log("Error creating Internal OrderSKUItem table", err);
-      }
-    });
+      this.dbConnection.run(createInternalOrderSKUItemTable, (err) => {
+        if (err) {
+          console.log("Error creating Internal OrderSKUItem table", err);
+          reject(err);
+        }
+      });
 
-    const createRestockOrderTable = `CREATE TABLE IF NOT EXISTS RestockOrder (
+      const createRestockOrderTable = `CREATE TABLE IF NOT EXISTS RestockOrder (
 		RestockOrderID INTEGER NOT NULL,
 		IssueDate VARCHAR(20) NOT NULL,
     State VARCHAR(20) NOT NULL,
@@ -224,13 +236,14 @@ class DbHelper {
     on delete cascade,
 		PRIMARY KEY(RestockOrderID)
 	);`;
-    this.dbConnection.run(createRestockOrderTable, (err) => {
-      if (err) {
-        console.log("Error creating Restock Order table", err);
-      }
-    });
+      this.dbConnection.run(createRestockOrderTable, (err) => {
+        if (err) {
+          console.log("Error creating Restock Order table", err);
+          reject(err);
+        }
+      });
 
-    const createRestockOrderProductTable = `CREATE TABLE IF NOT EXISTS RestockOrderProduct (
+      const createRestockOrderProductTable = `CREATE TABLE IF NOT EXISTS RestockOrderProduct (
 		ItemID INTEGER NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
 		QTY INTEGER NOT NULL,
@@ -240,13 +253,14 @@ class DbHelper {
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
     on delete cascade
     );`;
-    this.dbConnection.run(createRestockOrderProductTable, (err) => {
-      if (err) {
-        console.log("Error creating RestockOrderProduct table", err);
-      }
-    });
+      this.dbConnection.run(createRestockOrderProductTable, (err) => {
+        if (err) {
+          console.log("Error creating RestockOrderProduct table", err);
+          reject(err);
+        }
+      });
 
-    const createRestockOrderSKUItemTable = `CREATE TABLE IF NOT EXISTS RestockOrderSKUItem (
+      const createRestockOrderSKUItemTable = `CREATE TABLE IF NOT EXISTS RestockOrderSKUItem (
 		RFID INTEGER NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
 		PRIMARY KEY(RFID, RestockOrderID),
@@ -255,13 +269,14 @@ class DbHelper {
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
 		on delete cascade
 	);`;
-    this.dbConnection.run(createRestockOrderSKUItemTable, (err) => {
-      if (err) {
-        console.log("Error creating RestockOrderSKUItem table", err);
-      }
-    });
+      this.dbConnection.run(createRestockOrderSKUItemTable, (err) => {
+        if (err) {
+          console.log("Error creating RestockOrderSKUItem table", err);
+          reject(err);
+        }
+      });
 
-    const createReturnOrderTable = `CREATE TABLE IF NOT EXISTS ReturnOrder (
+      const createReturnOrderTable = `CREATE TABLE IF NOT EXISTS ReturnOrder (
 		ReturnOrderID INTEGER NOT NULL,
 		ReturnDate VARCHAR(20) NOT NULL,
 		RestockOrderID INTEGER NOT NULL,
@@ -269,13 +284,14 @@ class DbHelper {
 		FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
     on delete cascade
 	  );`;
-    this.dbConnection.run(createReturnOrderTable, (err) => {
-      if (err) {
-        console.log("Error creating Return Order table", err);
-      }
-    });
+      this.dbConnection.run(createReturnOrderTable, (err) => {
+        if (err) {
+          console.log("Error creating Return Order table", err);
+          reject(err);
+        }
+      });
 
-    const createReturnOrderProductTable = `CREATE TABLE IF NOT EXISTS ReturnOrderProduct (
+      const createReturnOrderProductTable = `CREATE TABLE IF NOT EXISTS ReturnOrderProduct (
       RFID VARCHAR(20) NOT NULL,
       ReturnOrderID INTEGER NOT NULL,
       PRIMARY KEY(RFID, ReturnOrderID),
@@ -284,10 +300,12 @@ class DbHelper {
       FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
       on delete cascade
       );`;
-    this.dbConnection.run(createReturnOrderProductTable, (err) => {
-      if (err) {
-        console.log("Error creating Return Order Product table", err);
-      }
+      this.dbConnection.run(createReturnOrderProductTable, (err) => {
+        if (err) {
+          console.log("Error creating Return Order Product table", err);
+          reject(err);
+        }
+      });
     });
   }
 
