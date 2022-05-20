@@ -306,6 +306,7 @@ class DbHelper {
           reject(err);
         }
       });
+      resolve();
     });
   }
 
