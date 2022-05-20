@@ -58,14 +58,14 @@ const items = [
         description: "A new item",
         price: 10.99,
         SKUId: 1,
-        supplierId: 1
+        supplierId: 7
     },
     {
         id: 13,
         description: "A newer item",
         price: 12.99,
         SKUId: 2,
-        supplierId: 1
+        supplierId: 8
     }
 ]
 
