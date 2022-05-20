@@ -1366,14 +1366,23 @@ class DbHelper {
   
   getInternalOrders(state) {
     return new Promise((resolve, reject) => {
-      let sql = `SELECT InternalOrderID FROM InternalOrder`;
+      let sql = `SELECT * FROM InternalOrder`;
       if (state) sql+=` where State = '${state}'`;
       sql+=`;`;
       this.dbConnection.all(sql, function (err, rows){
         if (err) {
           reject(err);
-        } else {
-          resolve(rows);
+        }
+        else {
+          const tds = rows.map( (r) =>
+            new InternalOrder(
+              r.InternalOrderID,
+              r.IssueDate,
+              r.State,
+              r.CustomerID
+            )
+          );
+          resolve(tds);
         }
       });
     });
@@ -1386,8 +1395,18 @@ class DbHelper {
         if (err) {
           reject(err.toString());
         } else {
-          // console.log(rows);
-          resolve(row);
+          if (row===undefined){
+            resolve(undefined);
+          }
+          else {
+            const tds = new InternalOrder(
+              row.InternalOrderID,
+              row.IssueDate,
+              row.State,
+              row.CustomerID
+            )
+            resolve(tds);
+          }
         }
       });
     });

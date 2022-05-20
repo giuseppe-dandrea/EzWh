@@ -841,13 +841,17 @@ class EzWhFacade {
   }
 
   async getInternalOrders(state) {
-    let internalOrders=[];
-    const internalOrderIDs = await this.db.getInternalOrders(state);
-    console.log(internalOrderIDs)
-    for (let i of internalOrderIDs){
-      const id = i.InternalOrderID;
-      const internalOrder = await this.getInternalOrderByID(id);
-      internalOrders.push(internalOrder);
+    const internalOrders = await this.db.getInternalOrders(state);
+    for (let internalOrder of internalOrders){
+      const state = internalOrder.state;
+      let products = [];
+      if (state==="COMPLETED"){
+        products = await this.getInternalOrderProducts(internalOrder.id);
+      }
+      else{
+        products = await this.getInternalOrderSKUItems(internalOrder.id);
+      }
+      internalOrder.concatProducts(products)
     }
     return internalOrders;
   }
@@ -860,55 +864,61 @@ class EzWhFacade {
     return this.getInternalOrders("ACCEPTED");
   }
 
+  async getInternalOrderProducts(ID){
+    let products = []
+    let internalOrderProducts = await this.db.getInternalOrderSKUItemByInternalOrderID(ID);
+    for (let internalProduct of internalOrderProducts){
+      let RFID = internalProduct.RFID;
+      let SKU = await this.db.getSKUItemByRfid(RFID);
+      if (SKU!==undefined){
+        let RFID = internalProduct.RFID;
+        let product = {
+          "SKUId": SKU.SKUID,
+          "description": SKU.Description,
+          "price": SKU.Price,
+          "RFID": RFID,
+        }
+        products.push(product);
+      }
+    }
+    return products;
+  }
+
+  async getInternalOrderSKUItems(ID){
+    let products = []
+    let internalOrderProducts = await this.db.getInternalOrderProductByInternalOrderID(ID);
+    for (let internalProduct of internalOrderProducts){
+      let SKUID = internalProduct.SKUID;
+      let SKU = await this.db.getSKUById(SKUID);
+      if (SKU!==undefined){
+        let QTY = internalProduct.QTY;
+        let product = {
+          "SKUId": SKU.SKUID,
+          "description": SKU.Description,
+          "price": SKU.Price,
+          "qty": QTY,
+        }
+        products.push(product);
+      }
+    }
+    return products;
+  }
+
   async getInternalOrderByID(ID) {
-    const internalOrderJson = await this.db.getInternalOrderByID(ID);
-    if (internalOrderJson===undefined){
+    const internalOrder = await this.db.getInternalOrderByID(ID);
+    if (internalOrder===undefined){
       return undefined;
     }
-    console.log(internalOrderJson)
-    const internalOrder = new InternalOrder(
-      internalOrderJson.InternalOrderID,
-      internalOrderJson.IssueDate,
-      internalOrderJson.State,
-      [],
-      internalOrderJson.CustomerID
-    );
     const state = internalOrder.state;
-    let internalOrderProducts;
+    let products = [];
     if (state==="COMPLETED"){
-      internalOrderProducts = await this.db.getInternalOrderSKUItemByInternalOrderID(internalOrder.id);
-      for (let internalProduct of internalOrderProducts){
-        let RFID = internalProduct.RFID;
-        let SKU = await this.db.getSKUItemByRfid(RFID);
-        if (SKU!==undefined){
-          let RFID = internalProduct.RFID;
-          let product = {
-            "SKUId": SKU.SKUID,
-            "description": SKU.Description,
-            "price": SKU.Price,
-            "RFID": RFID,
-          }
-          internalOrder.addProduct(product);
-        }
-      }
+      products = await this.getInternalOrderProducts(internalOrder.id);
+      
     }
     else{
-      internalOrderProducts = await this.db.getInternalOrderProductByInternalOrderID(internalOrder.id);
-      for (let internalProduct of internalOrderProducts){
-        let SKUID = internalProduct.SKUID;
-        let SKU = await this.db.getSKUById(SKUID);
-        if (SKU!==undefined){
-          let QTY = internalProduct.QTY;
-          let product = {
-            "SKUId": SKU.SKUID,
-            "description": SKU.Description,
-            "price": SKU.Price,
-            "qty": QTY,
-          }
-          internalOrder.addProduct(product);
-        }
-      }
+      products = await this.getInternalOrderSKUItems(internalOrder.id);
     }
+    internalOrder.concatProducts(products)
     return internalOrder;
   }
 
