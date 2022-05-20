@@ -253,120 +253,124 @@ function testDeleteTestResult(id, rfid, expectedStatus) {
             });
     });
 }
+describe("TEST TestResult API", function () {
 
-describe("Add new skus, skuItems and testDescriptors to test", function () {
-    for (let sku of skus) {
-        testCreateSKU(201, sku);
-    }
+    describe("Add new skus, skuItems and testDescriptors to test", function () {
+        for (let sku of skus) {
+            testCreateSKU(201, sku);
+        }
 
-    for (let td of testDescriptors) {
-        testAddNewTestDescriptor(td, 201);
-    }
+        for (let td of testDescriptors) {
+            testAddNewTestDescriptor(td, 201);
+        }
 
-});
-
-describe("Add new skuItems to test", function () {
-    for (let si of skuItems)
-        testCreateSKUItem(si, 201);
-});
-
-describe("Add test results", function () {
-    for (let tr of testResults) {
-        testAddNewTestResult(tr, 201);
-    }
-});
-
-describe("Get test results by rfid", function () {
-    for (let tr of testResults) {
-        testGetTestResultsByRFID(tr.rfid, 200, testResults.filter((t) => t.rfid === tr.rfid).length, testResults.filter((t) => t.rfid === tr.rfid));
-    }
-});
-
-describe("Get test results by rfid (invalid input)", function () {
-    testGetTestResultsByRFID("12345678901234567890123456789055", 404);
-    testGetTestResultsByRFID("1234567890123456789012345678905", 422);
-    testGetTestResultsByRFID("123456789012345678901234567890aa", 422);
-    testGetTestResultsByRFID("aa", 422);
-    testGetTestResultsByRFID(32, 422);
-});
-
-describe("Get test results by id and rfid", function() {
-    testGetTestResultsByIDAndRFID(1, testResults[0].rfid, 200, testResults[0]);
-    testGetTestResultsByIDAndRFID(2, testResults[1].rfid, 200, testResults[1]);
-    testGetTestResultsByIDAndRFID(3, testResults[2].rfid, 200, testResults[2]);
-});
-
-describe("Get test results by id and rfid (invalid input)", function() {
-    testGetTestResultsByIDAndRFID(50, testResults[0].rfid, 404);
-    testGetTestResultsByIDAndRFID(1, "12345678901234567890123456798055", 404);
-    testGetTestResultsByIDAndRFID("asd", "12345678901234567890123456798055", 422);
-    testGetTestResultsByIDAndRFID(1, "12345678901234567890123456795", 422);
-    testGetTestResultsByIDAndRFID(1, "1234567890123456789012345679805a", 422);
-});
-
-describe("Edit test result", function () {
-    let editTestResult = {
-        newIdTestDescriptor: 2,
-        newDate: "2021/10/15 15:30",
-        newResult: true
-    }
-    testEditTestResult(1, testResults[0].rfid, editTestResult, 200);
-    testGetTestResultsByIDAndRFID(1, testResults[0].rfid, 200, {
-        id: 1,
-        idTestDescriptor: editTestResult.newIdTestDescriptor,
-        Date: editTestResult.newDate,
-        Result: editTestResult.newResult
     });
-    testEditTestResult(1, testResults[0].rfid, {
-        newIdTestDescriptor: testResults[0].idTestDescriptor,
-        newDate: testResults[0].Date,
-        newResult: testResults[0].Result
-    }, 200);
-    testGetTestResultsByIDAndRFID(1, testResults[0].rfid, 200, testResults[0]);
-});
 
-describe("Edit test result (invalid input)", function () {
-    let editTestResult = {
-        newIdTestDescriptor: 2,
-        newDate: "2021/10/15 15:30",
-        newResult: true
-    }
-    testEditTestResult(50, testResults[0].rfid, editTestResult, 404);
-    testEditTestResult(1, "12345678901234567890123456789055", editTestResult, 404);
-    testEditTestResult(1, testResults[0].rfid, {...editTestResult, newIdTestDescriptor: 50}, 404);
-    testEditTestResult(1, "asd", editTestResult, 422);
-    testEditTestResult(0, testResults[0].rfid, editTestResult, 422);
-    testEditTestResult(-1, testResults[0].rfid, editTestResult, 422);
-    testEditTestResult("asd", testResults[0].rfid, editTestResult, 422);
-});
 
-describe("Delete test result", function () {
-    testDeleteTestResult(1, testResults[0].rfid, 204);
-    testDeleteTestResult(2, testResults[1].rfid, 204);
-    testDeleteTestResult(3, testResults[2].rfid, 204);
-});
+    describe("Add new skuItems to test", function () {
+        for (let si of skuItems)
+            testCreateSKUItem(si, 201);
+    });
 
-describe("Delete test result (invalid input)", function () {
-    testDeleteTestResult(50, testResults[0].rfid, 204);
-    testDeleteTestResult(1, "asd", 422);
-    testDeleteTestResult(50, "12345678901234567890123456789055", 204);
-    testDeleteTestResult(50, "1234567890123456789012345678905", 422);
-    testDeleteTestResult(50, "1234567890123456789012345678905a", 422);
-    testDeleteTestResult(0, testResults[0].rfid, 422);
-    testDeleteTestResult(-1, testResults[0].rfid, 422);
-    testDeleteTestResult("asd", testResults[0].rfid, 422);
-});
+    describe("Add test results", function () {
+        for (let tr of testResults) {
+            testAddNewTestResult(tr, 201);
+        }
+    });
 
-describe("Delete skus and testDescriptors used to test", function () {
-    for (let i = 0; i < skus.length; i++) {
-        testDeleteSKU(204, i+1);
-    }
+    describe("Get test results by rfid", function () {
+        for (let tr of testResults) {
+            testGetTestResultsByRFID(tr.rfid, 200, testResults.filter((t) => t.rfid === tr.rfid).length, testResults.filter((t) => t.rfid === tr.rfid));
+        }
+    });
 
-    for (let skuitem of skuItems) {
-        testDeleteSKUItem(204, skuitem.RFID);
-    }
+    describe("Get test results by rfid (invalid input)", function () {
+        testGetTestResultsByRFID("12345678901234567890123456789055", 404);
+        testGetTestResultsByRFID("1234567890123456789012345678905", 422);
+        testGetTestResultsByRFID("123456789012345678901234567890aa", 422);
+        testGetTestResultsByRFID("aa", 422);
+        testGetTestResultsByRFID(32, 422);
+    });
 
-    for (let i = 0; i < testDescriptors.length; i++) {
-        testDeleteTestDescriptor(i + 1, 204);
-    }
+    describe("Get test results by id and rfid", function() {
+        testGetTestResultsByIDAndRFID(1, testResults[0].rfid, 200, testResults[0]);
+        testGetTestResultsByIDAndRFID(2, testResults[1].rfid, 200, testResults[1]);
+        testGetTestResultsByIDAndRFID(3, testResults[2].rfid, 200, testResults[2]);
+    });
+
+    describe("Get test results by id and rfid (invalid input)", function() {
+        testGetTestResultsByIDAndRFID(50, testResults[0].rfid, 404);
+        testGetTestResultsByIDAndRFID(1, "12345678901234567890123456798055", 404);
+        testGetTestResultsByIDAndRFID("asd", "12345678901234567890123456798055", 422);
+        testGetTestResultsByIDAndRFID(1, "12345678901234567890123456795", 422);
+        testGetTestResultsByIDAndRFID(1, "1234567890123456789012345679805a", 422);
+    });
+
+    describe("Edit test result", function () {
+        let editTestResult = {
+            newIdTestDescriptor: 2,
+            newDate: "2021/10/15 15:30",
+            newResult: true
+        }
+        testEditTestResult(1, testResults[0].rfid, editTestResult, 200);
+        testGetTestResultsByIDAndRFID(1, testResults[0].rfid, 200, {
+            id: 1,
+            idTestDescriptor: editTestResult.newIdTestDescriptor,
+            Date: editTestResult.newDate,
+            Result: editTestResult.newResult
+        });
+        testEditTestResult(1, testResults[0].rfid, {
+            newIdTestDescriptor: testResults[0].idTestDescriptor,
+            newDate: testResults[0].Date,
+            newResult: testResults[0].Result
+        }, 200);
+        testGetTestResultsByIDAndRFID(1, testResults[0].rfid, 200, testResults[0]);
+    });
+
+    describe("Edit test result (invalid input)", function () {
+        let editTestResult = {
+            newIdTestDescriptor: 2,
+            newDate: "2021/10/15 15:30",
+            newResult: true
+        }
+        testEditTestResult(50, testResults[0].rfid, editTestResult, 404);
+        testEditTestResult(1, "12345678901234567890123456789055", editTestResult, 404);
+        testEditTestResult(1, testResults[0].rfid, {...editTestResult, newIdTestDescriptor: 50}, 404);
+        testEditTestResult(1, "asd", editTestResult, 422);
+        testEditTestResult(0, testResults[0].rfid, editTestResult, 422);
+        testEditTestResult(-1, testResults[0].rfid, editTestResult, 422);
+        testEditTestResult("asd", testResults[0].rfid, editTestResult, 422);
+    });
+
+    describe("Delete test result", function () {
+        testDeleteTestResult(1, testResults[0].rfid, 204);
+        testDeleteTestResult(2, testResults[1].rfid, 204);
+        testDeleteTestResult(3, testResults[2].rfid, 204);
+    });
+
+    describe("Delete test result (invalid input)", function () {
+        testDeleteTestResult(50, testResults[0].rfid, 204);
+        testDeleteTestResult(1, "asd", 422);
+        testDeleteTestResult(50, "12345678901234567890123456789055", 204);
+        testDeleteTestResult(50, "1234567890123456789012345678905", 422);
+        testDeleteTestResult(50, "1234567890123456789012345678905a", 422);
+        testDeleteTestResult(0, testResults[0].rfid, 422);
+        testDeleteTestResult(-1, testResults[0].rfid, 422);
+        testDeleteTestResult("asd", testResults[0].rfid, 422);
+    });
+
+    describe("Delete skus and testDescriptors used to test", function () {
+        for (let i = 0; i < skus.length; i++) {
+            testDeleteSKU(204, i+1);
+        }
+
+        for (let skuitem of skuItems) {
+            testDeleteSKUItem(204, skuitem.RFID);
+        }
+
+        for (let i = 0; i < testDescriptors.length; i++) {
+            testDeleteTestDescriptor(i + 1, 204);
+        }
+    });
+
 });

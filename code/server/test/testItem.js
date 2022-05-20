@@ -235,70 +235,77 @@ function testEditItem(id, editItem, expectedStatus) {
     });
 }
 
-describe("Adding new sku and supplier to test item", function () {
-    for (let supplier of suppliers) {
-        testAddNewUser(supplier, 201);
-    }
-    for (let sku of skus) {
-        testCreateSKU(201, sku);
-    }
-});
+describe("TEST Item API", function () {
 
-describe("Add new items", function () {
-    for (let item of items) {
-        testCreateItem(item, 201);
-    }
-    testCreateItem(items[0], 422);
-    testCreateItem({...items[0], id: 10}, 422);
-    testCreateItem({...items[0], id: 10, SKUId: 50}, 404);
-    testCreateItem({...items[0], id: 10, SKUId: 0}, 422);
-    testCreateItem({...items[0], id: 10, SKUId: -1}, 422);
-    testCreateItem({...items[0], id: 10, SKUId: "asd"}, 422);
-    testGetItems(200, items.length, items);
-    for (let item of items) {
-        testGetItemById(item.id, 200, item);
-    }
+    describe("Adding new sku and supplier to test item", function () {
+        for (let supplier of suppliers) {
+            testAddNewUser(supplier, 201);
+        }
+        for (let sku of skus) {
+            testCreateSKU(201, sku);
+        }
+    });
 
-});
+    describe("Add new items", function () {
+        for (let item of items) {
+            testCreateItem(item, 201);
+        }
+        testCreateItem(items[0], 422);
+        testCreateItem({...items[0], id: 10}, 422);
+        testCreateItem({...items[0], id: 10, SKUId: 50}, 404);
+        testCreateItem({...items[0], id: 10, SKUId: 0}, 422);
+        testCreateItem({...items[0], id: 10, SKUId: -1}, 422);
+        testCreateItem({...items[0], id: 10, SKUId: "asd"}, 422);
+        testGetItems(200, items.length, items);
+        for (let item of items) {
+            testGetItemById(item.id, 200, item);
+        }
 
-describe("Get items by id (Invalid input)", function () {
-    testGetItemById(50, 404);
-    testGetItemById(0, 422);
-    testGetItemById(-1, 422);
-    testGetItemById("asd", 422);
-});
+    });
 
-describe("Edit items", function () {
-    for (let i = 0; i < items.length; i++) {
-        testEditItem(items[i].id, editItems[i], 200);
-        testGetItemById(items[i].id, 200, {...items[i], description: editItems[i].newDescription, price: editItems[i].newPrice});
-    }
-});
+    describe("Get items by id (Invalid input)", function () {
+        testGetItemById(50, 404);
+        testGetItemById(0, 422);
+        testGetItemById(-1, 422);
+        testGetItemById("asd", 422);
+    });
 
-describe("Edit items (Invalid input)", function () {
-    testEditItem(50, editItems[0], 404);
-    testEditItem(0, editItems[0], 422);
-    testEditItem(-1, editItems[0], 422);
-    testEditItem("asd", editItems[0], 422);
+    describe("Edit items", function () {
+        for (let i = 0; i < items.length; i++) {
+            testEditItem(items[i].id, editItems[i], 200);
+            testGetItemById(items[i].id, 200, {
+                ...items[i],
+                description: editItems[i].newDescription,
+                price: editItems[i].newPrice
+            });
+        }
+    });
 
-});
+    describe("Edit items (Invalid input)", function () {
+        testEditItem(50, editItems[0], 404);
+        testEditItem(0, editItems[0], 422);
+        testEditItem(-1, editItems[0], 422);
+        testEditItem("asd", editItems[0], 422);
 
-describe("Delete inserted items", function () {
-    for (let item of items) {
-        testDeleteItem(item.id, 204);
-    }
-    testDeleteItem(50, 204);
-    testDeleteItem(0, 422);
-    testDeleteItem(-1, 422);
+    });
 
-    testGetItems(200, 0);
-});
+    describe("Delete inserted items", function () {
+        for (let item of items) {
+            testDeleteItem(item.id, 204);
+        }
+        testDeleteItem(50, 204);
+        testDeleteItem(0, 422);
+        testDeleteItem(-1, 422);
 
-describe("Deleting skus and suppliers", function () {
-    for (let supplier of suppliers) {
-        testDeleteUser(supplier.username, "supplier", 204);
-    }
-    for (let i = 0; i < skus.length; i++) {
-        testDeleteSKU(204, i+1);
-    }
+        testGetItems(200, 0);
+    });
+
+    describe("Deleting skus and suppliers", function () {
+        for (let supplier of suppliers) {
+            testDeleteUser(supplier.username, "supplier", 204);
+        }
+        for (let i = 0; i < skus.length; i++) {
+            testDeleteSKU(204, i + 1);
+        }
+    });
 });
