@@ -1,7 +1,6 @@
-const dbConnection = require("./DatabaseConnection").getInstance();
-
 exports.getSKUItems = () => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `SELECT * FROM SKUItem;`;
         dbConnection.all(sql, (err, rows) => {
             if (err) {
@@ -15,6 +14,7 @@ exports.getSKUItems = () => {
 
 exports.getSKUItemsBySKU = (SKUID) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `SELECT * FROM SKUItem WHERE SKUID = ? AND Available = 1;`;
         dbConnection.all(sql, SKUID, (err, rows) => {
             if (err) reject(err);
@@ -25,6 +25,7 @@ exports.getSKUItemsBySKU = (SKUID) => {
 
 exports.getSKUItemByRfid = (rfid) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `SELECT * FROM SKUItem WHERE RFID = ?;`;
         dbConnection.get(sql, rfid, (err, row) => {
             if (err) reject(err);
@@ -35,6 +36,7 @@ exports.getSKUItemByRfid = (rfid) => {
 
 exports.createSKUItem = (rfid, SKUId, dateOfStock) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `INSERT INTO SKUItem(rfid, skuid, available, dateofstock) VALUES (?, ?, 0, ?)`;
         dbConnection.run(sql, [rfid, SKUId, dateOfStock], (err) => {
             if (err) reject(err);
@@ -45,6 +47,7 @@ exports.createSKUItem = (rfid, SKUId, dateOfStock) => {
 
 exports.modifySKUItem = (rfid, newRfid, newAvailable, newDateOfStock) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `UPDATE SKUItem SET
 		  	RFID = ?,
 		  	Available = ?,
@@ -59,6 +62,7 @@ exports.modifySKUItem = (rfid, newRfid, newAvailable, newDateOfStock) => {
 
 exports.deleteSKUItem = (rfid) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `DELETE FROM SKUItem WHERE RFID = ?;`;
         dbConnection.run(sql, rfid, (err) => {
             if (err) reject(err);
@@ -69,6 +73,7 @@ exports.deleteSKUItem = (rfid) => {
 //USED ONLY FOR TESTING
 exports.deleteAllSKUItems = () => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `DELETE FROM SKUItem `;
         dbConnection.run(sql, [], (err) => {
             if (err) reject(err);

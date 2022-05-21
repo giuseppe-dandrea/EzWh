@@ -1,8 +1,8 @@
 const ReturnOrder = require("../modules/ReturnOrder");
-const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.createReturnOrder = (returnDate, restockOrderID) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(d => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `insert into ReturnOrder (ReturnDate, RestockOrderId)
       values ('${returnDate}', ${restockOrderID});`;
         dbConnection.run(sql, function (err) {
@@ -16,7 +16,8 @@ exports.createReturnOrder = (returnDate, restockOrderID) => {
 }
 
 exports.createReturnOrderProducts = (ID, RFID) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(d => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `insert into ReturnOrderProduct (RFID, ReturnOrderID)
       values ('${RFID}', ${ID});`;
         dbConnection.run(sql, function (err) {
@@ -30,7 +31,8 @@ exports.createReturnOrderProducts = (ID, RFID) => {
 }
 
 exports.getReturnOrderProducts = (ID) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(d => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `select * from ReturnOrderProduct where ReturnOrderID=${ID};`;
         dbConnection.all(sql, function (err, rows) {
             if (err) {
@@ -43,7 +45,8 @@ exports.getReturnOrderProducts = (ID) => {
 }
 
 exports.getReturnOrders = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise(d => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `select * from ReturnOrder;`;
         dbConnection.all(sql, function (err, rows) {
             if (err) {
@@ -61,7 +64,8 @@ exports.getReturnOrders = () => {
 }
 
 exports.getReturnOrderByID = (ID) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(d => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `select * from ReturnOrder where ReturnOrderID=${ID};`;
         dbConnection.get(sql, function (err, row) {
             if (err) {
@@ -83,7 +87,8 @@ exports.getReturnOrderByID = (ID) => {
 }
 
 exports.deleteReturnOrder = (ID) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(d => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `delete from ReturnOrder where ReturnOrderID=${ID}`;
         console.log(sql);
         dbConnection.run(sql, [], (err) => {

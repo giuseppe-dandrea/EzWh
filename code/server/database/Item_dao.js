@@ -1,8 +1,8 @@
 const Item = require("../modules/Item");
-const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.getItems = () => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = "SELECT * FROM Item;";
         dbConnection.all(sql, [], (err, rows) => {
             if (err) {
@@ -16,6 +16,7 @@ exports.getItems = () => {
 }
 exports.getItemByID = (id) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `SELECT * FROM Item WHERE ItemID = ${id};`;
         dbConnection.all(sql, [], (err, rows) => {
             if (err) {
@@ -29,6 +30,7 @@ exports.getItemByID = (id) => {
 }
 exports.getItemBySKUIDAndSupplierID = (SKUID, supplierID) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `select ItemID from Item
       where SKUID=${SKUID} and
       SupplierID=${supplierID}`;
@@ -54,6 +56,7 @@ exports.getItemBySKUIDAndSupplierID = (SKUID, supplierID) => {
 }
 exports.createItem = (item) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `INSERT INTO Item(ItemID, Description, Price, SKUID, SupplierID) 
         VALUES (?, ?, ?, ?, ?);`;
         dbConnection.run(sql, [item.id, item.description, item.price, item.skuId, item.supplierId], (err) => {
@@ -68,6 +71,7 @@ exports.createItem = (item) => {
 
 exports.modifyItem = (id, newDescription, newPrice) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `UPDATE Item SET Description = ?, Price = ?  WHERE ItemID = ?;`;
         dbConnection.run(sql, [newDescription, newPrice, id], (err) => {
             if (err) reject(err);
@@ -78,6 +82,7 @@ exports.modifyItem = (id, newDescription, newPrice) => {
 
 exports.deleteItem = (id) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `DELETE FROM Item WHERE ItemID = ?;`;
         dbConnection.run(sql, [id], (err) => {
             if (err) reject(err);

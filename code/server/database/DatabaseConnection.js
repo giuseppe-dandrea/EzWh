@@ -1,5 +1,6 @@
 const sqlite3 = require("sqlite3");
-
+const UserService = require("../services/User_service");
+const userService = new UserService();
 
 class DatabaseConnection {
     static db = null;
@@ -10,6 +11,8 @@ class DatabaseConnection {
             console.log("Creating tables...");
             await this.createTables();
             console.log("Tables created!");
+            await this.createHardcodedUsers();
+            console.log("Hardcoded users added");
             await this.runSQL(`PRAGMA foreign_keys=on;`);
             console.log(`Foreign keys activated with "PRAGMA foreign_keys=on"`);
         }
@@ -20,8 +23,20 @@ class DatabaseConnection {
         for (let tableSQL of this.tables) {
             await this.runSQL(tableSQL);
         }
-        return;
     }
+
+    static async createHardcodedUsers() {
+    try {
+      await userService.createUser("manager1@ezwh.com", "Michael", "Scott", "testpassword", "manager");
+      await userService.createUser("supplier1@ezwh.com", "Best", "Supplier", "testpassword", "supplier");
+      await userService.createUser("deliveryEmployee1@ezwh.com", "UPS", "Guy", "testpassword", "deliveryEmployee");
+      await userService.createUser("clerk1@ezwh.com", "Michael", "Reeves", "testpassword", "clerk");
+      await userService.createUser("qualityEmployee1@ezwh.com", "Creed", "Bratton", "testpassword", "qualityEmployee");
+      await userService.createUser("user1@ezwh.com", "John", "Doe", "testpassword", "customer");
+    } catch (err) {
+      // console.log("Hardcoded users already added");
+    }
+  }
 
     static runSQL(SQL) {
         return new Promise((resolve, reject) => {

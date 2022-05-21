@@ -1,8 +1,8 @@
 const Position = require("../modules/Position");
-const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.getPositions = () => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = "SELECT * FROM Position;";
         dbConnection.all(sql, [], (err, rows) => {
             if (err) {
@@ -27,6 +27,7 @@ exports.getPositions = () => {
 }
 exports.getPositionByID = (id) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `SELECT * FROM Position WHERE PositionID = ?`;
         dbConnection.all(sql, [id], (err, rows) => {
             if (err) {
@@ -52,6 +53,7 @@ exports.getPositionByID = (id) => {
 }
 exports.createPosition = (position) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `INSERT INTO Position(PositionID, AisleID, Row, Col, MaxWeight, MaxVolume) 
       VALUES (?, ?, ?, ?, ?, ?);`;
         dbConnection.run(
@@ -80,6 +82,7 @@ exports.modifyPosition = (
     newOccupiedVolume
 ) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `UPDATE Position SET PositionID =${newPositionID} , AisleID = ${newAisleID}, Row =${newRow} , Col =${newCol} , MaxWeight =${newMaxWeight} , MaxVolume=${newMaxVolume} ,OccupiedWeight=${newOccupiedWeight}, OccupiedVolume =${newOccupiedVolume}
     WHERE PositionID = ${oldID};`;
         dbConnection.run(sql, [], (err) => {
@@ -93,6 +96,7 @@ exports.modifyPosition = (
 
 exports.modifySKUPosition = (positionId, newOccupiedWeight, newOccupiedVolume, SKUId) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `UPDATE Position SET OccupiedWeight =${newOccupiedWeight} , OccupiedVolume =${newOccupiedVolume} , SKUID =${SKUId} WHERE PositionID = ${positionId};`;
         dbConnection.run(sql, [], (err) => {
             if (err) {
@@ -105,6 +109,7 @@ exports.modifySKUPosition = (positionId, newOccupiedWeight, newOccupiedVolume, S
 
 exports.modifyPositionID = (oldID, newPositionID, newAisleID, newRow, newCol) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `UPDATE Position SET PositionID =${newPositionID} , AisleID = ${newAisleID}, Row =${newRow} , Col =${newCol} WHERE PositionID = ${oldID};`;
         dbConnection.run(sql, [], (err) => {
             if (err) {
@@ -117,6 +122,7 @@ exports.modifyPositionID = (oldID, newPositionID, newAisleID, newRow, newCol) =>
 
 exports.deletePosition = (id) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `DELETE FROM Position WHERE PositionID = ?;`;
         dbConnection.run(sql, [id], (err) => {
             if (err) reject(err);
@@ -128,6 +134,7 @@ exports.deletePosition = (id) => {
 //USED ONLY FOR TESTING
 exports.deleteAllPositions = () => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `DELETE FROM Position `;
         dbConnection.run(sql, [], (err) => {
             if (err) reject(err);

@@ -1,13 +1,14 @@
 const sqlite = require("sqlite3");
 const { User } = require("../modules/User");
 
-const dbConnection = require("./DatabaseConnection").getInstance();
+
 
 exports.getUserInfo = (id) => {
 } //TODO
 
 exports.getSuppliers = () => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = 'SELECT * FROM User WHERE Type = ?';
         dbConnection.all(sql, "supplier", (err, rows) => {
             if (err) {
@@ -23,6 +24,7 @@ exports.getSuppliers = () => {
 
 exports.getUsers = () => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = 'SELECT * FROM User WHERE Type <> ?'; // also, ADMIN??
         dbConnection.all(sql, "manager", (err, rows) => {
             if (err) {
@@ -38,6 +40,7 @@ exports.getUsers = () => {
 
 exports.createUser = (email, name, surname, password, type) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `INSERT INTO User (Name, Surname, Email, Type, Password)
       VALUES (?, ?, ?, ?, ?)`;
         dbConnection.run(sql, [name, surname, email, type, password], function (err) {
@@ -53,6 +56,7 @@ exports.createUser = (email, name, surname, password, type) => {
 
 exports.modifyUserRights = (email, oldType, newType) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `UPDATE User SET Type=?
          WHERE Email=? AND Type=?`;
         dbConnection.run(sql, [newType, email, oldType], function (err) {
@@ -68,6 +72,7 @@ exports.modifyUserRights = (email, oldType, newType) => {
 
 exports.deleteUser = (email, type) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `DELETE FROM User WHERE Email=? AND Type=?`;
         dbConnection.run(sql, [email, type], function (err) {
             if (err) {
@@ -82,6 +87,7 @@ exports.deleteUser = (email, type) => {
 
 exports.getUserByEmail = (email, type) => {
     return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
         const sql = `SELECT * FROM User WHERE Email=? AND Type=?`;
         dbConnection.all(sql, [email, type], (err, rows) => {
             if (err) {
