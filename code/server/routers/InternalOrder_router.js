@@ -1,5 +1,7 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
+const InternalOrderService = require('../services/InternalOrder_service');
+const internalOrderService = new InternalOrderService();
 
 const router = express.Router();
 
@@ -14,7 +16,7 @@ router.post("/internalOrders",
     }
     try {
       // console.log(req.body)
-      await facade.createInternalOrder(req.body.issueDate, req.body.products, req.body.customerId);
+      await internalOrderService.createInternalOrder(req.body.issueDate, req.body.products, req.body.customerId);
       return res.status(201).end();
     } catch (err) {
       console.log(err);
@@ -25,7 +27,7 @@ router.post("/internalOrders",
 router.get("/internalOrders",
   async (req, res) => {
     try{
-      const internalOrders = await facade.getInternalOrders();
+      const internalOrders = await internalOrderService.getInternalOrders();
       return res.status(201).json(internalOrders);
     } catch (err) {
       console.log(err);
@@ -36,7 +38,7 @@ router.get("/internalOrders",
 router.get("/internalOrdersIssued",
   async (req, res) => {
     try{
-      const internalOrders = await facade.getInternalOrdersIssued();
+      const internalOrders = await internalOrderService.getInternalOrdersIssued();
       return res.status(201).json(internalOrders);
     } catch (err) {
       console.log(err);
@@ -47,7 +49,7 @@ router.get("/internalOrdersIssued",
 router.get("/internalOrdersAccepted",
   async (req, res) => {
     try{
-      const internalOrders = await facade.getInternalOrdersAccepted();
+      const internalOrders = await internalOrderService.getInternalOrdersAccepted();
       return res.status(201).json(internalOrders);
     } catch (err) {
       console.log(err);
@@ -57,7 +59,7 @@ router.get("/internalOrdersAccepted",
 
 router.get("/internalOrders/:ID", param("ID"), async (req, res) => {
   try {
-    const internalOrder = await facade.getInternalOrderByID(req.params.ID);
+    const internalOrder = await internalOrderService.getInternalOrderByID(req.params.ID);
     if (internalOrder===undefined)
       return res.status(404).end();
     else
@@ -72,7 +74,7 @@ router.put("/internalOrders/:ID",
   param("ID"),
   async (req, res) => {
   try {
-    const internalOrder = await facade.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);
+    const internalOrder = await internalOrderService.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);
     if (internalOrder===undefined)
       return res.status(404).end();
     else
@@ -88,7 +90,7 @@ router.delete(
   param("ID").isInt({ min: 1 }),
   async (req, res) => {
     try {
-      await facade.deleteInternalOrder(req.params.ID);
+      await internalOrderService.deleteInternalOrder(req.params.ID);
       return res.status(204).end();
     } catch (err) {
       console.log(err);

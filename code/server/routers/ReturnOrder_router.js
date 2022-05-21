@@ -1,6 +1,8 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
+const ReturnOrderService = require('../services/ReturnOrder_service');
+const returnOrderService = new ReturnOrderService();
 
 const router = express.Router();
 
@@ -15,7 +17,7 @@ router.post(
       return res.status(422).end();
     }
     try{
-      await facade.createReturnOrder(req.body.returnDate, req.body.products, req.body.restockOrderId)
+      await returnOrderService.createReturnOrder(req.body.returnDate, req.body.products, req.body.restockOrderId)
       return res.status(201).end();
     } catch (err) {
       console.log(err);
@@ -28,7 +30,7 @@ router.get(
   "/returnOrders",
   async (req, res) => {
     try{
-      const returnOrders = await facade.getReturnOrders();
+      const returnOrders = await returnOrderService.getReturnOrders();
       return res.status(200).json(returnOrders);
     } catch (err) {
       console.log(err);
@@ -38,7 +40,7 @@ router.get(
 
 router.get("/returnOrders/:ID", param("ID"), async (req, res) => {
   try {
-    const returnOrder = await facade.getReturnOrderByID(req.params.ID);
+    const returnOrder = await returnOrderService.getReturnOrderByID(req.params.ID);
     return res.status(200).json(returnOrder);
   } catch (err) {
     console.log(err);
@@ -55,7 +57,7 @@ router.delete(
       return res.status(422).end();
     }
     try {
-      await facade.deleteReturnOrder(req.params.ID);
+      await returnOrderService.deleteReturnOrder(req.params.ID);
       return res.status(204).end();
     } catch (err) {
       console.log(err);

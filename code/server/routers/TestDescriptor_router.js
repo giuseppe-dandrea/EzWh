@@ -1,13 +1,15 @@
 const express = require("express");
 const { validationResult, param, check } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
+const TestDescriptorService = require('../services/TestDescriptor_service');
+const testDescriptorService = new TestDescriptorService();
 
 const router = express.Router();
 
 // Test Descriptor
 router.get('/testDescriptors', async (req, res) => {
   try {
-    const testDescriptors = await facade.getTestDescriptors()
+    const testDescriptors = await testDescriptorService.getTestDescriptors()
     return res.status(200).json(testDescriptors);
   } catch (err) {
     console.log("Error in Server");
@@ -23,7 +25,7 @@ router.get('/testDescriptors/:id', param('id').isInt({ min: 1 }),
       if (!errors.isEmpty()) {
         return res.status(422).end();
       }
-      const testDescriptor = await facade.getTestDescriptorByID(req.params.id);
+      const testDescriptor = await testDescriptorService.getTestDescriptorByID(req.params.id);
       return res.status(200).json(testDescriptor);
     } catch (err) {
       console.log("Error in Server");
@@ -41,7 +43,7 @@ check('idSKU').isInt({ min: 1 }),
       if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(422).end();
       }
-      await facade.createTestDescriptor(req.body.name, req.body.procedureDescription,
+      await testDescriptorService.createTestDescriptor(req.body.name, req.body.procedureDescription,
         req.body.idSKU);
       return res.status(201).end();
     }
@@ -61,7 +63,7 @@ check('newIdSKU').isInt({ min: 1 }), async (req, res) => {
     if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
       return res.status(422).end();
     }
-    await facade.modifyTestDescriptor(req.params.id, req.body.newName,
+    await testDescriptorService.modifyTestDescriptor(req.params.id, req.body.newName,
       req.body.newProcedureDescription, req.body.newIdSKU);
     return res.status(200).end();
   }
@@ -80,7 +82,7 @@ router.delete('/testDescriptor/:id', param('id').isInt({ min: 1 }),
       if (!errors.isEmpty()) {
         return res.status(422).end();
       }
-      await facade.deleteTestDescriptor(req.params.id);
+      await testDescriptorService.deleteTestDescriptor(req.params.id);
       return res.status(204).end();
     }
     catch (err) {

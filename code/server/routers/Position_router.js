@@ -1,13 +1,15 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
+const PositionService = require('../services/Position_service');
+const positionService = new PositionService();
 
 const router = express.Router();
 
 //GET /positions
 router.get("/positions", async (req, res) => {
   try {
-    const positions = await facade.getPositions();
+    const positions = await positionService.getPositions();
     return res.status(200).json(positions);
   } catch (err) {
     return res.status(500).end();
@@ -21,7 +23,7 @@ router.get("/positions/:id", param("id").isString().isNumeric().isLength({ min: 
     return res.status(422).end();
   }
   try {
-    const position = await facade.getPositionByID(req.params.id);
+    const position = await positionService.getPositionByID(req.params.id);
     return res.status(200).json(position);
   } catch (err) {
     if (err === EzWhException.NotFound) return res.status(404).end();
@@ -50,7 +52,7 @@ router.post(
     }
 
     try {
-      await facade.createPosition(
+      await positionService.createPosition(
         req.body.positionID,
         req.body.aisleID,
         req.body.row,
@@ -85,7 +87,7 @@ router.put(
     }
     const newPositionID = req.body.newAisleID.concat(req.body.newRow, req.body.newCol);
     try {
-      await facade.modifyPosition(
+      await positionService.modifyPosition(
         req.params.positionID,
         newPositionID,
         req.body.newAisleID,
@@ -118,7 +120,7 @@ router.put(
     const newRow = req.body.newPositionID.slice(4, 8);
     const newCol = req.body.newPositionID.slice(8, 12);
     try {
-      await facade.modifyPositionID(req.params.positionID, req.body.newPositionID, newAisleID, newRow, newCol);
+      await positionService.modifyPositionID(req.params.positionID, req.body.newPositionID, newAisleID, newRow, newCol);
       return res.status(200).end();
     } catch (err) {
       if (err === EzWhException.NotFound) return res.status(404).end();
@@ -137,7 +139,7 @@ router.delete(
       return res.status(422).end();
     }
     try {
-      await facade.deletePosition(req.params.positionID);
+      await positionService.deletePosition(req.params.positionID);
       return res.status(204).end();
     } catch (err) {
       if (err === EzWhException.NotFound) return res.status(404).end();
@@ -151,7 +153,7 @@ router.delete(
     "/position/",
     async (req, res) => {
         try {
-            await facade.deleteAllPositions();
+            await positionService.deleteAllPositions();
             return res.status(204).end();
         } catch (err) {
             if (err === EzWhException.NotFound) return res.status(404).end();

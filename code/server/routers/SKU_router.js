@@ -1,13 +1,15 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
+const SKUService = require('../services/SKU_service');
+const skuService = new SKUService();
 
 const router = express.Router();
 
 //GET /skus
 router.get("/skus", async (req, res) => {
   try {
-    let skus = await facade.getSKUs();
+    let skus = await skuService.getSKUs();
     skus.map((s) => {return {
         id: s.id,
         description: s.description,
@@ -33,7 +35,7 @@ router.get("/skus/:id", param("id").isInt({min : 1}),
 		return res.status(422).end();
 	}
 	try {
-		let sku = await facade.getSKUById(req.params.id);
+		let sku = await skuService.getSKUById(req.params.id);
 		return res.status(200).json({
             id: sku.id,
             description: sku.description,
@@ -68,7 +70,7 @@ router.post(
       return res.status(422).end();
     }
     try {
-      await facade.createSKU(
+      await skuService.createSKU(
         req.body.description,
         req.body.weight,
         req.body.volume,
@@ -101,7 +103,7 @@ router.put(
 			return res.status(422).end();
 		}
 		try {
-			await facade.modifySKU(req.params.id, req.body.newDescription, req.body.newWeight, req.body.newVolume, req.body.newNotes, req.body.newPrice, req.body.newAvailableQuantity
+			await skuService.modifySKU(req.params.id, req.body.newDescription, req.body.newWeight, req.body.newVolume, req.body.newNotes, req.body.newPrice, req.body.newAvailableQuantity
       );
       return res.status(200).end();
     } catch (err) {
@@ -129,7 +131,7 @@ router.put(
 			return res.status(422).end();
 		}
 		try {
-			await facade.addSKUPosition(req.params.id, req.body.position);
+			await skuService.addSKUPosition(req.params.id, req.body.position);
 			return res.status(200).end();
 		} catch (err) {
 			if (err === EzWhException.NotFound)
@@ -149,7 +151,7 @@ router.delete("/skus/:id", param("id").isInt({min : 1}),
 			return res.status(422).end();
 		}
 		try {
-			await facade.deleteSKU(req.params.id);
+			await skuService.deleteSKU(req.params.id);
 			return res.status(204).end();
 		} catch (err) {
 			if (err === EzWhException.InternalError)

@@ -2,6 +2,8 @@ const express = require("express");
 const { validationResult, param, check } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
 const { UserTypes } = require("../modules/User");
+const UserService = require('../services/User_service');
+const userService = new UserService();
 
 
 const router = express.Router();
@@ -13,7 +15,7 @@ router.get('/userinfo', (req, res) => {  //TODO
 
 router.get('/suppliers', async (req, res) => {
   try {
-    const suppliers = await facade.getSuppliers();
+    const suppliers = await userService.getSuppliers();
     return res.status(200).json(suppliers);
   } catch (err) {
     console.log("Error in Server");
@@ -24,7 +26,7 @@ router.get('/suppliers', async (req, res) => {
 
 router.get('/users', async (req, res) => {
   try {
-    const users = await facade.getUsers();
+    const users = await userService.getUsers();
     return res.status(200).json(users);
   } catch (err) {
     console.log("Error in Server");
@@ -44,7 +46,7 @@ router.post('/newUser',  // TODO
         req.body.type === UserTypes.MANAGER || req.body.type === UserTypes.ADMINISTRATOR) {
         return res.status(422).end();
       }
-      await facade.createUser(req.body.username, req.body.name,
+      await userService.createUser(req.body.username, req.body.name,
         req.body.surname, req.body.password, req.body.type);
       return res.status(201).end();
     }
@@ -64,7 +66,7 @@ router.post('/managerSessions',
       if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
-      let user = await facade.login(req.body.username, req.body.password, UserTypes.MANAGER);
+      let user = await userService.login(req.body.username, req.body.password, UserTypes.MANAGER);
       return res.status(200).json(user);
     }
     catch (err) {
@@ -83,7 +85,7 @@ router.post('/customerSessions',
       if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
-      let user = await facade.login(req.body.username, req.body.password, UserTypes.INTERNAL_CUSTOMER);
+      let user = await userService.login(req.body.username, req.body.password, UserTypes.INTERNAL_CUSTOMER);
       return res.status(200).json(user);
     }
     catch (err) {
@@ -102,7 +104,7 @@ router.post('/supplierSessions',
       if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
-      let user = await facade.login(req.body.username, req.body.password, UserTypes.SUPPLIER);
+      let user = await userService.login(req.body.username, req.body.password, UserTypes.SUPPLIER);
       return res.status(200).json(user);
     }
     catch (err) {
@@ -121,7 +123,7 @@ router.post('/clerkSessions',
       if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
-      let user = await facade.login(req.body.username, req.body.password, UserTypes.CLERK);
+      let user = await userService.login(req.body.username, req.body.password, UserTypes.CLERK);
       return res.status(200).json(user);
     }
     catch (err) {
@@ -140,7 +142,7 @@ router.post('/qualityEmployeeSessions',
       if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
-      let user = await facade.login(req.body.username, req.body.password, UserTypes.QUALITY_CHECK_EMPLOYEE);
+      let user = await userService.login(req.body.username, req.body.password, UserTypes.QUALITY_CHECK_EMPLOYEE);
       return res.status(200).json(user);
     }
     catch (err) {
@@ -159,7 +161,7 @@ router.post('/deliveryEmployeeSessions',
       if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
-      let user = await facade.login(req.body.username, req.body.password, UserTypes.DELIVERY_EMPLOYEE);
+      let user = await userService.login(req.body.username, req.body.password, UserTypes.DELIVERY_EMPLOYEE);
       return res.status(200).json(user);
     }
     catch (err) {
@@ -185,7 +187,7 @@ router.put('/users/:username',
         || req.body.newType === UserTypes.MANAGER || req.body.newType === UserTypes.ADMINISTRATOR) {
         return res.status(422).end();
       }
-      await facade.modifyUserRights(req.params.username,
+      await userService.modifyUserRights(req.params.username,
         req.body.oldType, req.body.newType);
       return res.status(200).end();
     }
@@ -206,7 +208,7 @@ router.delete('/users/:username/:type',
         req.params.type === UserTypes.ADMINISTRATOR || req.params.type === UserTypes.MANAGER) {
         return res.status(422).end();
       }
-      await facade.deleteUser(req.params.username, req.params.type);
+      await userService.deleteUser(req.params.username, req.params.type);
       return res.status(204).end();
     }
     catch (err) {

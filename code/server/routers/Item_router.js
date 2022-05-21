@@ -1,13 +1,14 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
-
+const ItemService = require('../services/Item_service');
+const itemService = new ItemService();
 const router = express.Router();
 
 //GET /items
 router.get("/items", async (req, res) => {
   try {
-    const items = await facade.getItems();
+    const items = await itemService.getItems();
     return res.status(200).json(
         items.map((i) => {
             return {
@@ -31,7 +32,7 @@ router.get("/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
     return res.status(422).end();
   }
   try {
-    const item = await facade.getItemByID(req.params.id);
+    const item = await itemService.getItemByID(req.params.id);
     return res.status(200).json({
         id: item.id,
         description: item.description,
@@ -59,7 +60,7 @@ router.post(
       return res.status(422).end();
     }
     try {
-      await facade.createItem(req.body.id, req.body.description, req.body.price, req.body.SKUId, req.body.supplierId);
+      await itemService.createItem(req.body.id, req.body.description, req.body.price, req.body.SKUId, req.body.supplierId);
       return res.status(201).end();
     } catch (err) {
       if (err === EzWhException.NotFound) return res.status(404).end();
@@ -81,7 +82,7 @@ router.put(
       return res.status(422).end();
     }
     try {
-      await facade.modifyItem(req.params.id, req.body.newDescription, req.body.newPrice);
+      await itemService.modifyItem(req.params.id, req.body.newDescription, req.body.newPrice);
       return res.status(200).end();
     } catch (err) {
       if (err === EzWhException.NotFound) return res.status(404).end();
@@ -98,7 +99,7 @@ router.delete("/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
     return res.status(422).end();
   }
   try {
-    await facade.deleteItem(req.params.id);
+    await itemService.deleteItem(req.params.id);
     return res.status(204).end();
   } catch (err) {
     if (err === EzWhException.NotFound) return res.status(404).end();

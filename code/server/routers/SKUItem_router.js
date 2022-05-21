@@ -1,13 +1,15 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
+const SKUItemService = require('../services/SKUItem_service');
+const skuitemService = new SKUItemService();
 
 const router = express.Router();
 
 //GET /skuitems
 router.get("/skuitems", async (req, res) => {
   try {
-    let skuitems = await facade.getSKUItems();
+    let skuitems = await skuitemService.getSKUItems();
     return res.status(200).json(
       skuitems.map((s) => {
         return {
@@ -31,7 +33,7 @@ router.get("/skuitems/sku/:id", param("id").isInt({min : 1}),
 			return res.status(422).end();
 		}
 		try {
-			let skuitems = await facade.getSKUItemsBySKU(req.params.id);
+			let skuitems = await skuitemService.getSKUItemsBySKU(req.params.id);
 			return res.status(200).json(skuitems.map((s) => {
 			return {
 				RFID: s.rfid,
@@ -54,7 +56,7 @@ router.get("/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, max: 
 			return res.status(422).end();
 		}
 		try {
-			let skuitem = await facade.getSKUItemByRfid(req.params.rfid);
+			let skuitem = await skuitemService.getSKUItemByRfid(req.params.rfid);
 			return res.status(200).json({
 				RFID: skuitem.rfid,
 				SKUId: skuitem.sku.id,
@@ -85,7 +87,7 @@ router.post(
       return res.status(422).end();
     }
     try {
-      await facade.createSKUItem(req.body.RFID, req.body.SKUId, req.body.DateOfStock);
+      await skuitemService.createSKUItem(req.body.RFID, req.body.SKUId, req.body.DateOfStock);
       return res.status(201).end();
     } catch (err) {
       if (err === EzWhException.NotFound) return res.status(404).end();
@@ -112,7 +114,7 @@ router.put(
       return res.status(422).end();
     }
     try {
-      await facade.modifySKUItem(req.params.rfid, req.body.newRFID, req.body.newAvailable, req.body.newDateOfStock);
+      await skuitemService.modifySKUItem(req.params.rfid, req.body.newRFID, req.body.newAvailable, req.body.newDateOfStock);
       return res.status(200).end();
     } catch (err) {
       if (err === EzWhException.NotFound) return res.status(404).end();
@@ -129,7 +131,7 @@ router.delete("/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, ma
 			return res.status(422).end();
 		}
 		try {
-			await facade.deleteSKUItem(req.params.rfid);
+			await skuitemService.deleteSKUItem(req.params.rfid);
 			return res.status(204).end();
 		} catch (err) {
 			return res.status(503).end();
@@ -140,7 +142,7 @@ router.delete(
     "/skuitems/",
     async (req, res) => {
         try {
-            await facade.deleteAllSKUItems();
+            await skuitemService.deleteAllSKUItems();
             return res.status(204).end();
         } catch (err) {
             if (err === EzWhException.NotFound) return res.status(404).end();

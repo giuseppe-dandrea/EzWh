@@ -1,6 +1,8 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
+const RestockOrderService = require('../services/RestockOrder_service');
+const restockOrderService = new RestockOrderService();
 
 const router = express.Router();
 
@@ -8,7 +10,7 @@ router.get(
   "/restockOrders",
   async (req, res) => {
     try {
-      const restockOrders = await facade.getRestockOrders();
+      const restockOrders = await restockOrderService.getRestockOrders();
       return res.status(200).json(restockOrders);
     } catch (err) {
       console.log(err);
@@ -21,7 +23,7 @@ router.get(
   "/restockOrdersIssued",
   async (req, res) => {
     try {
-      const restockOrdersIssued = await facade.getRestockOrders("ISSUED");
+      const restockOrdersIssued = await restockOrderService.getRestockOrders("ISSUED");
       return res.status(200).json(restockOrdersIssued);
     } catch (err) {
       return res.status(500).end();
@@ -38,7 +40,7 @@ router.get(
       return res.status(422).end();
     }
     try {
-      const restockOrder = await facade.getRestockOrderByID(req.params.ID);
+      const restockOrder = await restockOrderService.getRestockOrderByID(req.params.ID);
       if (restockOrder===undefined)
         return res.status(404).end();
       else
@@ -60,7 +62,7 @@ router.get(
       return res.status(422).end();
     }
     try {
-      const returnItems = await facade.getRestockOrderReturnItems(req.params.ID);
+      const returnItems = await restockOrderService.getRestockOrderReturnItems(req.params.ID);
       return res.status(200).json(returnItems);
     } catch (err) {
       console.log(err);
@@ -79,7 +81,7 @@ router.post("/restockOrder",
       return res.status(422).end();
     }
     try {
-      await facade.createRestockOrder(req.body.issueDate, req.body.products, req.body.supplierId);
+      await restockOrderService.createRestockOrder(req.body.issueDate, req.body.products, req.body.supplierId);
       return res.status(201).end();
     } catch (err) {
       console.log(err);
@@ -99,7 +101,7 @@ router.put("/restockOrder/:ID",
     }
     try {
       // console.log(req.params.ID);
-      await facade.modifyRestockOrderState(req.params.ID, req.body.newState);
+      await restockOrderService.modifyRestockOrderState(req.params.ID, req.body.newState);
       return res.status(200).end();
     } catch (err) {
       console.log(err);
@@ -118,7 +120,7 @@ router.put("/restockOrder/:ID/skuItems",
     }
     try {
       // console.log(req.body);
-      await facade.addSkuItemsToRestockOrder(req.params.ID, req.body.skuItems)
+      await restockOrderService.addSkuItemsToRestockOrder(req.params.ID, req.body.skuItems)
       return res.status(200).end();
     } catch (err) {
       console.log(err);
@@ -136,7 +138,7 @@ router.put("/restockOrder/:ID/transportNote",
       return res.status(422).end();
     }
     try {
-      await facade.addTransportNoteToRestockOrder(req.params.ID, req.body.transportNote);
+      await restockOrderService.addTransportNoteToRestockOrder(req.params.ID, req.body.transportNote);
       return res.status(200).end();
     } catch (err) {
       console.log(err);
@@ -155,7 +157,7 @@ router.delete(
       return res.status(422).end();
     }
     try {
-      await facade.deleteRestockOrder(req.params.ID);
+      await restockOrderService.deleteRestockOrder(req.params.ID);
       return res.status(204).end();
     } catch (err) {
       console.log(err);

@@ -1,6 +1,8 @@
 const express = require("express");
 const { validationResult, param, check } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
+const TestResultService = require('../services/TestResult_service');
+const testResultService = new TestResultService();
 
 const router = express.Router();
 
