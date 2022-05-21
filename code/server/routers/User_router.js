@@ -1,17 +1,17 @@
 const express = require("express");
 const { validationResult, param, check } = require("express-validator");
-const EzWhException = require("./modules/EzWhException.js");
-const { UserTypes } = require("./modules/User");
+const EzWhException = require("../modules/EzWhException.js");
+const { UserTypes } = require("../modules/User");
 
 
 const router = express.Router();
 
 // User
-router.get('/api/userinfo', (req, res) => {  //TODO
+router.get('/userinfo', (req, res) => {  //TODO
   return res.status(500).end();
 });
 
-router.get('/api/suppliers', async (req, res) => {
+router.get('/suppliers', async (req, res) => {
   try {
     const suppliers = await facade.getSuppliers();
     return res.status(200).json(suppliers);
@@ -22,7 +22,7 @@ router.get('/api/suppliers', async (req, res) => {
   }
 });
 
-router.get('/api/users', async (req, res) => {
+router.get('/users', async (req, res) => {
   try {
     const users = await facade.getUsers();
     return res.status(200).json(users);
@@ -33,7 +33,7 @@ router.get('/api/users', async (req, res) => {
   }
 });
 
-router.post('/api/newUser',  // TODO
+router.post('/newUser',  // TODO
   check('username').isEmail(), check('name').exists(), check('surname').exists(),
   check('password').isLength({ min: 8 }), check('type').exists(),
   async (req, res) => {
@@ -56,7 +56,7 @@ router.post('/api/newUser',  // TODO
     }
   });
 
-router.post('/api/managerSessions',
+router.post('/managerSessions',
   check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
@@ -75,7 +75,7 @@ router.post('/api/managerSessions',
     }
   });
 
-router.post('/api/customerSessions',
+router.post('/customerSessions',
   check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
@@ -94,7 +94,7 @@ router.post('/api/customerSessions',
     }
   });
 
-router.post('/api/supplierSessions',
+router.post('/supplierSessions',
   check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
@@ -113,7 +113,7 @@ router.post('/api/supplierSessions',
     }
   });
 
-router.post('/api/clerkSessions',
+router.post('/clerkSessions',
   check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
@@ -132,7 +132,7 @@ router.post('/api/clerkSessions',
     }
   });
 
-router.post('/api/qualityEmployeeSessions',
+router.post('/qualityEmployeeSessions',
   check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
@@ -151,7 +151,7 @@ router.post('/api/qualityEmployeeSessions',
     }
   });
 
-router.post('/api/deliveryEmployeeSessions',
+router.post('/deliveryEmployeeSessions',
   check('username').isEmail(), check('password').isLength({ min: 8 }),
   async (req, res) => {
     try {
@@ -170,11 +170,11 @@ router.post('/api/deliveryEmployeeSessions',
     }
   });
 
-router.post('/api/logout', (req, res) => { // TODO
+router.post('/logout', (req, res) => { // TODO
   return res.status(500).end();
 });
 
-router.put('/api/users/:username',
+router.put('/users/:username',
   param('username').isEmail(), check('oldType').exists(), check('newType').exists(),
   async (req, res) => {
     try {
@@ -197,7 +197,7 @@ router.put('/api/users/:username',
     }
   });
 
-router.delete('/api/users/:username/:type',
+router.delete('/users/:username/:type',
   param('username').isEmail(), param('type').exists(),
   async (req, res) => {
     try {

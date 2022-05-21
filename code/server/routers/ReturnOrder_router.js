@@ -1,11 +1,11 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
-const EzWhException = require("./modules/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 const router = express.Router();
 
 router.post(
-  "/api/returnOrder",
+  "/returnOrder",
   body("returnDate").isDate(),
   body("products").isArray(),
   body("restockOrderId").isInt({ min: 1 }),
@@ -25,7 +25,7 @@ router.post(
 });
 
 router.get(
-  "/api/returnOrders",
+  "/returnOrders",
   async (req, res) => {
     try{
       const returnOrders = await facade.getReturnOrders();
@@ -36,7 +36,7 @@ router.get(
     }
 });
 
-router.get("/api/returnOrders/:ID", param("ID"), async (req, res) => {
+router.get("/returnOrders/:ID", param("ID"), async (req, res) => {
   try {
     const returnOrder = await facade.getReturnOrderByID(req.params.ID);
     return res.status(200).json(returnOrder);
@@ -47,7 +47,7 @@ router.get("/api/returnOrders/:ID", param("ID"), async (req, res) => {
 });
 
 router.delete(
-  "/api/returnOrder/:ID",
+  "/returnOrder/:ID",
   param("ID").isInt({ min: 1 }),
   async (req, res) => {
     const validationErrors = validationResult(req);

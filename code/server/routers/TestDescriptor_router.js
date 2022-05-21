@@ -1,11 +1,11 @@
 const express = require("express");
 const { validationResult, param, check } = require("express-validator");
-const EzWhException = require("./modules/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 const router = express.Router();
 
 // Test Descriptor
-router.get('/api/testDescriptors', async (req, res) => {
+router.get('/testDescriptors', async (req, res) => {
   try {
     const testDescriptors = await facade.getTestDescriptors()
     return res.status(200).json(testDescriptors);
@@ -16,7 +16,7 @@ router.get('/api/testDescriptors', async (req, res) => {
   }
 });
 
-router.get('/api/testDescriptors/:id', param('id').isInt({ min: 1 }),
+router.get('/testDescriptors/:id', param('id').isInt({ min: 1 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -33,7 +33,7 @@ router.get('/api/testDescriptors/:id', param('id').isInt({ min: 1 }),
     }
   });
 
-router.post('/api/testDescriptor', check('name').exists(), check('procedureDescription').exists(),
+router.post('/testDescriptor', check('name').exists(), check('procedureDescription').exists(),
 check('idSKU').isInt({ min: 1 }),
   async (req, res) => {
     try {
@@ -53,7 +53,7 @@ check('idSKU').isInt({ min: 1 }),
     }
   });
 
-router.put('/api/testDescriptor/:id', param('id').isInt({ min: 1 }),
+router.put('/testDescriptor/:id', param('id').isInt({ min: 1 }),
 check('newName').exists(), check('newProcedureDescription').exists(),
 check('newIdSKU').isInt({ min: 1 }), async (req, res) => {
   try {
@@ -73,7 +73,7 @@ check('newIdSKU').isInt({ min: 1 }), async (req, res) => {
   }
 });
 
-router.delete('/api/testDescriptor/:id', param('id').isInt({ min: 1 }),
+router.delete('/testDescriptor/:id', param('id').isInt({ min: 1 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);

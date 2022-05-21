@@ -1,11 +1,11 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
-const EzWhException = require("./modules/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 const router = express.Router();
 
-//GET /api/skus
-router.get("/api/skus", async (req, res) => {
+//GET /skus
+router.get("/skus", async (req, res) => {
   try {
     let skus = await facade.getSKUs();
     skus.map((s) => {return {
@@ -25,8 +25,8 @@ router.get("/api/skus", async (req, res) => {
   }
 });
 
-//GET /api/skus/:id
-router.get("/api/skus/:id", param("id").isInt({min : 1}),
+//GET /skus/:id
+router.get("/skus/:id", param("id").isInt({min : 1}),
 	async (req, res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
@@ -53,9 +53,9 @@ router.get("/api/skus/:id", param("id").isInt({min : 1}),
 	}
 });
 
-//POST /api/sku
+//POST /sku
 router.post(
-  "/api/sku",
+  "/sku",
   body("description").exists(),
   body("weight").isFloat({ min: 0 }),
   body("volume").isFloat({ min: 0 }),
@@ -85,9 +85,9 @@ router.post(
   }
 );
 
-//PUT /api/sku/:id
+//PUT /sku/:id
 router.put(
-    "/api/sku/:id",
+    "/sku/:id",
     param("id").isInt({min : 1}),
 	body("newDescription").isString(),
 	body("newWeight").isFloat({min : 0}),
@@ -118,9 +118,9 @@ router.put(
   }
 );
 
-//PUT /api/sku/:id/position
+//PUT /sku/:id/position
 router.put(
-    "/api/sku/:id/position",
+    "/sku/:id/position",
     param("id").isInt({min : 1}),
 	body("position").exists().isString().isNumeric().isLength({ min: 12, max: 12 }),
 	async (req, res) => {
@@ -141,8 +141,8 @@ router.put(
 		}
 });
 
-//DELETE /api/skus/:id
-router.delete("/api/skus/:id", param("id").isInt({min : 1}),
+//DELETE /skus/:id
+router.delete("/skus/:id", param("id").isInt({min : 1}),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
 		if (!validationErrors.isEmpty()) {

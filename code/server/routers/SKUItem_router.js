@@ -1,11 +1,11 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
-const EzWhException = require("./modules/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 const router = express.Router();
 
-//GET /api/skuitems
-router.get("/api/skuitems", async (req, res) => {
+//GET /skuitems
+router.get("/skuitems", async (req, res) => {
   try {
     let skuitems = await facade.getSKUItems();
     return res.status(200).json(
@@ -23,8 +23,8 @@ router.get("/api/skuitems", async (req, res) => {
   }
 });
 
-//GET /api/skuitems/sku/:id
-router.get("/api/skuitems/sku/:id", param("id").isInt({min : 1}),
+//GET /skuitems/sku/:id
+router.get("/skuitems/sku/:id", param("id").isInt({min : 1}),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
 		if (!validationErrors.isEmpty()) {
@@ -46,8 +46,8 @@ router.get("/api/skuitems/sku/:id", param("id").isInt({min : 1}),
   }
 });
 
-//GET /api/skuitems/:rfid
-router.get("/api/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, max: 32}),
+//GET /skuitems/:rfid
+router.get("/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, max: 32}),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
 		if (!validationErrors.isEmpty()) {
@@ -68,9 +68,9 @@ router.get("/api/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, m
   }
 });
 
-//POST /api/skuitem
+//POST /skuitem
 router.post(
-  "/api/skuitem",
+  "/skuitem",
   body("RFID").isNumeric().isLength({min: 32, max: 32}),
   body("SKUId").isInt({ min: 1 }),
   body("DateOfStock").custom((value) => {
@@ -94,9 +94,9 @@ router.post(
   }
 );
 
-//PUT /api/skuitems/:rfid
+//PUT /skuitems/:rfid
 router.put(
-    "/api/skuitems/:rfid",
+    "/skuitems/:rfid",
     param("rfid").isNumeric().isLength({min: 32, max: 32}),
 	body("newRFID").exists().isNumeric().isLength({min: 32, max: 32}),
 	body("newAvailable").isInt({min : 0, max: 1}),
@@ -121,8 +121,8 @@ router.put(
   }
 );
 
-//DELETE /api/skuitems/:rfid
-router.delete("/api/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, max: 32}),
+//DELETE /skuitems/:rfid
+router.delete("/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, max: 32}),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
 		if (!validationErrors.isEmpty()) {
@@ -137,7 +137,7 @@ router.delete("/api/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32
 });
 //USED ONLY FOR TESTING
 router.delete(
-    "/api/skuitems/",
+    "/skuitems/",
     async (req, res) => {
         try {
             await facade.deleteAllSKUItems();

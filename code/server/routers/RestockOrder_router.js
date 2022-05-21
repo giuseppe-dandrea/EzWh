@@ -1,11 +1,11 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
-const EzWhException = require("./modules/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 const router = express.Router();
 
 router.get(
-  "/api/restockOrders",
+  "/restockOrders",
   async (req, res) => {
     try {
       const restockOrders = await facade.getRestockOrders();
@@ -18,7 +18,7 @@ router.get(
 );
 
 router.get(
-  "/api/restockOrdersIssued",
+  "/restockOrdersIssued",
   async (req, res) => {
     try {
       const restockOrdersIssued = await facade.getRestockOrders("ISSUED");
@@ -30,7 +30,7 @@ router.get(
 );
 
 router.get(
-  "/api/restockOrders/:ID",
+  "/restockOrders/:ID",
   param("ID").isInt({ min: 1 }),
   async (req, res) => {
     const validationErrors = validationResult(req);
@@ -52,7 +52,7 @@ router.get(
 );
 
 router.get(
-  "/api/restockOrders/:ID/returnItems",
+  "/restockOrders/:ID/returnItems",
   param("ID").isInt({ min: 1 }),
   async (req, res) => {
     const validationErrors = validationResult(req);
@@ -69,7 +69,7 @@ router.get(
   }
 );
 
-router.post("/api/restockOrder",
+router.post("/restockOrder",
   body("issueDate").isDate(),
   body("products").isArray(),
   body("supplierId").isInt({ min: 1 }),
@@ -89,7 +89,7 @@ router.post("/api/restockOrder",
   }
 );
 
-router.put("/api/restockOrder/:ID",
+router.put("/restockOrder/:ID",
   param("ID").isInt({ min:1 }),
   body("newState").isString(),
   async (req, res) => {
@@ -108,7 +108,7 @@ router.put("/api/restockOrder/:ID",
     }
 });
 
-router.put("/api/restockOrder/:ID/skuItems",
+router.put("/restockOrder/:ID/skuItems",
   param("ID").isInt({ min:1 }),
   body("skuItems").isArray(),
   async (req, res) => {
@@ -128,7 +128,7 @@ router.put("/api/restockOrder/:ID/skuItems",
     }
 });
 
-router.put("/api/restockOrder/:ID/transportNote",
+router.put("/restockOrder/:ID/transportNote",
   body("transportNote").exists(),
   async (req, res) => {
     const validationErrors = validationResult(req);
@@ -147,7 +147,7 @@ router.put("/api/restockOrder/:ID/transportNote",
 });
 
 router.delete(
-  "/api/restockOrder/:ID",
+  "/restockOrder/:ID",
   param("ID").isInt({ min: 1 }),
   async (req, res) => {
     const validationErrors = validationResult(req);

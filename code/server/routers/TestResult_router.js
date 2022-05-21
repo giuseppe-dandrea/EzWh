@@ -1,11 +1,11 @@
 const express = require("express");
 const { validationResult, param, check } = require("express-validator");
-const EzWhException = require("./modules/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 const router = express.Router();
 
 // TestResult
-router.get('/api/skuitems/:rfid/testResults', param('rfid').isNumeric().isLength({min: 32, max: 32}),
+router.get('/skuitems/:rfid/testResults', param('rfid').isNumeric().isLength({min: 32, max: 32}),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -22,7 +22,7 @@ router.get('/api/skuitems/:rfid/testResults', param('rfid').isNumeric().isLength
     }
   });
 
-router.get('/api/skuitems/:rfid/testResults/:id', param('rfid').isNumeric().isLength({min: 32, max: 32}),
+router.get('/skuitems/:rfid/testResults/:id', param('rfid').isNumeric().isLength({min: 32, max: 32}),
 param('id').isInt({ min: 1 }), async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -39,7 +39,7 @@ param('id').isInt({ min: 1 }), async (req, res) => {
   }
 });
 
-router.post('/api/skuitems/testResult', check('rfid').isNumeric().isLength({min: 32, max: 32}),
+router.post('/skuitems/testResult', check('rfid').isNumeric().isLength({min: 32, max: 32}),
 check('idTestDescriptor').isInt({ min: 1 }),
 check('Date').exists(), check('Result').isBoolean(), async (req, res) => {
   try {
@@ -60,7 +60,7 @@ check('Date').exists(), check('Result').isBoolean(), async (req, res) => {
   }
 });
 
-router.put('/api/skuitems/:rfid/testResult/:id', param('rfid').isNumeric().isLength({min: 32, max: 32}),
+router.put('/skuitems/:rfid/testResult/:id', param('rfid').isNumeric().isLength({min: 32, max: 32}),
 param('id').isInt({ min: 1 }), check('newIdTestDescriptor').isInt({ min: 1 }),
 check('newDate').exists(), check('newResult').isBoolean(), async (req, res) => {
   try {
@@ -81,7 +81,7 @@ check('newDate').exists(), check('newResult').isBoolean(), async (req, res) => {
   }
 });
 
-router.delete('/api/skuitems/:rfid/testResult/:id', param('rfid').isNumeric().isLength({min: 32, max: 32}),
+router.delete('/skuitems/:rfid/testResult/:id', param('rfid').isNumeric().isLength({min: 32, max: 32}),
 param('id').isInt({ min: 1 }), async (req, res) => {
   try {
     const errors = validationResult(req);

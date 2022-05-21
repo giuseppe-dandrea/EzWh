@@ -1,11 +1,11 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
-const EzWhException = require("./modules/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 const router = express.Router();
 
-//GET /api/items
-router.get("/api/items", async (req, res) => {
+//GET /items
+router.get("/items", async (req, res) => {
   try {
     const items = await facade.getItems();
     return res.status(200).json(
@@ -24,8 +24,8 @@ router.get("/api/items", async (req, res) => {
   }
 });
 
-//GET /api/items/:id
-router.get("/api/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
+//GET /items/:id
+router.get("/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
   const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
     return res.status(422).end();
@@ -45,9 +45,9 @@ router.get("/api/items/:id", param("id").isInt({ min: 1 }), async (req, res) => 
   }
 });
 
-//POST /api/item
+//POST /item
 router.post(
-  "/api/item",
+  "/item",
   body("id").isInt({ min: 1 }),
   body("description").exists(),
   body("price").isFloat({ min: 0 }),
@@ -69,9 +69,9 @@ router.post(
   }
 );
 
-//PUT /api/item/:id
+//PUT /item/:id
 router.put(
-  "/api/item/:id",
+  "/item/:id",
   param("id").isInt({ min: 1 }),
   body("newDescription").exists(),
   body("newPrice").isFloat({ min: 0 }),
@@ -91,8 +91,8 @@ router.put(
   }
 );
 
-//DELETE /api/items/:id
-router.delete("/api/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
+//DELETE /items/:id
+router.delete("/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
   const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
     return res.status(422).end();

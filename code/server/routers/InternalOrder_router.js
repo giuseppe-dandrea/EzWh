@@ -3,7 +3,7 @@ const { validationResult, param, body } = require("express-validator");
 
 const router = express.Router();
 
-router.post("/api/internalOrders",
+router.post("/internalOrders",
   body("issueDate").isDate(),
   body("products").isArray(),
   body("customerId").isInt({ min: 1 }),
@@ -22,7 +22,7 @@ router.post("/api/internalOrders",
     }
 });
 
-router.get("/api/internalOrders",
+router.get("/internalOrders",
   async (req, res) => {
     try{
       const internalOrders = await facade.getInternalOrders();
@@ -33,7 +33,7 @@ router.get("/api/internalOrders",
     }
 });
 
-router.get("/api/internalOrdersIssued",
+router.get("/internalOrdersIssued",
   async (req, res) => {
     try{
       const internalOrders = await facade.getInternalOrdersIssued();
@@ -44,7 +44,7 @@ router.get("/api/internalOrdersIssued",
     }
 });
 
-router.get("/api/internalOrdersAccepted",
+router.get("/internalOrdersAccepted",
   async (req, res) => {
     try{
       const internalOrders = await facade.getInternalOrdersAccepted();
@@ -55,7 +55,7 @@ router.get("/api/internalOrdersAccepted",
     }
 });
 
-router.get("/api/internalOrders/:ID", param("ID"), async (req, res) => {
+router.get("/internalOrders/:ID", param("ID"), async (req, res) => {
   try {
     const internalOrder = await facade.getInternalOrderByID(req.params.ID);
     if (internalOrder===undefined)
@@ -68,7 +68,7 @@ router.get("/api/internalOrders/:ID", param("ID"), async (req, res) => {
   }
 });
 
-router.put("/api/internalOrders/:ID",
+router.put("/internalOrders/:ID",
   param("ID"),
   async (req, res) => {
   try {
@@ -84,7 +84,7 @@ router.put("/api/internalOrders/:ID",
 });
 
 router.delete(
-  "/api/InternalOrders/:ID",
+  "/InternalOrders/:ID",
   param("ID").isInt({ min: 1 }),
   async (req, res) => {
     try {

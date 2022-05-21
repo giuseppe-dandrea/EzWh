@@ -1,11 +1,11 @@
 const express = require("express");
 const { validationResult, param, body } = require("express-validator");
-const EzWhException = require("./modules/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 const router = express.Router();
 
-//GET /api/positions
-router.get("/api/positions", async (req, res) => {
+//GET /positions
+router.get("/positions", async (req, res) => {
   try {
     const positions = await facade.getPositions();
     return res.status(200).json(positions);
@@ -14,8 +14,8 @@ router.get("/api/positions", async (req, res) => {
   }
 });
 
-//GET /api/positions/:id
-router.get("/api/positions/:id", param("id").isString().isNumeric().isLength({ min: 12, max: 12 }), async (req, res) => {
+//GET /positions/:id
+router.get("/positions/:id", param("id").isString().isNumeric().isLength({ min: 12, max: 12 }), async (req, res) => {
   const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
     return res.status(422).end();
@@ -29,9 +29,9 @@ router.get("/api/positions/:id", param("id").isString().isNumeric().isLength({ m
   }
 });
 
-//POST /api/position
+//POST /position
 router.post(
-  "/api/position",
+  "/position",
   body("positionID").exists().isString().isNumeric().isLength({ min: 12, max: 12 }),
   body("aisleID").exists().isString().isNumeric().isLength({ min: 4, max: 4 }),
   body("row").exists().isString().isNumeric().isLength({ min: 4, max: 4 }),
@@ -67,9 +67,9 @@ router.post(
   }
 );
 
-//PUT /api/position/:positionID
+//PUT /position/:positionID
 router.put(
-  "/api/position/:positionID",
+  "/position/:positionID",
   param("positionID").isString().isNumeric().isLength({ min: 12, max: 12 }),
   body("newAisleID").isString().isNumeric().isLength({ min: 4, max: 4 }),
   body("newRow").isString().isNumeric().isLength({ min: 4, max: 4 }),
@@ -104,9 +104,9 @@ router.put(
   }
 );
 
-//PUT /api/position/:positionID/changeID
+//PUT /position/:positionID/changeID
 router.put(
-  "/api/position/:positionID/changeID",
+  "/position/:positionID/changeID",
   param("positionID").isString().isNumeric().isLength({ min: 12, max: 12 }),
   body("newPositionID").isString().isNumeric().isLength({ min: 12, max: 12 }),
   async (req, res) => {
@@ -127,9 +127,9 @@ router.put(
   }
 );
 
-//DELETE /api/position/:positionID
+//DELETE /position/:positionID
 router.delete(
-  "/api/position/:positionID",
+  "/position/:positionID",
   param("positionID").isString().isNumeric().isLength({ min: 12, max: 12 }),
   async (req, res) => {
     const validationErrors = validationResult(req);
@@ -148,7 +148,7 @@ router.delete(
 
 //USED ONLY FOR TESTING
 router.delete(
-    "/api/position/",
+    "/position/",
     async (req, res) => {
         try {
             await facade.deleteAllPositions();
