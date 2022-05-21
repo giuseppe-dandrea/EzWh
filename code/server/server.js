@@ -7,7 +7,7 @@ dayjs.extend(customParseFormat);
 const EzWhException = require("./src/EzWhException.js");
 const EzWhFacade = require("./src/EzWhFacade");
 const { validationResult, param, check, body } = require("express-validator");
-const { UserTypes, User } = require("./src/User");
+const { UserTypes } = require("./src/User");
 const facade = new EzWhFacade();
 
 // init express
@@ -372,7 +372,7 @@ check('idSKU').isInt({ min: 1 }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty() || Object.keys(req.body) == 0) {
+      if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(422).end();
       }
       await facade.createTestDescriptor(req.body.name, req.body.procedureDescription,
@@ -392,7 +392,7 @@ check('newName').exists(), check('newProcedureDescription').exists(),
 check('newIdSKU').isInt({ min: 1 }), async (req, res) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty() || Object.keys(req.body) == 0) {
+    if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
       return res.status(422).end();
     }
     await facade.modifyTestDescriptor(req.params.id, req.body.newName,
@@ -402,7 +402,7 @@ check('newIdSKU').isInt({ min: 1 }), async (req, res) => {
   catch (err) {
     console.log("Error in Server");
     console.log(err);
-    if (err == EzWhException.NotFound) return res.status(404).end();
+    if (err === EzWhException.NotFound) return res.status(404).end();
     else return res.status(503).end();
   }
 });
@@ -437,7 +437,7 @@ app.get('/api/skuitems/:rfid/testResults', param('rfid').isNumeric().isLength({m
     } catch (err) {
       console.log("Error in Server");
       console.log(err);
-      if (err == EzWhException.NotFound) return res.status(404).end();
+      if (err === EzWhException.NotFound) return res.status(404).end();
       return res.status(500).end();
     }
   });
@@ -464,7 +464,7 @@ check('idTestDescriptor').isInt({ min: 1 }),
 check('Date').exists(), check('Result').isBoolean(), async (req, res) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty() || Object.keys(req.body) == 0 ||
+    if (!errors.isEmpty() || Object.keys(req.body).length === 0 ||
       !dayjs(req.body.Date, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
       return res.status(422).end();
     }
@@ -485,7 +485,7 @@ param('id').isInt({ min: 1 }), check('newIdTestDescriptor').isInt({ min: 1 }),
 check('newDate').exists(), check('newResult').isBoolean(), async (req, res) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty() || Object.keys(req.body) == 0 ||
+    if (!errors.isEmpty() || Object.keys(req.body).length === 0 ||
       !dayjs(req.body.newDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
       return res.status(422).end();
     }
@@ -496,7 +496,7 @@ check('newDate').exists(), check('newResult').isBoolean(), async (req, res) => {
   catch (err) {
     console.log("Error in Server");
     console.log(err);
-    if (err == EzWhException.NotFound) return res.status(404).end();
+    if (err === EzWhException.NotFound) return res.status(404).end();
     else return res.status(503).end();
   }
 });
@@ -553,9 +553,9 @@ app.post('/api/newUser',  // TODO
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty() || Object.keys(req.body) == 0
+      if (!errors.isEmpty() || Object.keys(req.body).length === 0
         || !UserTypes.isUserTypes(req.body.type) ||
-        req.body.type == UserTypes.MANAGER || req.body.type == UserTypes.ADMINISTRATOR) {
+        req.body.type === UserTypes.MANAGER || req.body.type === UserTypes.ADMINISTRATOR) {
         return res.status(422).end();
       }
       await facade.createUser(req.body.username, req.body.name,
@@ -565,7 +565,7 @@ app.post('/api/newUser',  // TODO
     catch (err) {
       console.log("Error in Server");
       console.log(err);
-      if (err == EzWhException.Conflict) return res.status(409).end();
+      if (err === EzWhException.Conflict) return res.status(409).end();
       return res.status(503).end();
     }
   });
@@ -575,7 +575,7 @@ app.post('/api/managerSessions',
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty() || Object.keys(req.body) == 0) {
+      if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
       let user = await facade.login(req.body.username, req.body.password, UserTypes.MANAGER);
@@ -584,7 +584,7 @@ app.post('/api/managerSessions',
     catch (err) {
       console.log("Error in Server");
       console.log(err);
-      if (err == EzWhException.Unauthorized) return res.status(401).end();
+      if (err === EzWhException.Unauthorized) return res.status(401).end();
       return res.status(500).end();
     }
   });
@@ -594,7 +594,7 @@ app.post('/api/customerSessions',
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty() || Object.keys(req.body) == 0) {
+      if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
       let user = await facade.login(req.body.username, req.body.password, UserTypes.INTERNAL_CUSTOMER);
@@ -603,7 +603,7 @@ app.post('/api/customerSessions',
     catch (err) {
       console.log("Error in Server");
       console.log(err);
-      if (err == EzWhException.Unauthorized) return res.status(401).end();
+      if (err === EzWhException.Unauthorized) return res.status(401).end();
       return res.status(500).end();
     }
   });
@@ -613,7 +613,7 @@ app.post('/api/supplierSessions',
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty() || Object.keys(req.body) == 0) {
+      if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
       let user = await facade.login(req.body.username, req.body.password, UserTypes.SUPPLIER);
@@ -622,7 +622,7 @@ app.post('/api/supplierSessions',
     catch (err) {
       console.log("Error in Server");
       console.log(err);
-      if (err == EzWhException.Unauthorized) return res.status(401).end();
+      if (err === EzWhException.Unauthorized) return res.status(401).end();
       return res.status(500).end();
     }
   });
@@ -632,7 +632,7 @@ app.post('/api/clerkSessions',
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty() || Object.keys(req.body) == 0) {
+      if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
       let user = await facade.login(req.body.username, req.body.password, UserTypes.CLERK);
@@ -641,7 +641,7 @@ app.post('/api/clerkSessions',
     catch (err) {
       console.log("Error in Server");
       console.log(err);
-      if (err == EzWhException.Unauthorized) return res.status(401).end();
+      if (err === EzWhException.Unauthorized) return res.status(401).end();
       return res.status(500).end();
     }
   });
@@ -651,7 +651,7 @@ app.post('/api/qualityEmployeeSessions',
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty() || Object.keys(req.body) == 0) {
+      if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
       let user = await facade.login(req.body.username, req.body.password, UserTypes.QUALITY_CHECK_EMPLOYEE);
@@ -660,7 +660,7 @@ app.post('/api/qualityEmployeeSessions',
     catch (err) {
       console.log("Error in Server");
       console.log(err);
-      if (err == EzWhException.Unauthorized) return res.status(401).end();
+      if (err === EzWhException.Unauthorized) return res.status(401).end();
       return res.status(500).end();
     }
   });
@@ -670,7 +670,7 @@ app.post('/api/deliveryEmployeeSessions',
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty() || Object.keys(req.body) == 0) {
+      if (!errors.isEmpty() || Object.keys(req.body).length === 0) {
         return res.status(401).end();
       }
       let user = await facade.login(req.body.username, req.body.password, UserTypes.DELIVERY_EMPLOYEE);
@@ -679,7 +679,7 @@ app.post('/api/deliveryEmployeeSessions',
     catch (err) {
       console.log("Error in Server");
       console.log(err);
-      if (err == EzWhException.Unauthorized) return res.status(401).end();
+      if (err === EzWhException.Unauthorized) return res.status(401).end();
       return res.status(500).end();
     }
   });
@@ -693,10 +693,10 @@ app.put('/api/users/:username',
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty() || Object.keys(req.body) == 0 ||
+      if (!errors.isEmpty() || Object.keys(req.body).length === 0 ||
         !UserTypes.isUserTypes(req.body.oldType) || !UserTypes.isUserTypes(req.body.newType)
-        || req.body.oldType == UserTypes.MANAGER || req.body.oldType == UserTypes.ADMINISTRATOR
-        || req.body.newType == UserTypes.MANAGER || req.body.newType == UserTypes.ADMINISTRATOR) {
+        || req.body.oldType === UserTypes.MANAGER || req.body.oldType === UserTypes.ADMINISTRATOR
+        || req.body.newType === UserTypes.MANAGER || req.body.newType === UserTypes.ADMINISTRATOR) {
         return res.status(422).end();
       }
       await facade.modifyUserRights(req.params.username,
@@ -706,7 +706,7 @@ app.put('/api/users/:username',
     catch (err) {
       console.log("Error in Server");
       console.log(err);
-      if (err == EzWhException.NotFound) return res.status(404).end();
+      if (err === EzWhException.NotFound) return res.status(404).end();
       else return res.status(503).end();
     }
   });
@@ -717,7 +717,7 @@ app.delete('/api/users/:username/:type',
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty() || !UserTypes.isUserTypes(req.params.type) ||
-        req.params.type == UserTypes.ADMINISTRATOR || req.params.type == UserTypes.MANAGER) {
+        req.params.type === UserTypes.ADMINISTRATOR || req.params.type === UserTypes.MANAGER) {
         return res.status(422).end();
       }
       await facade.deleteUser(req.params.username, req.params.type);
@@ -1071,7 +1071,7 @@ app.post("/api/restockOrder",
       return res.status(201).end();
     } catch (err) {
       console.log(err);
-      if (err == EzWhException.EntryNotAllowed) return res.status(422).end();
+      if (err === EzWhException.EntryNotAllowed) return res.status(422).end();
       else return res.status(503).end();
     }
   }
@@ -1091,7 +1091,7 @@ app.put("/api/restockOrder/:ID",
       return res.status(200).end();
     } catch (err) {
       console.log(err);
-      if (err == EzWhException.NotFound) return res.status(404).end();
+      if (err === EzWhException.NotFound) return res.status(404).end();
       else return res.status(503).end();
     }
 });
@@ -1110,8 +1110,8 @@ app.put("/api/restockOrder/:ID/skuItems",
       return res.status(200).end();
     } catch (err) {
       console.log(err);
-      if (err == EzWhException.NotFound) return res.status(404).end();
-      else if (err == EzWhException.EntryNotAllowed) return res.status(422).end();
+      if (err === EzWhException.NotFound) return res.status(404).end();
+      else if (err === EzWhException.EntryNotAllowed) return res.status(422).end();
       else return res.status(503).end();
     }
 });
@@ -1128,8 +1128,8 @@ app.put("/api/restockOrder/:ID/transportNote",
       return res.status(200).end();
     } catch (err) {
       console.log(err);
-      if (err == EzWhException.NotFound) return res.status(404).end();
-      else if (err == EzWhException.EntryNotAllowed) return res.status(422).end();
+      if (err === EzWhException.NotFound) return res.status(404).end();
+      else if (err === EzWhException.EntryNotAllowed) return res.status(422).end();
       else return res.status(503).end();
     }
 });
@@ -1167,7 +1167,7 @@ app.post(
       return res.status(201).end();
     } catch (err) {
       console.log(err);
-      if (err == EzWhException.NotFound) return res.status(404).end();
+      if (err === EzWhException.NotFound) return res.status(404).end();
       else return res.status(503).end();
     }
 });
