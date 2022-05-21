@@ -1,0 +1,162 @@
+const express = require("express");
+const { validationResult, param, body } = require("express-validator");
+const EzWhException = require("./modules/EzWhException.js");
+
+const router = express.Router();
+
+//GET /api/skus
+router.get("/api/skus", async (req, res) => {
+  try {
+    let skus = await facade.getSKUs();
+    skus.map((s) => {return {
+        id: s.id,
+        description: s.description,
+        weight: s.weight,
+        volume: s.volume,
+        notes: s.notes,
+        position: s.position ? s.position.id : s.position,
+        availableQuantity: s.availableQuantity,
+        price: s.price,
+        testDescriptors: s.testDescriptors.map((t) => t.id)
+    }});
+    return res.status(200).json(skus);
+  } catch (err) {
+    if (err === EzWhException.InternalError) return res.status(500).end();
+  }
+});
+
+//GET /api/skus/:id
+router.get("/api/skus/:id", param("id").isInt({min : 1}),
+	async (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).end();
+	}
+	try {
+		let sku = await facade.getSKUById(req.params.id);
+		return res.status(200).json({
+            id: sku.id,
+            description: sku.description,
+            weight: sku.weight,
+            volume: sku.volume,
+            notes: sku.notes,
+            position: sku.position ? sku.position.id : sku.position,
+            availableQuantity: sku.availableQuantity,
+            price: sku.price,
+            testDescriptors: sku.testDescriptors.map((t) => t.id)
+        });
+	} catch (err) {
+		if (err === EzWhException.InternalError)
+			return res.status(500).end();
+		else if (err === EzWhException.NotFound)
+			return res.status(404).end();
+	}
+});
+
+//POST /api/sku
+router.post(
+  "/api/sku",
+  body("description").exists(),
+  body("weight").isFloat({ min: 0 }),
+  body("volume").isFloat({ min: 0 }),
+  body("notes").exists(),
+  body("price").isFloat({ min: 0 }),
+  body("availableQuantity").isInt({ min: 0 }),
+  async (req, res) => {
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      return res.status(422).end();
+    }
+    try {
+      await facade.createSKU(
+        req.body.description,
+        req.body.weight,
+        req.body.volume,
+        req.body.notes,
+        req.body.price,
+        req.body.availableQuantity
+      );
+      return res.status(201).end();
+    } catch (err) {
+      if (err === EzWhException.InternalError) {
+        return res.status(503).end();
+      }
+    }
+  }
+);
+
+//PUT /api/sku/:id
+router.put(
+    "/api/sku/:id",
+    param("id").isInt({min : 1}),
+	body("newDescription").isString(),
+	body("newWeight").isFloat({min : 0}),
+	body("newVolume").isFloat({min : 0}),
+	body("newNotes").isString(),
+	body("newPrice").isFloat({min : 0}),
+	body("newAvailableQuantity").isInt({min : 0}),
+	async (req, res) => {
+		const validationErrors = validationResult(req);
+		if (!validationErrors.isEmpty()) {
+			return res.status(422).end();
+		}
+		try {
+			await facade.modifySKU(req.params.id, req.body.newDescription, req.body.newWeight, req.body.newVolume, req.body.newNotes, req.body.newPrice, req.body.newAvailableQuantity
+      );
+      return res.status(200).end();
+    } catch (err) {
+      if (err === EzWhException.PositionFull) {
+        //TODO: test when position ready
+        return res.status(422).end();
+      } else if (err === EzWhException.InternalError) {
+        return res.status(503).end();
+      }
+      else if (err === EzWhException.NotFound) {
+          return res.status(404).end();
+      }
+    }
+  }
+);
+
+//PUT /api/sku/:id/position
+router.put(
+    "/api/sku/:id/position",
+    param("id").isInt({min : 1}),
+	body("position").exists().isString().isNumeric().isLength({ min: 12, max: 12 }),
+	async (req, res) => {
+		const validationErrors = validationResult(req);
+		if (!validationErrors.isEmpty()) {
+			return res.status(422).end();
+		}
+		try {
+			await facade.addSKUPosition(req.params.id, req.body.position);
+			return res.status(200).end();
+		} catch (err) {
+			if (err === EzWhException.NotFound)
+				return res.status(404).end();
+			else if (err === EzWhException.PositionFull)
+				return res.status(422).end();
+			else if (err === EzWhException.InternalError)
+				return res.status(503).end();
+		}
+});
+
+//DELETE /api/skus/:id
+router.delete("/api/skus/:id", param("id").isInt({min : 1}),
+	async (req, res) => {
+		const validationErrors = validationResult(req);
+		if (!validationErrors.isEmpty()) {
+			return res.status(422).end();
+		}
+		try {
+			await facade.deleteSKU(req.params.id);
+			return res.status(204).end();
+		} catch (err) {
+			if (err === EzWhException.InternalError)
+				return res.status(500).end();
+			else if (err === EzWhException.NotFound)
+				return res.status(404).end();
+		}
+});
+
+module.exports = router;

@@ -1,5 +1,5 @@
 "use strict";
-const DbHelper = require("./src/DbHelper.js");
+const DbHelper = require("./modules/DbHelper.js");
 const db = new DbHelper("./code/server/dev.db");
 try{
     (async function() {

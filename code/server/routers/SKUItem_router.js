@@ -1,0 +1,152 @@
+const express = require("express");
+const { validationResult, param, body } = require("express-validator");
+const EzWhException = require("./modules/EzWhException.js");
+
+const router = express.Router();
+
+//GET /api/skuitems
+router.get("/api/skuitems", async (req, res) => {
+  try {
+    let skuitems = await facade.getSKUItems();
+    return res.status(200).json(
+      skuitems.map((s) => {
+        return {
+          RFID: s.rfid,
+          SKUId: s.sku.id,
+          Available: s.available,
+          DateOfStock: s.dateOfStock,
+        };
+      })
+    );
+  } catch (err) {
+    return res.status(500).end();
+  }
+});
+
+//GET /api/skuitems/sku/:id
+router.get("/api/skuitems/sku/:id", param("id").isInt({min : 1}),
+	async (req, res) => {
+		const validationErrors = validationResult(req);
+		if (!validationErrors.isEmpty()) {
+			return res.status(422).end();
+		}
+		try {
+			let skuitems = await facade.getSKUItemsBySKU(req.params.id);
+			return res.status(200).json(skuitems.map((s) => {
+			return {
+				RFID: s.rfid,
+				SKUId: s.sku.id,
+				DateOfStock: s.dateOfStock,
+        };
+      })
+    );
+  } catch (err) {
+    if (err === EzWhException.NotFound) return res.status(404).end();
+    else return res.status(500).end();
+  }
+});
+
+//GET /api/skuitems/:rfid
+router.get("/api/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, max: 32}),
+	async (req, res) => {
+		const validationErrors = validationResult(req);
+		if (!validationErrors.isEmpty()) {
+			return res.status(422).end();
+		}
+		try {
+			let skuitem = await facade.getSKUItemByRfid(req.params.rfid);
+			return res.status(200).json({
+				RFID: skuitem.rfid,
+				SKUId: skuitem.sku.id,
+				Available: skuitem.available,
+				DateOfStock: skuitem.dateOfStock,
+    });
+  } catch (err) {
+    if (err === EzWhException.NotFound) {
+      return res.status(404).end();
+    } else return res.status(500).end();
+  }
+});
+
+//POST /api/skuitem
+router.post(
+  "/api/skuitem",
+  body("RFID").isNumeric().isLength({min: 32, max: 32}),
+  body("SKUId").isInt({ min: 1 }),
+  body("DateOfStock").custom((value) => {
+    if (value !== null && !dayjs(value, ["YYYY/MM/DD", "YYYY/MM/DD H:m"], true).isValid()) {
+      throw new Error("Invalid date");
+    }
+    return true;
+  }),
+  async (req, res) => {
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      return res.status(422).end();
+    }
+    try {
+      await facade.createSKUItem(req.body.RFID, req.body.SKUId, req.body.DateOfStock);
+      return res.status(201).end();
+    } catch (err) {
+      if (err === EzWhException.NotFound) return res.status(404).end();
+      else if (err === EzWhException.InternalError) return res.status(503).end();
+    }
+  }
+);
+
+//PUT /api/skuitems/:rfid
+router.put(
+    "/api/skuitems/:rfid",
+    param("rfid").isNumeric().isLength({min: 32, max: 32}),
+	body("newRFID").exists().isNumeric().isLength({min: 32, max: 32}),
+	body("newAvailable").isInt({min : 0, max: 1}),
+	body("newDateOfStock").custom((value) => {
+		if (value !== null && !dayjs(value, ["YYYY/MM/DD", "YYYY/MM/DD H:m"], true).isValid()) {
+      throw new Error("Invalid date");
+    }
+    return true;
+  }),
+  async (req, res) => {
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      return res.status(422).end();
+    }
+    try {
+      await facade.modifySKUItem(req.params.rfid, req.body.newRFID, req.body.newAvailable, req.body.newDateOfStock);
+      return res.status(200).end();
+    } catch (err) {
+      if (err === EzWhException.NotFound) return res.status(404).end();
+      else return res.status(503).end();
+    }
+  }
+);
+
+//DELETE /api/skuitems/:rfid
+router.delete("/api/skuitems/:rfid", param("rfid").isNumeric().isLength({min: 32, max: 32}),
+	async (req, res) => {
+		const validationErrors = validationResult(req);
+		if (!validationErrors.isEmpty()) {
+			return res.status(422).end();
+		}
+		try {
+			await facade.deleteSKUItem(req.params.rfid);
+			return res.status(204).end();
+		} catch (err) {
+			return res.status(503).end();
+		}
+});
+//USED ONLY FOR TESTING
+router.delete(
+    "/api/skuitems/",
+    async (req, res) => {
+        try {
+            await facade.deleteAllSKUItems();
+            return res.status(204).end();
+        } catch (err) {
+            if (err === EzWhException.NotFound) return res.status(404).end();
+            else if (err === EzWhException.InternalError) return res.status(503).end();
+        }
+    }
+);
+
+module.exports = router;
