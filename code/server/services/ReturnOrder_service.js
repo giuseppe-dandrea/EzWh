@@ -1,4 +1,6 @@
 const dao = require("../database/ReturnOrder_dao");
+const SKU_dao = require("../database/SKU_dao");
+const SKUItem_dao = require("../database/SKUItem_dao");
 const ReturnOrder = require("../modules/ReturnOrder");
 const EzWhException = require("./src/EzWhException.js");
 
@@ -18,9 +20,9 @@ class ReturnOrderService {
         const products = await dao.getReturnOrderProducts(returnOrderID);
         console.log(`products: ${products}`)
         for (let product of products) {
-            const SKUItem = await dao.getSKUItemByRfid(product.RFID);
+            const SKUItem = await SKUItem_dao.getSKUItemByRfid(product.RFID);
             console.log(`SKUItem: ${SKUItem}`)
-            const SKU = await dao.getSKUById(SKUItem.SKUID)
+            const SKU = await SKU_dao.getSKUById(SKUItem.SKUID)
             console.log(`SKUs: ${SKU}`)
             const returnProduct =
                 {

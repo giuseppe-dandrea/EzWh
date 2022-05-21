@@ -1,4 +1,5 @@
 const dao = require("../database/SKUItem_dao");
+const SKU_dao = require("../database/SKU_dao");
 const SKUItem = require("../modules/SKUItem");
 const EzWhException = require("./src/EzWhException.js");
 
@@ -11,7 +12,7 @@ class SKUItemService {
             let skuItemsJson = await dao.getSKUItems();
             let skuItems = skuItemsJson.map((s) => new SKUItem(s.RFID, s.SKUID, s.Available, s.DateOfStock));
             for (let s of skuItems) {
-                s.sku = await this.getSKUById(s.sku);
+                s.sku = await SKU_dao.getSKUById(s.sku);
                 //TODO: add testResults if needed
             }
             return skuItems;
@@ -22,11 +23,11 @@ class SKUItemService {
 
     async getSKUItemsBySKU(SKUID) {
         try {
-            await this.getSKUById(SKUID);
+            await SKU_dao.getSKUById(SKUID);
             let skuItemsJson = await dao.getSKUItemsBySKU(SKUID);
             let skuItems = skuItemsJson.map((s) => new SKUItem(s.RFID, s.SKUID, s.Available, s.DateOfStock));
             for (let s of skuItems) {
-                s.sku = await this.getSKUById(s.sku);
+                s.sku = await SKU_dao.getSKUById(s.sku);
                 //TODO: add testResults if needed
             }
             return skuItems;
@@ -41,7 +42,7 @@ class SKUItemService {
             let skuItemJson = await dao.getSKUItemByRfid(rfid);
             if (skuItemJson === undefined) throw EzWhException.NotFound;
             let skuItem = new SKUItem(skuItemJson.RFID, skuItemJson.SKUID, skuItemJson.Available, skuItemJson.DateOfStock);
-            skuItem.sku = await this.getSKUById(skuItem.sku);
+            skuItem.sku = await SKU_dao.getSKUById(skuItem.sku);
             //TODO: add testResults if needed
             return skuItem;
         } catch (err) {
@@ -79,7 +80,7 @@ class SKUItemService {
 
     async createSKUItem(rfid, SKUId, dateOfStock) {
         try {
-            await this.getSKUById(SKUId);
+            await SKU_dao.getSKUById(SKUId);
             await dao.createSKUItem(rfid, SKUId, dateOfStock);
         } catch (err) {
             if (err === EzWhException.NotFound) throw EzWhException.NotFound;

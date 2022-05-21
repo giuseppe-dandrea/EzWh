@@ -1,4 +1,5 @@
 const dao = require("../database/TestDescriptor_dao");
+const SKU_dao = require("../database/SKU_dao");
 const TestDescriptor = require("../modules/TestDescriptor");
 const EzWhException = require("./src/EzWhException.js");
 
@@ -47,7 +48,7 @@ class TestDescriptorService {
     async createTestDescriptor(name, procedureDescription, idSKU) {
         // TODO
         try {
-            let sku = await dao.getSKUById(idSKU);
+            let sku = await SKU_dao.getSKUById(idSKU);
             console.log(sku);
             if (sku === undefined) throw EzWhException.NotFound;
             await dao.createTestDescriptor(name, procedureDescription, idSKU);
@@ -61,7 +62,7 @@ class TestDescriptorService {
 
     async modifyTestDescriptor(id, newName, newProcedureDescription, newIdSKU) {
         try {
-            let sku = await dao.getSKUById(newIdSKU);
+            let sku = await SKU_dao.getSKUById(newIdSKU);
             console.log(sku);
             if (sku === undefined) throw EzWhException.NotFound;
             let td = await this.getTestDescriptorByID(id);

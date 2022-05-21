@@ -1,4 +1,6 @@
 const dao = require("../database/RestockOrder_dao");
+const Item_dao = require("../database/Item_dao");
+const SKUItem_dao = require("../database/SKUItem_dao");
 const RestockOrder = require("../modules/RestockOrder");
 const EzWhException = require("./src/EzWhException.js");
 
@@ -11,7 +13,7 @@ class RestockOrderService {
         let products = []
         for (let p of productsJson) {
             const itemID = p.ItemID;
-            let item = await dao.getItemByID(itemID);
+            let item = await Item_dao.getItemByID(itemID);
             item = item[0];
             const product = {
                 "SKUId": item.id,
@@ -29,7 +31,7 @@ class RestockOrderService {
         let skuItems = [];
         for (let s of skuItemsJson) {
             const RFID = s.RFID;
-            const SKU = await dao.getSKUItemByRfid(RFID);
+            const SKU = await SKUItem_dao.getSKUItemByRfid(RFID);
             const SKUID = SKU.SKUID;
             const skuItem = {"RFID": RFID, "SKUId": SKUID}
             skuItems.push(skuItem);
@@ -72,7 +74,7 @@ class RestockOrderService {
         const restockOrderID = await dao.createRestockOrder(issueDate, supplierID);
         console.log(restockOrderID);
         for (let product of products) {
-            const item = await dao.getItemBySKUIDAndSupplierID(product.SKUId, supplierID);
+            const item = await Item_dao.getItemBySKUIDAndSupplierID(product.SKUId, supplierID);
             console.log(item);
             if (item === undefined) {
                 throw EzWhException.EntryNotAllowed;

@@ -1,4 +1,6 @@
 const dao = require("../database/TestResult_dao");
+const SKUItem_dao = require("../database/SKUItem_dao");
+const TestDescriptor_dao = require("../database/TestDescriptor_dao");
 const TestResult = require("../modules/TestResult");
 const EzWhException = require("./src/EzWhException.js");
 
@@ -9,7 +11,7 @@ class TestResultService {
     async getTestResultsByRFID(RFID) {
         // TODO
         try {
-            let skuItem = await dao.getSKUItemByRfid(RFID);
+            let skuItem = await SKUItem_dao.getSKUItemByRfid(RFID);
             console.log(skuItem);
             console.log(RFID);
             if (skuItem === undefined) throw EzWhException.NotFound;
@@ -54,11 +56,11 @@ class TestResultService {
     async addTestResult(RFID, idTestDescriptor, date, result) {
         // TODO
         try {
-            let skuItem = await this.getSKUItemByRfid(RFID);
+            let skuItem = await SKUItem_dao.getSKUItemByRfid(RFID);
             console.log(RFID);
             console.log(skuItem);
             if (skuItem === undefined) throw EzWhException.NotFound;
-            let tr = await this.getTestDescriptorByID(idTestDescriptor);
+            let tr = await TestDescriptor_dao.getTestDescriptorByID(idTestDescriptor);
             console.log(idTestDescriptor);
             console.log(tr);
             if (tr === undefined) throw EzWhException.NotFound;
@@ -74,9 +76,9 @@ class TestResultService {
     async modifyTestResult(RFID, id, newIdTestDescriptor, newDate, newResult) {
         //TODO
         try {
-            await this.getSKUItemByRfid(RFID);
+            await SKUItem_dao.getSKUItemByRfid(RFID);
             console.log(newIdTestDescriptor);
-            await this.getTestDescriptorByID(newIdTestDescriptor);
+            await TestDescriptor_dao.getTestDescriptorByID(newIdTestDescriptor);
             let tr = await dao.getTestResultByIDAndRFID(RFID, id);
             if (tr === undefined) throw EzWhException.NotFound;
             tr.idTestDescriptor = newIdTestDescriptor;

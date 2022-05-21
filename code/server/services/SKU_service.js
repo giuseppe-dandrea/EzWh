@@ -1,5 +1,6 @@
 const dao = require("../database/SKU_dao");
 const SKU = require("../modules/SKU");
+const Position_dao = require("../database/Position_dao");
 const TestDescriptor = require("../modules/TestDescriptor");
 const EzWhException = require("./src/EzWhException.js");
 
@@ -31,7 +32,7 @@ class SKUService {
                     )
                 );
                 if (s.position)
-                    s.position = await this.getPositionByID(s.position);
+                    s.position = await Position_dao.getPositionByID(s.position);
             }
             return skus;
         } catch (err) {
@@ -70,7 +71,7 @@ class SKUService {
                 )
             );
             if (sku.position)
-                sku.position = await this.getPositionByID(sku.position);
+                sku.position = await Position_dao.getPositionByID(sku.position);
             return sku;
         } catch (err) {
             if (err === EzWhException.NotFound) throw EzWhException.NotFound;
@@ -104,8 +105,8 @@ class SKUService {
 
     async modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId) {
         try {
-            await this.getPositionByID(positionId);
-            return await dao.modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId);
+            await Position_dao.getPositionByID(positionId);
+            return await Position_dao.modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId);
         } catch (err) {
             if (err === EzWhException.NotFound) throw EzWhException.NotFound;
             if (err.code === "SQLITE_CONSTRAINT" && err.errno === 19) throw EzWhException.InternalError;
@@ -116,14 +117,14 @@ class SKUService {
     async addSKUPosition(id, positionId) {
         try {
             let sku = await this.getSKUById(id);
-            let position = await this.getPositionByID(positionId);
+            let position = await Position_dao.getPositionByID(positionId);
             if (
                 position.maxWeight < sku.weight * sku.availableQuantity ||
                 position.maxVolume < sku.volume * sku.availableQuantity
             )
                 throw EzWhException.PositionFull;
             if (position.sku !== null) throw EzWhException.PositionFull;
-            await dao.modifySKUPosition(
+            await Position_dao.modifySKUPosition(
                 positionId,
                 sku.weight * sku.availableQuantity,
                 sku.volume * sku.availableQuantity,

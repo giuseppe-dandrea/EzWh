@@ -1,4 +1,6 @@
 const dao = require("../database/InternalOrder_dao");
+const SKU_dao = require("../database/SKU_dao");
+const SKUItem_dao = require("../database/SKUItem_dao");
 const InternalOrder = require("../modules/InternalOrder");
 const EzWhException = require("./src/EzWhException.js");
 
@@ -41,7 +43,7 @@ class InternalOrderService {
         let internalOrderProducts = await dao.getInternalOrderSKUItemByInternalOrderID(ID);
         for (let internalProduct of internalOrderProducts) {
             let RFID = internalProduct.RFID;
-            let SKU = await dao.getSKUItemByRfid(RFID);
+            let SKU = await SKUItem_dao.getSKUItemByRfid(RFID);
             if (SKU !== undefined) {
                 let RFID = internalProduct.RFID;
                 let product = {
@@ -61,7 +63,7 @@ class InternalOrderService {
         let internalOrderProducts = await dao.getInternalOrderProductByInternalOrderID(ID);
         for (let internalProduct of internalOrderProducts) {
             let SKUID = internalProduct.SKUID;
-            let SKU = await dao.getSKUById(SKUID);
+            let SKU = await SKU_dao.getSKUById(SKUID);
             if (SKU !== undefined) {
                 let QTY = internalProduct.QTY;
                 let product = {
