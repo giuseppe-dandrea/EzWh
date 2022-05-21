@@ -7,17 +7,19 @@ class DatabaseConnection {
     static async getInstance() {
         if (this.db===null){
             this.db = new sqlite3.Database("./database/ezwh.db", (err) => err && console.log(err));
+            console.log("Creating tables...");
             await this.createTables();
+            console.log("Tables created!");
+            await this.runSQL(`PRAGMA foreign_keys=on;`);
+            console.log(`Foreign keys activated with "PRAGMA foreign_keys=on"`);
         }
         return this.db;
     }
 
     static async createTables() {
-        console.log("Creating tables...")
         for (let tableSQL of this.tables) {
             await this.runSQL(tableSQL);
         }
-        console.log("Tables created!");
         return;
     }
 
