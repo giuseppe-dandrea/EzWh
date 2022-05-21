@@ -78,7 +78,8 @@ class TestResultService {
         try {
             await SKUItem_dao.getSKUItemByRfid(RFID);
             console.log(newIdTestDescriptor);
-            await TestDescriptor_dao.getTestDescriptorByID(newIdTestDescriptor);
+            let td = await TestDescriptor_dao.getTestDescriptorByID(newIdTestDescriptor);
+            if (td === undefined) throw EzWhException.NotFound;
             let tr = await dao.getTestResultByIDAndRFID(RFID, id);
             if (tr === undefined) throw EzWhException.NotFound;
             tr.idTestDescriptor = newIdTestDescriptor;

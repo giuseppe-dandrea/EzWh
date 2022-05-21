@@ -1,3 +1,6 @@
+const SKU = require("../modules/SKU");
+const TestDescriptor = require("../modules/TestDescriptor");
+
 exports.getSKUs = () => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
@@ -6,7 +9,16 @@ exports.getSKUs = () => {
             if (err) {
                 reject(err.toString());
             } else {
-                resolve(rows);
+                resolve(rows.map((s) => new SKU(
+                    s["SKUID"],
+                    s["Description"],
+                    s["Weight"],
+                    s["Volume"],
+                    s["Notes"],
+                    s["Price"],
+                    s["AvailableQuantity"],
+                    s["Position"]
+                )));
             }
         });
     });
@@ -20,7 +32,7 @@ exports.getTestDescriptorsBySKUID = (skuid) => {
             if (err) {
                 reject(err.toString());
             } else {
-                resolve(rows);
+                resolve(rows.map((t) => new TestDescriptor(t["TestDescriptorID"], t["Name"], t["ProcedureDescription"], t["SKUID"])));
             }
         });
     });
@@ -49,7 +61,16 @@ exports.getSKUById = (id) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(row);
+                resolve(row ? new SKU(
+                    row["SKUID"],
+                    row["Description"],
+                    row["Weight"],
+                    row["Volume"],
+                    row["Notes"],
+                    row["Price"],
+                    row["AvailableQuantity"],
+                    row["Position"]
+                ) : undefined);
             }
         });
     });

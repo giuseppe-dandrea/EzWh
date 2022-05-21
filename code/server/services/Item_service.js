@@ -29,7 +29,8 @@ class ItemService {
 
     async createItem(ItemID, Description, Price, SKUID, SupplierID) {
         try {
-            await SKU_dao.getSKUById(SKUID);
+            let sku = await SKU_dao.getSKUById(SKUID);
+            if (sku === undefined) throw EzWhException.NotFound;
             let suppliers = await User_dao.getSuppliers();
             let supplier = suppliers.find(({id}) => id === SupplierID);
             if (supplier === undefined) throw EzWhException.InternalError;

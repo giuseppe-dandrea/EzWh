@@ -36,15 +36,14 @@ exports.getTestResultByIDAndRFID = (RFID, id) => {
 exports.addTestResult = (RFID, idTestDescriptor, date, result) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `INSERT INTO TestResult (TestResultID, RFID, TestDescriptorID, Date, Result)
-      VALUES (?, ?, ?, ?, ?)`;
-        dbConnection.run(sql, [this.idTR, RFID, idTestDescriptor, date, result], (err) => {
+        const sql = `INSERT INTO TestResult (RFID, TestDescriptorID, Date, Result)
+      VALUES (?, ?, ?, ?)`;
+        dbConnection.run(sql, [RFID, idTestDescriptor, date, result], (err) => {
             if (err) {
                 console.log("Error in DB");
                 console.log(err);
                 reject(err);
             }
-            this.idTR++;
             resolve();
         });
     });

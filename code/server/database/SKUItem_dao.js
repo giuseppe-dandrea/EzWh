@@ -1,3 +1,5 @@
+const SKUItem = require("../modules/SKUItem");
+
 exports.getSKUItems = () => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
@@ -6,7 +8,7 @@ exports.getSKUItems = () => {
             if (err) {
                 reject(err);
             } else {
-                resolve(rows);
+                resolve(rows.map((s) => new SKUItem(s.RFID, s.SKUID, s.Available, s.DateOfStock)));
             }
         });
     });
@@ -18,7 +20,7 @@ exports.getSKUItemsBySKU = (SKUID) => {
         const sql = `SELECT * FROM SKUItem WHERE SKUID = ? AND Available = 1;`;
         dbConnection.all(sql, SKUID, (err, rows) => {
             if (err) reject(err);
-            else resolve(rows);
+            else resolve(rows.map((s) => new SKUItem(s.RFID, s.SKUID, s.Available, s.DateOfStock)));
         });
     });
 }
@@ -29,7 +31,7 @@ exports.getSKUItemByRfid = (rfid) => {
         const sql = `SELECT * FROM SKUItem WHERE RFID = ?;`;
         dbConnection.get(sql, rfid, (err, row) => {
             if (err) reject(err);
-            else resolve(row);
+            else resolve(row ? new SKUItem(row.RFID, row.SKUID, row.Available, row.DateOfStock) : undefined);
         });
     });
 }

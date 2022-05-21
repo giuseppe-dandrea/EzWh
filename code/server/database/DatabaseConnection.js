@@ -62,7 +62,7 @@ class DatabaseConnection {
             Position VARCHAR(20),
             AvailableQuantity INTEGER NOT NULL,
             PRIMARY KEY(SKUID),
-            FOREIGN KEY(Position) REFERENCES Position(PositionID)
+            FOREIGN KEY(Position) REFERENCES Position(PositionID) ON DELETE SET NULL
             );`,
 
         `CREATE TABLE IF NOT EXISTS SKUItem (
@@ -71,7 +71,7 @@ class DatabaseConnection {
     		Available INTEGER NOT NULL,
     		DateOfStock VARCHAR(11),
     		PRIMARY KEY (RFID),
-    		FOREIGN KEY (SKUID) references SKU(SKUID)
+    		FOREIGN KEY (SKUID) references SKU(SKUID) ON DELETE CASCADE
 		    );`,
 
         `CREATE TABLE IF NOT EXISTS Position (
@@ -85,7 +85,7 @@ class DatabaseConnection {
     		OccupiedVolume DOUBLE DEFAULT 0,
     		SKUID INTEGER,
     		PRIMARY KEY (PositionID),
-    		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)
+    		FOREIGN KEY (SKUID) REFERENCES SKU(SKUID) ON DELETE SET NULL
 		    );`,
 
         `CREATE TABLE IF NOT EXISTS User (
@@ -105,16 +105,16 @@ class DatabaseConnection {
 			ProcedureDescription VARCHAR(20) NOT NULL,
 			SKUID INTEGER NOT NULL,
 			PRIMARY KEY (TestDescriptorID),
-			FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)
+			FOREIGN KEY (SKUID) REFERENCES SKU(SKUID) ON DELETE CASCADE
 		    );`,
 
         `CREATE TABLE IF NOT EXISTS TestResult (
-			TestResultID INTEGER NOT NULL,
+			TestResultID INTEGER NOT NULL PRIMARY KEY ,
 			RFID VARCHAR(20) NOT NULL,
 			TestDescriptorID INTEGER NOT NULL,
 			Date VARCHAR(20) NOT NULL,
 			Result BOOLEN NOT NULL,
-			PRIMARY KEY (TestResultID, RFID),
+			UNIQUE (TestResultID, RFID),
 			FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
 			FOREIGN KEY (TestDescriptorID) REFERENCES TestDescriptor(TestDescriptorID)
 		    );`,
@@ -127,7 +127,7 @@ class DatabaseConnection {
     		SupplierID INTEGER NOT NULL,
     		PRIMARY KEY (ItemID),
             UNIQUE(SupplierID,SKUID),
-            FOREIGN KEY (SKUID) REFERENCES SKU(SKUID),
+            FOREIGN KEY (SKUID) REFERENCES SKU(SKUID) ON DELETE CASCADE ,
     		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
             );`,
         
