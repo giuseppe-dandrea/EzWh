@@ -94,6 +94,7 @@ class SKUService {
             if (sku === undefined) throw EzWhException.NotFound;
             let position = await Position_dao.getPositionByID(positionId);
             if (position && position.length > 0) position = position[0];
+            else throw EzWhException.NotFound;
             if (
                 position.maxWeight < sku.weight * sku.availableQuantity ||
                 position.maxVolume < sku.volume * sku.availableQuantity
