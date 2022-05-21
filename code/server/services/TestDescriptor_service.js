@@ -27,8 +27,7 @@ class TestDescriptorService {
 
     async getTestDescriptorByID(id) {
         try {
-            let TestDescriptorList = await dao.getTestDescriptors();
-            let td = TestDescriptorList.filter((testD) => testD.id === parseInt(id))[0];
+            let td = await dao.getTestDescriptorByID(id);
             console.log(td);
             if (td === undefined) throw EzWhException.NotFound;
             return {

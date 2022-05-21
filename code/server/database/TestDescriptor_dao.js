@@ -17,6 +17,22 @@ exports.getTestDescriptors = () => {
     });
 }
 
+exports.getTestDescriptorByID = (id) => {
+    return new Promise((resolve, reject) => {
+        const sql = "SELECT * FROM TestDescriptor WHERE TestDescriptorID=?";
+        dbConnection.all(sql, [id], (err, rows) => {
+            if (err) {
+                console.log("Error in DB");
+                console.log(err);
+                reject(err);
+                return;
+            }
+            const tds = rows.map((r) => new TestDescriptor(r.TestDescriptorID, r.Name, r.ProcedureDescription, r.SKUID));
+            resolve(tds[0]);
+        });
+    });
+}
+
 exports.createTestDescriptor = (name, procedureDescription, idSKU) => {
     return new Promise((resolve, reject) => {
         const sql = `INSERT INTO TestDescriptor (Name, ProcedureDescription, SKUID)
