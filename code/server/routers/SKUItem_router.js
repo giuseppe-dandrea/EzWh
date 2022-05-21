@@ -3,6 +3,9 @@ const { validationResult, param, body } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
 const SKUItemService = require('../services/SKUItem_service');
 const skuitemService = new SKUItemService();
+const dayjs = require("dayjs");
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 
 const router = express.Router();
 

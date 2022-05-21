@@ -3,7 +3,9 @@ const { validationResult, param, check } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
 const TestResultService = require('../services/TestResult_service');
 const testResultService = new TestResultService();
-
+const dayjs = require("dayjs");
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 const router = express.Router();
 
 // TestResult
@@ -14,7 +16,7 @@ router.get('/skuitems/:rfid/testResults', param('rfid').isNumeric().isLength({mi
       if (!errors.isEmpty()) {
         return res.status(422).end();
       }
-      const testResults = await facade.getTestResultsByRFID(req.params.rfid);
+      const testResults = await testResultService.getTestResultsByRFID(req.params.rfid);
       return res.status(200).json(testResults);
     } catch (err) {
       console.log("Error in Server");
@@ -31,7 +33,7 @@ param('id').isInt({ min: 1 }), async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).end();
     }
-    const testResult = await facade.getTestResultByIDAndRFID(req.params.rfid, req.params.id);
+    const testResult = await testResultService.getTestResultByIDAndRFID(req.params.rfid, req.params.id);
     return res.status(200).json(testResult);
   } catch (err) {
     console.log("Error in Server");
@@ -50,7 +52,7 @@ check('Date').exists(), check('Result').isBoolean(), async (req, res) => {
       !dayjs(req.body.Date, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
       return res.status(422).end();
     }
-    await facade.addTestResult(req.body.rfid, req.body.idTestDescriptor,
+    await testResultService.addTestResult(req.body.rfid, req.body.idTestDescriptor,
       req.body.Date, req.body.Result);
     return res.status(201).end();
   }
@@ -71,7 +73,7 @@ check('newDate').exists(), check('newResult').isBoolean(), async (req, res) => {
       !dayjs(req.body.newDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
       return res.status(422).end();
     }
-    await facade.modifyTestResult(req.params.rfid, req.params.id,
+    await testResultService.modifyTestResult(req.params.rfid, req.params.id,
       req.body.newIdTestDescriptor, req.body.newDate, req.body.newResult);
     return res.status(200).end();
   }
@@ -90,7 +92,7 @@ param('id').isInt({ min: 1 }), async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).end();
     }
-    await facade.deleteTestResult(req.params.rfid, req.params.id);
+    await testResultService.deleteTestResult(req.params.rfid, req.params.id);
     return res.status(204).end();
   }
   catch (err) {

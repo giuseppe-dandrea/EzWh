@@ -10,29 +10,14 @@ class SKUService {
 
     async getSKUs() {
         try {
-            let skusJson = await dao.getSKUs();
-            let skus = skusJson.map(
-                (s) =>
-                    new SKU(
-                        s["SKUID"],
-                        s["Description"],
-                        s["Weight"],
-                        s["Volume"],
-                        s["Notes"],
-                        s["Price"],
-                        s["AvailableQuantity"],
-                        s["Position"]
-                    )
-            );
+            let skus = await dao.getSKUs();
             for (let s of skus) {
-                let testDescriptorsJson = await dao.getTestDescriptorsBySKUID(s.id);
-                testDescriptorsJson.forEach((t) =>
-                    s.addTestDescriptor(
-                        new TestDescriptor(t["TestDescriptorID"], t["Name"], t["ProcedureDescription"], t["SKUID"])
-                    )
-                );
-                if (s.position)
-                    s.position = await Position_dao.getPositionByID(s.position);
+                let testDescriptors = await dao.getTestDescriptorsBySKUID(s.id);
+                testDescriptors.forEach((t) => s.addTestDescriptor(t));
+                if (s.positionID) {
+                    let tmpPos = await Position_dao.getPositionByID(s.position);
+                    s.position = tmpPos && tmpPos.length > 0 ? tmpPos : null;
+                }
             }
             return skus;
         } catch (err) {
@@ -50,28 +35,16 @@ class SKUService {
 
     async getSKUById(id) {
         try {
-            let skuJson = await dao.getSKUById(id);
-            if (skuJson === undefined) {
+            let sku = await dao.getSKUById(id);
+            if (sku === undefined) {
                 throw EzWhException.NotFound;
             }
-            let sku = new SKU(
-                skuJson["SKUID"],
-                skuJson["Description"],
-                skuJson["Weight"],
-                skuJson["Volume"],
-                skuJson["Notes"],
-                skuJson["Price"],
-                skuJson["AvailableQuantity"],
-                skuJson["Position"]
-            );
-            let testDescriptorsJson = await dao.getTestDescriptorsBySKUID(sku.id);
-            testDescriptorsJson.forEach((t) =>
-                sku.addTestDescriptor(
-                    new TestDescriptor(t["TestDescriptorID"], t["Name"], t["ProcedureDescription"], t["SKUID"])
-                )
-            );
-            if (sku.position)
-                sku.position = await Position_dao.getPositionByID(sku.position);
+            let testDescriptors = await dao.getTestDescriptorsBySKUID(sku.id);
+            testDescriptors.forEach((t) => sku.addTestDescriptor(t));
+            if (sku.positionId) {
+                let tmpPos = await Position_dao.getPositionByID(sku.position);
+                sku.position = tmpPos && tmpPos.length > 0 ? tmpPos : null;
+            }
             return sku;
         } catch (err) {
             if (err === EzWhException.NotFound) throw EzWhException.NotFound;
@@ -81,7 +54,8 @@ class SKUService {
 
     async modifySKU(id, newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity) {
         try {
-            let sku = await this.getSKUById(id);
+            let sku = await dao.getSKUById(id);
+            if (sku === undefined) throw EzWhException.NotFound;
             if (
                 sku.position &&
                 (sku.position.maxWeight < newWeight * newAvailableQuantity ||
@@ -116,8 +90,10 @@ class SKUService {
 
     async addSKUPosition(id, positionId) {
         try {
-            let sku = await this.getSKUById(id);
+            let sku = await dao.getSKUById(id);
+            if (sku === undefined) throw EzWhException.NotFound;
             let position = await Position_dao.getPositionByID(positionId);
+            if (position && position.length > 0) position = position[0];
             if (
                 position.maxWeight < sku.weight * sku.availableQuantity ||
                 position.maxVolume < sku.volume * sku.availableQuantity
@@ -142,6 +118,7 @@ class SKUService {
         try {
             return await dao.deleteSKU(id);
         } catch (err) {
+            console.log(err);
             throw EzWhException.InternalError;
         }
     }
