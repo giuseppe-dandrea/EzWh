@@ -2,16 +2,17 @@ const express = require("express");
 const { validationResult, param, body } = require("express-validator");
 const InternalOrderService = require('../services/InternalOrder_service');
 const internalOrderService = new InternalOrderService();
+const dayjs = require("dayjs");
 
 const router = express.Router();
 
 router.post("/internalOrders",
-  body("issueDate").isDate(),
+  body("issueDate").exists(),
   body("products").isArray(),
   body("customerId").isInt({ min: 1 }),
   async (req, res) => {
     const validationErrors = validationResult(req);
-    if (!validationErrors.isEmpty()) {
+    if (!validationErrors.isEmpty() || !dayjs(req.body.returnDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
       return res.status(422).end();
     }
     try {

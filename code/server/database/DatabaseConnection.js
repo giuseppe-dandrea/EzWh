@@ -8,13 +8,14 @@ class DatabaseConnection {
     static async getInstance() {
         if (this.db===null){
             this.db = new sqlite3.Database("./database/ezwh.db", (err) => err && console.log(err));
-            console.log("Creating tables...");
-            await this.createTables();
-            console.log("Tables created!");
-            await this.createHardcodedUsers();
-            console.log("Hardcoded users added");
             await this.runSQL(`PRAGMA foreign_keys=on;`);
-            console.log(`Foreign keys activated with "PRAGMA foreign_keys=on"`);
+            // console.log(`Foreign keys activated with "PRAGMA foreign_keys=on"`);
+            // console.log("Creating tables...");
+            await this.createTables();
+            // console.log("Tables created!");
+            await this.createHardcodedUsers();
+            // console.log("Hardcoded users added");
+            console.log("DB initiation is done!");
         }
         return this.db;
     }
@@ -173,7 +174,7 @@ class DatabaseConnection {
             RestockOrderID INTEGER NOT NULL,
             IssueDate VARCHAR(20) NOT NULL,
             State VARCHAR(20) NOT NULL,
-            TransportNote VARCHAR(20) NOT NULL,
+            TransportNote VARCHAR(20),
             SupplierID INTEGER NOT NULL,
             FOREIGN KEY (SupplierID) REFERENCES User(UserID)
             on delete cascade,

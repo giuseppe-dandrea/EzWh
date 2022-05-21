@@ -111,10 +111,11 @@ exports.getRestockOrderReturnItems = (ID) => {
 exports.createRestockOrder = (issueDate, supplierID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `INSERT INTO RestockOrder
-      (IssueDate, SupplierID, State, TransportNote)
-      values
-      ('${issueDate}', ${supplierID}, 'ISSUED', 'ISSUED'); `;
+        const sql = `
+        INSERT INTO RestockOrder
+        (IssueDate, SupplierID, State, TransportNote)
+        values
+        ('${issueDate}', ${supplierID}, 'ISSUED', 'ISSUED'); `;
         dbConnection.run(sql, function (err) {
             if (err) {
                 reject(err);
@@ -189,9 +190,9 @@ exports.deleteRestockOrder = (ID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `delete from RestockOrder where RestockOrderID=${ID}`;
-        console.log(sql);
+        // console.log(sql);
         dbConnection.run(sql, function (err) {
-            console.log("deleted!")
+            // console.log("deleted!")
             if (err) {
                 reject(err);
             }

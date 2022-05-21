@@ -100,3 +100,25 @@ exports.getUserByEmail = (email, type) => {
         });
     });
 }
+
+exports.getUserByID = (ID) => {
+    return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
+        const sql = `SELECT * FROM User WHERE UserID=?`;
+        dbConnection.get(sql, [ID], (err, row) => {
+            if (err) {
+                console.log("Error in DB");
+                console.log(err);
+                reject(err);
+            }
+            if (row===undefined){
+                resolve(undefined);
+            }
+            else {
+                const user = new User(row.UserID, row.Name, row.Surname, row.Email, row.Type, row.Password);
+                resolve(user);
+            }
+        });
+    });
+    
+}

@@ -1,5 +1,6 @@
 const dao = require("../database/RestockOrder_dao");
 const Item_dao = require("../database/Item_dao");
+const User_dao = require("../database/User_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
 const RestockOrder = require("../modules/RestockOrder");
 const EzWhException = require("../modules/EzWhException.js");
@@ -57,10 +58,10 @@ class RestockOrderService {
         }
         const products = await this.getRestockOrderProducts(id);
         const skuItems = await this.getRestockOrderSKUItems(id);
-        console.log(products)
+        // console.log(products)
         restockOrder.concatProducts(products);
         restockOrder.concatSKUItems(skuItems);
-        console.log(restockOrder)
+        // console.log(restockOrder)
         return restockOrder;
     }
 
@@ -71,15 +72,23 @@ class RestockOrderService {
     }
 
     async createRestockOrder(issueDate, products, supplierID) {
+        const supplier = await User_dao.getUserByID(supplierID);
+        if (supplier===undefined){
+            console.log(`>>Supplier ${supplierID} not found!`);
+            throw EzWhException.EntryNotAllowed;
+        }
         const restockOrderID = await dao.createRestockOrder(issueDate, supplierID);
-        console.log(restockOrderID);
+        // console.log(`>>ResstockOrderID is ${restockOrderID}!`);
         for (let product of products) {
             const item = await Item_dao.getItemBySKUIDAndSupplierID(product.SKUId, supplierID);
-            console.log(item);
+            // console.log(`>>Item is ${item}!`);
             if (item === undefined) {
+                console.log(`>>Item with SKUID ${product.SKUId} and SupplierID ${supplierID} not found!`);
                 throw EzWhException.EntryNotAllowed;
             }
-            await dao.createRestockOrderProduct(item.id, restockOrderID, product.qty);
+            else{
+                await dao.createRestockOrderProduct(item.id, restockOrderID, product.qty);
+            }
         }
     }
 
@@ -91,9 +100,9 @@ class RestockOrderService {
     }
 
     async addSkuItemsToRestockOrder(ID, skuItems) {
-        console.log("inside facade addSkuItemsToRestockOrder")
+        // console.log("inside facade addSkuItemsToRestockOrder")
         const restockOrder = await dao.getRestockOrderByID(ID);
-        console.log(restockOrder);
+        // console.log(restockOrder);
         if (restockOrder === undefined) throw EzWhException.NotFound;
         if (restockOrder.state !== "DELIVERED") throw EzWhException.EntryNotAllowed;
         for (let skuItem of skuItems) {

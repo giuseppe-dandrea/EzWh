@@ -3,6 +3,7 @@ const { validationResult, param, body } = require("express-validator");
 const EzWhException = require("../modules/EzWhException.js");
 const RestockOrderService = require('../services/RestockOrder_service');
 const restockOrderService = new RestockOrderService();
+const dayjs = require("dayjs");
 
 const router = express.Router();
 
@@ -72,12 +73,12 @@ router.get(
 );
 
 router.post("/restockOrder",
-  body("issueDate").isDate(),
+  body("issueDate").exists(),
   body("products").isArray(),
   body("supplierId").isInt({ min: 1 }),
   async (req, res) => {
     const validationErrors = validationResult(req);
-    if (!validationErrors.isEmpty()) {
+    if (!validationErrors.isEmpty() || !dayjs(req.body.issueDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
       return res.status(422).end();
     }
     try {
