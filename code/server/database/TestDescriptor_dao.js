@@ -1,4 +1,4 @@
-const TestDescriptor = require("./TestDescriptor");
+const TestDescriptor = require("../modules/TestDescriptor");
 const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.getTestDescriptors = () => {

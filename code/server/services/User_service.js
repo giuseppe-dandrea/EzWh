@@ -1,6 +1,6 @@
 const dao = require("../database/User_dao");
 const { User } = require("../modules/User");
-const EzWhException = require("./src/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 class UserService {
     constructor() {

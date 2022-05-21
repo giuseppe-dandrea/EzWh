@@ -1,4 +1,4 @@
-const TestResult = require("./TestResult");
+const TestResult = require("../modules/TestResult");
 const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.getTestResultsByRFID = (RFID) => {

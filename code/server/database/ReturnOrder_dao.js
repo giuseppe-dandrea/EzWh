@@ -1,4 +1,4 @@
-const ReturnOrder = require("./ReturnOrder");
+const ReturnOrder = require("../modules/ReturnOrder");
 const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.createReturnOrder = (returnDate, restockOrderID) => {

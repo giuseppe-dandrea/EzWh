@@ -1,4 +1,4 @@
-const Item = require("./Item");
+const Item = require("../modules/Item");
 const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.getItems = () => {

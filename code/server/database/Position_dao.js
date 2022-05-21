@@ -1,4 +1,4 @@
-const Position = require("./Position");
+const Position = require("../modules/Position");
 const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.getPositions = () => {

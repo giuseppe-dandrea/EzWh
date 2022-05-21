@@ -1,4 +1,4 @@
-const InternalOrder = require("./InternalOrder");
+const InternalOrder = require("../modules/InternalOrder");
 const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.createInternalOrderProduct = (internalOrderID, SKUID, QTY) => {

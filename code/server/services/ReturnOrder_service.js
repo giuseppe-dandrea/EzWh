@@ -2,7 +2,7 @@ const dao = require("../database/ReturnOrder_dao");
 const SKU_dao = require("../database/SKU_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
 const ReturnOrder = require("../modules/ReturnOrder");
-const EzWhException = require("./src/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 class ReturnOrderService {
     constructor() {

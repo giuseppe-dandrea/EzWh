@@ -2,7 +2,7 @@ const dao = require("../database/Item_dao");
 const SKU_dao = require("../database/SKU_dao");
 const User_dao = require("../database/User_dao");
 const Item = require("../modules/Item");
-const EzWhException = require("./src/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 class ItemService {
     constructor() {

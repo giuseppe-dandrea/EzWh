@@ -1,4 +1,4 @@
-const RestockOrder = require("./RestockOrder");
+const RestockOrder = require("../modules/RestockOrder");
 const dbConnection = require("./DatabaseConnection").getInstance();
 
 exports.getRestockOrders = (state) => {

@@ -1,5 +1,5 @@
 const sqlite = require("sqlite3");
-const { User } = require("./User");
+const { User } = require("../modules/User");
 
 const dbConnection = require("./DatabaseConnection").getInstance();
 

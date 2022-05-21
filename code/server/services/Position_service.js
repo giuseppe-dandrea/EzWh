@@ -1,6 +1,6 @@
 const dao = require("../database/Position_dao");
 const Position = require("../modules/Position");
-const EzWhException = require("./src/EzWhException.js");
+const EzWhException = require("../modules/EzWhException.js");
 
 class PositionService {
     constructor() {
