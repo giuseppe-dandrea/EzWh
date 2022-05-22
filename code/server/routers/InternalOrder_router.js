@@ -3,6 +3,7 @@ const { validationResult, param, body } = require("express-validator");
 const InternalOrderService = require('../services/InternalOrder_service');
 const internalOrderService = new InternalOrderService();
 const dayjs = require("dayjs");
+const EzWhException = require("../modules/EzWhException.js");
 
 const router = express.Router();
 
@@ -12,7 +13,8 @@ router.post("/internalOrders",
   body("customerId").isInt({ min: 1 }),
   async (req, res) => {
     const validationErrors = validationResult(req);
-    if (!validationErrors.isEmpty() || !dayjs(req.body.returnDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
+    if (!validationErrors.isEmpty() || !dayjs(req.body.issueDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
+      console.log("Router 422!")
       return res.status(422).end();
     }
     try {
@@ -21,7 +23,8 @@ router.post("/internalOrders",
       return res.status(201).end();
     } catch (err) {
       console.log(err);
-      return res.status(503).end();
+      if (err === EzWhException.EntryNotAllowed) return res.status(422).end();
+      else return res.status(503).end();
     }
 });
 
@@ -58,7 +61,7 @@ router.get("/internalOrdersAccepted",
     }
 });
 
-router.get("/internalOrders/:ID", param("ID"), async (req, res) => {
+router.get("/internalOrders/:ID", param("ID").isInt({ min: 1 }), async (req, res) => {
   try {
     const internalOrder = await internalOrderService.getInternalOrderByID(req.params.ID);
     if (internalOrder===undefined)
