@@ -113,9 +113,9 @@ exports.createRestockOrder = (issueDate, supplierID) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `
         INSERT INTO RestockOrder
-        (IssueDate, SupplierID, State, TransportNote)
+        (IssueDate, SupplierID, State)
         values
-        ('${issueDate}', ${supplierID}, 'ISSUED', 'ISSUED'); `;
+        ('${issueDate}', ${supplierID}, 'ISSUED'); `;
         dbConnection.run(sql, function (err) {
             if (err) {
                 reject(err);
