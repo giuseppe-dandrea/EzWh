@@ -79,11 +79,9 @@ class PositionService {
 
     async deletePosition(id) {
         try {
-            await this.getPositionByID(id);
             return await dao.deletePosition(id);
         } catch (err) {
-            if (err === EzWhException.NotFound) throw EzWhException.NotFound;
-            else throw EzWhException.InternalError;
+            throw EzWhException.InternalError;
         }
     }
 

@@ -105,6 +105,15 @@ let falsePutPositions = [
         newOccupiedWeight: 200,
         newOccupiedVolume:100
     },
+    {//ID already exists
+        newAisleID: "1212",
+        newRow: "1212",
+        newCol: "1212",
+        newMaxWeight: 1200,
+        newMaxVolume: 600,
+        newOccupiedWeight: 200,
+        newOccupiedVolume:100
+    },
 ];
 
 
@@ -281,6 +290,7 @@ describe("Testing PUT APIs" ,function (){
     testModifyPosition(422 , "777788889999", falsePutPositions[0]);//Missing Field
     testModifyPosition(422 , "777788889999", falsePutPositions[1]);//Empty Object
     testModifyPosition(422 , "777788889999", falsePutPositions[2]);//Wrong Values
+    testModifyPosition(503 , "987654321987", falsePutPositions[3]);//Id Already Exists
 
     //Correct ID Edit
     testModifyPositionID(200, "777788889999", {newPositionID : "676792928484"});
@@ -298,14 +308,14 @@ describe("Testing PUT APIs" ,function (){
 
 describe("Testing DELETE APIs", function(){
     testDeleteAllPositions(204);
-    it("doing the test", function() {
+    describe("doing the test", function() {
         //Correct Posts
         testCreatePosition(201, postPositions[0]);
         testCreatePosition(201, postPositions[1]);
         testCreatePosition(201, postPositions[2]);
 
         testDeletePosition(204, 111122223333);//Correct Delete
-        testDeletePosition(404, 111122223333);//Not Found
+        testDeletePosition(204, 123456789897);//Not Found
         testDeletePosition(422, 11112222333433);//ID Not Validated
     })
 })

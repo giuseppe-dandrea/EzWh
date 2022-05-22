@@ -71,10 +71,10 @@ let putSKUs = [
   },
   {
     newDescription: "edited",
-    newWeight: 1,
+    newWeight: 200,
     newVolume: 1,
     newNotes: "third",
-    newAvailableQuantity: 10,
+    newAvailableQuantity: 1000,
     newPrice: 13.99,
   },
 ];
@@ -161,7 +161,7 @@ function DeleteAllPositions(expectedStatus) {
   });
 }
 function deleteAllSKUs() {
-  for (let i = 1; i < 10; i++) {
+  for (let i = 1; i < 30; i++) {
     testDeleteSKU(204, i);
   }
 }
@@ -344,7 +344,7 @@ describe("Testing PUT APIs" ,function (){
   testModifySKUPosition(422 , 3 , {position : "777788889999"});//Not Enough position
 
   testModifySKU(404, 12, putSKUs[0]);
-  testModifySKU(422, 3, falsePutSKUs[3]); //not enough position
+  testModifySKU(422, 1, falsePutSKUs[3]); //not enough position
   testModifySKU(422, 1, falsePutSKUs[0]); //missing fields
   testModifySKU(422, 1, falsePutSKUs[2]); //missing fields
   testModifySKU(422, 2, falsePutSKUs[1]); //empty object
