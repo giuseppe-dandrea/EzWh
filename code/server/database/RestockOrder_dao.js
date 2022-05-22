@@ -3,14 +3,20 @@ const RestockOrder = require("../modules/RestockOrder");
 exports.getRestockOrders = (state) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        let sql = `SELECT RestockOrderID FROM RestockOrder`;
+        let sql = `SELECT * FROM RestockOrder`;
         if (state) sql += ` where State = '${state}'`;
         sql += `;`;
         dbConnection.all(sql, function (err, rows) {
             if (err) {
                 reject(err);
             } else {
-                resolve(rows);
+                resolve(rows.map((row) => new RestockOrder(
+                    row.RestockOrderID,
+                    row.IssueDate,
+                    row.State,
+                    row.SupplierID,
+                    row.TransportNote
+                )));
             }
         });
     });
@@ -113,9 +119,9 @@ exports.createRestockOrder = (issueDate, supplierID) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `
         INSERT INTO RestockOrder
-        (IssueDate, SupplierID, State, TransportNote)
+        (IssueDate, SupplierID, State)
         values
-        ('${issueDate}', ${supplierID}, 'ISSUED', 'ISSUED'); `;
+        ('${issueDate}', ${supplierID}, 'ISSUED'); `;
         dbConnection.run(sql, function (err) {
             if (err) {
                 reject(err);

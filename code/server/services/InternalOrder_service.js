@@ -3,15 +3,13 @@ const SKU_dao = require("../database/SKU_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
 const InternalOrder = require("../modules/InternalOrder");
 const EzWhException = require("../modules/EzWhException.js");
-const {getSKUById} = require("../database/SKU_dao");
-const {createInternalOrderSKUItem} = require("../database/InternalOrder_dao");
 
 class InternalOrderService {
     constructor() {
     }
 
     async createInternalOrder(issueDate, products, customerID) {
-        try{
+        try{//User Verification ?
             for (let product of products){//Discard order Before inserting in InternalOrder table if SKUID not found
                 let sku = await SKU_dao.getSKUById(product.SKUId);
                 if (sku === undefined) {

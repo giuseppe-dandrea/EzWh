@@ -242,81 +242,85 @@ function testDeleteAllPositions(expectedStatus) {
     });
 }
 
-
-describe("Testing POST APIs",function (){
-    testDeleteAllPositions(204);
-    //Correct Posts
-    testCreatePosition(201, postPositions[0]);
-    testCreatePosition(201, postPositions[1]);
-    testCreatePosition(201, postPositions[2]);
-
-
-    //False Posts
-    testCreatePosition(422, falsePostPositions[0]);//Missing Fields
-    testCreatePosition(422, falsePostPositions[1]);//Empty Object
-    testCreatePosition(422, falsePostPositions[2]);//Wrong ID Composition
-    testCreatePosition(503, postPositions[2]);//Position already exist
-
-})
-
-describe("Testing GET APIs",function (){
-    testDeleteAllPositions(204);
-
-    //Correct Posts
-    testCreatePosition(201, postPositions[0]);
-    testCreatePosition(201, postPositions[1]);
-    testCreatePosition(201, postPositions[2]);
-
-    testGetAllPositions(200,3);
-})
-
-describe("Testing PUT APIs" ,function (){
-    testDeleteAllPositions(204);
-
-    //Correct Posts
-    testCreatePosition(201, postPositions[0]);
-    testCreatePosition(201, postPositions[1]);
-    testCreatePosition(201, postPositions[2]);
-
-    //Correct Puts
-    testModifyPosition(200 , "111122223333", putPositions[0]);
-    testModifyPosition(200 , "444455556666", putPositions[2]);
-
-    //False Puts
-    testModifyPosition(404 , "938476736273", putPositions[1]);//ID Not Found
-    testModifyPosition(422 , "938567476736273", putPositions[1]);//ID Wrong Composition
-    testModifyPosition(422 , "asas", putPositions[1]);//ID not validated
-
-    testModifyPosition(422 , "777788889999", falsePutPositions[0]);//Missing Field
-    testModifyPosition(422 , "777788889999", falsePutPositions[1]);//Empty Object
-    testModifyPosition(422 , "777788889999", falsePutPositions[2]);//Wrong Values
-    testModifyPosition(503 , "987654321987", falsePutPositions[3]);//Id Already Exists
-
-    //Correct ID Edit
-    testModifyPositionID(200, "777788889999", {newPositionID : "676792928484"});
-
-    //False ID Edit
-    testModifyPositionID(503, "987654321987", {newPositionID : "121212121212"});//new ID Already Exists
-    testModifyPositionID(404, "847930295724", {newPositionID : "123456789123"});//old ID not found
-    testModifyPositionID(422, "987654321987", {newPositionID : "3245"});//new ID not validated
-    testModifyPositionID(422, "62334", {newPositionID : "123456789123"});//old ID not validated
-    testModifyPositionID(422, "987654321987", {newPositionID : "asdadfa"});//new ID not validated
-
-
-
-})
-
-describe("Testing DELETE APIs", function(){
-    testDeleteAllPositions(204);
-    describe("doing the test", function() {
+describe("TEST Position API", function () {
+    describe("Testing POST APIs",function (){
+        testDeleteAllPositions(204);
         //Correct Posts
         testCreatePosition(201, postPositions[0]);
         testCreatePosition(201, postPositions[1]);
         testCreatePosition(201, postPositions[2]);
 
-        testDeletePosition(204, 111122223333);//Correct Delete
-        testDeletePosition(204, 123456789897);//Not Found
-        testDeletePosition(422, 11112222333433);//ID Not Validated
-    })
-})
 
+        //False Posts
+        testCreatePosition(422, falsePostPositions[0]);//Missing Fields
+        testCreatePosition(422, falsePostPositions[1]);//Empty Object
+        testCreatePosition(422, falsePostPositions[2]);//Wrong ID Composition
+        testCreatePosition(503, postPositions[2]);//Position already exist
+
+    })
+
+    describe("Testing GET APIs",function (){
+        testDeleteAllPositions(204);
+
+        //Correct Posts
+        testCreatePosition(201, postPositions[0]);
+        testCreatePosition(201, postPositions[1]);
+        testCreatePosition(201, postPositions[2]);
+
+        testGetAllPositions(200,3);
+    })
+
+    describe("Testing PUT APIs" ,function (){
+        testDeleteAllPositions(204);
+
+        //Correct Posts
+        testCreatePosition(201, postPositions[0]);
+        testCreatePosition(201, postPositions[1]);
+        testCreatePosition(201, postPositions[2]);
+
+        //Correct Puts
+        testModifyPosition(200 , "111122223333", putPositions[0]);
+        testModifyPosition(200 , "444455556666", putPositions[2]);
+
+        //False Puts
+        testModifyPosition(404 , "938476736273", putPositions[1]);//ID Not Found
+        testModifyPosition(422 , "938567476736273", putPositions[1]);//ID Wrong Composition
+        testModifyPosition(422 , "asas", putPositions[1]);//ID not validated
+
+        testModifyPosition(422 , "777788889999", falsePutPositions[0]);//Missing Field
+        testModifyPosition(422 , "777788889999", falsePutPositions[1]);//Empty Object
+        testModifyPosition(422 , "777788889999", falsePutPositions[2]);//Wrong Values
+        testModifyPosition(503 , "987654321987", falsePutPositions[3]);//Id Already Exists
+
+        //Correct ID Edit
+        testModifyPositionID(200, "777788889999", {newPositionID : "676792928484"});
+
+        //False ID Edit
+        testModifyPositionID(503, "987654321987", {newPositionID : "121212121212"});//new ID Already Exists
+        testModifyPositionID(404, "847930295724", {newPositionID : "123456789123"});//old ID not found
+        testModifyPositionID(422, "987654321987", {newPositionID : "3245"});//new ID not validated
+        testModifyPositionID(422, "62334", {newPositionID : "123456789123"});//old ID not validated
+        testModifyPositionID(422, "987654321987", {newPositionID : "asdadfa"});//new ID not validated
+
+
+
+    })
+
+    describe("Testing DELETE APIs", function(){
+        testDeleteAllPositions(204);
+        describe("Creating positions to delete", function() {
+            //Correct Posts
+            testCreatePosition(201, postPositions[0]);
+            testCreatePosition(201, postPositions[1]);
+            testCreatePosition(201, postPositions[2]);
+        });
+        describe("Creating positions to delete", function() {
+            testDeletePosition(204, postPositions[0].positionID);//Correct Delete
+            testDeletePosition(204, 123456789897);//Not Found
+            testDeletePosition(422, 11112222333433);//ID Not Validated
+            // clear db
+            testDeletePosition(204, postPositions[1].positionID);
+            testDeletePosition(204, postPositions[2].positionID);
+        });
+    })
+});

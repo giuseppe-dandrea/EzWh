@@ -1,6 +1,7 @@
 const dao = require("../database/ReturnOrder_dao");
 const SKU_dao = require("../database/SKU_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
+const RestockOrder_dao = require("../database/RestockOrder_dao");
 const ReturnOrder = require("../modules/ReturnOrder");
 const EzWhException = require("../modules/EzWhException.js");
 
@@ -9,8 +10,20 @@ class ReturnOrderService {
     }
 
     async createReturnOrder(returnDate, products, restockOrderID) {
+        const restockOrder =  await RestockOrder_dao.getRestockOrderByID(restockOrderID);
+        if (restockOrder===undefined){
+            console.log(`RestockOrder ${restockOrderID} not found!`);
+            throw EzWhException.EntryNotAllowed;
+        }
         const returnOrderID = await dao.createReturnOrder(returnDate, restockOrderID);
         for (let product of products) {
+            const SKUItem = await SKUItem_dao.getSKUItemByRfid(product.RFID);
+            if (SKUItem===undefined){
+                console.log(`SKUItem ${product.RFID} not found!`);
+                await dao.deleteReturnOrder(returnOrderID);
+                console.log(`ReturnOrder ${returnOrderID} deleted for rollback!`);
+                throw EzWhException.EntryNotAllowed;
+            }
             await dao.createReturnOrderProducts(returnOrderID, product.RFID)
         }
     }

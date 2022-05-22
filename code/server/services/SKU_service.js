@@ -41,9 +41,9 @@ class SKUService {
             }
             let testDescriptors = await dao.getTestDescriptorsBySKUID(sku.id);
             testDescriptors.forEach((t) => sku.addTestDescriptor(t));
-            if (sku.positionId) {
-                let tmpPos = await Position_dao.getPositionByID(sku.position);
-                sku.position = tmpPos && tmpPos.length > 0 ? tmpPos : null;
+            if (sku.positionID) {
+                let tmpPos = await Position_dao.getPositionByID(sku.positionID);
+                sku.position = tmpPos && tmpPos.length > 0 ? tmpPos[0] : null;
             }
             return sku;
         } catch (err) {
@@ -56,6 +56,10 @@ class SKUService {
         try {
             let sku = await dao.getSKUById(id);
             if (sku === undefined) throw EzWhException.NotFound;
+            if (sku.positionID) {
+                let tmpPos = await Position_dao.getPositionByID(sku.positionID);
+                sku.position = tmpPos && tmpPos.length > 0 ? tmpPos[0] : null;
+            }
             if (
                 sku.position &&
                 (sku.position.maxWeight < newWeight * newAvailableQuantity ||
@@ -79,7 +83,7 @@ class SKUService {
 
     async modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId) {
         try {
-            await Position_dao.getPositionByID(positionId);
+            let position = await Position_dao.getPositionByID(positionId);
             return await Position_dao.modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId);
         } catch (err) {
             if (err === EzWhException.NotFound) throw EzWhException.NotFound;

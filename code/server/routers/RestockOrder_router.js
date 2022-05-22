@@ -7,6 +7,9 @@ const dayjs = require("dayjs");
 
 const router = express.Router();
 
+const states = ["ISSUED", "DELIVERY", "DELIVERED",
+    "TESTED", "COMPLETEDRETURN", "COMPLETED"];
+
 router.get(
   "/restockOrders",
   async (req, res) => {
@@ -97,7 +100,14 @@ router.put("/restockOrder/:ID",
   body("newState").isString(),
   async (req, res) => {
     const validationErrors = validationResult(req);
-    if (!validationErrors.isEmpty()) {
+    if (!validationErrors.isEmpty()||(
+      res.body.newState!==states[0]&&
+      res.body.newState!==states[1]&&
+      res.body.newState!==states[2]&&
+      res.body.newState!==states[3]&&
+      res.body.newState!==states[4]&&
+      res.body.newState!==states[5]
+    )) {
       return res.status(422).end();
     }
     try {

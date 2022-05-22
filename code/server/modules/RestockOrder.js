@@ -12,6 +12,7 @@ class RestockOrder {
     this.issueDate = issueDate;
     this.state = state;
     this.supplierId = supplierId;
+    if(transportNote!==null)
     this.transportNote = transportNote;
     this.products = products;
     this.skuItems = skuItems;

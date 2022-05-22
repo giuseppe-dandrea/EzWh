@@ -59,7 +59,7 @@ router.get("/internalOrdersAccepted",
     }
 });
 
-router.get("/internalOrders/:ID", param("ID"), async (req, res) => {
+router.get("/internalOrders/:ID", param("ID").isInt({ min: 1 }), async (req, res) => {
   try {
     const internalOrder = await internalOrderService.getInternalOrderByID(req.params.ID);
     if (internalOrder===undefined)
