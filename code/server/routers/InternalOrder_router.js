@@ -12,7 +12,7 @@ router.post("/internalOrders",
   body("customerId").isInt({ min: 1 }),
   async (req, res) => {
     const validationErrors = validationResult(req);
-    if (!validationErrors.isEmpty() || !dayjs(req.body.returnDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
+    if (!validationErrors.isEmpty() || !dayjs(req.body.issueDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
       return res.status(422).end();
     }
     try {
@@ -71,15 +71,29 @@ router.get("/internalOrders/:ID", param("ID"), async (req, res) => {
   }
 });
 
-router.put("/internalOrders/:ID",
-  param("ID"),
+router.put("/internalOrders/:id",
+  param("id").isInt({min:1}),
+  body("newState").isString(),
+  body("products").optional().isArray(),
   async (req, res) => {
+      const validationErrors = validationResult(req);
+      if (!validationErrors.isEmpty()) {
+          return res.status(422).end();
+      }
   try {
-    const internalOrder = await internalOrderService.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);
-    if (internalOrder===undefined)
-      return res.status(404).end();
-    else
-      return res.status(200).end();
+      if(req.body.newState !== "COMPLETED"){
+          await internalOrderService.modifyInternalOrder(req.params.id, req.body.newState);
+          return res.status(200).end();
+      }
+      else if(req.body.newState === "COMPLETED"){
+          await internalOrderService.completeInternalOrder(req.params.id, req.body.newState, req.body.products);
+          return res.status(200).end();
+      }
+    // const internalOrder = await internalOrderService.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);
+    // if (internalOrder===undefined)
+    //   return res.status(404).end();
+    // else
+    //   return res.status(200).end();
   } catch (err) {
     console.log(err);
     return res.status(500).end();

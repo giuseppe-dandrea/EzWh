@@ -1,11 +1,11 @@
 const InternalOrder = require("../modules/InternalOrder");
 
-exports.createInternalOrderProduct = (internalOrderID, SKUID, QTY) => {
+exports.createInternalOrderProduct = (internalOrderID, SKUID,description,price, QTY) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `insert into InternalOrderProduct (InternalOrderID, SKUID, QTY)
-      values (${internalOrderID}, ${SKUID}, ${QTY});`;
-        dbConnection.run(sql, function (err) {
+        const sql = `INSERT INTO InternalOrderProduct (InternalOrderID, SKUID,description,price, QTY)
+      VALUES (?,?,?,?,?);`;
+        dbConnection.run(sql, [internalOrderID, SKUID,description,price, QTY],function (err) {
             if (err) {
                 reject(err.toString());
             } else {
@@ -18,9 +18,9 @@ exports.createInternalOrderProduct = (internalOrderID, SKUID, QTY) => {
 exports.createInternalOrder = (issueDate, customerID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `insert into InternalOrder (IssueDate, CustomerID, State)
-      values ('${issueDate}', ${customerID}, 'ISSUED');`;
-        dbConnection.run(sql, function (err) {
+        const sql = `INSERT INTO InternalOrder (IssueDate, CustomerID, State)
+                     VALUES (?, ?, 'ISSUED');`;
+        dbConnection.run(sql,[issueDate,customerID], function (err) {
             if (err) {
                 reject(err);
             } else {
@@ -121,14 +121,12 @@ const dbConnection = require("./DatabaseConnection").db;
 //   });
 // }
 
-exports.createInternalOrderSKUItem = (ID, RFID) => {
+exports.createInternalOrderSKUItem = (orderId,SKUID, RFID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `
-      insert into InternalOrderSKUItem
-      (RFID, InternalOrderID)
-      values ('${RFID}', ${ID})`;
-        dbConnection.run(sql, function (err) {
+        const sql = ` INSERT INTO InternalOrderSKUItem (InternalOrderID, SKUID, RFID)
+      VALUES (?,?,?)`;
+        dbConnection.run(sql,[orderId, SKUID, RFID], function (err) {
             if (err) {
                 reject(err);
             } else {
@@ -138,14 +136,11 @@ exports.createInternalOrderSKUItem = (ID, RFID) => {
     });
 }
 
-exports.modifyInternalOrderState = (ID, newState) => {
+exports.modifyInternalOrderState = (id, newState) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `
-      update InternalOrder
-      SET State='${newState}'
-      where InternalOrderID=${ID}`;
-        dbConnection.run(sql, function (err) {
+        const sql = `UPDATE InternalOrder SET State=? where InternalOrderID=?`;
+        dbConnection.run(sql,[newState, id], function (err) {
             if (err) {
                 reject(err);
             } else {

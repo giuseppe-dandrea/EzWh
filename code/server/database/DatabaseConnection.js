@@ -150,8 +150,10 @@ class DatabaseConnection {
             );`,
         
         `CREATE TABLE IF NOT EXISTS InternalOrderProduct (
-            SKUID INTEGER NOT NULL,
             InternalOrderID INTEGER NOT NULL,
+            SKUID INTEGER NOT NULL,
+            description VARCHAR(20) NOT NULL,
+            price DOUBLE NOT NULL,
             QTY INTEGER NOT NULL,
             PRIMARY KEY(SKUID, InternalOrderID),
             FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)
@@ -162,9 +164,12 @@ class DatabaseConnection {
 
         `CREATE TABLE IF NOT EXISTS InternalOrderSKUItem (
             RFID INTEGER NOT NULL,
+            SKUID INTEGER NOT NULL,
             InternalOrderID INTEGER NOT NULL,
-            PRIMARY KEY(RFID, InternalOrderID),
+            PRIMARY KEY(RFID),
             FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
+            on delete cascade,
+            FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)
             on delete cascade,
             FOREIGN KEY (InternalOrderID) REFERENCES InternalOrder(InternalOrderID)
             on delete cascade

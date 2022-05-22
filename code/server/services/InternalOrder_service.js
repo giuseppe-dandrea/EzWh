@@ -3,15 +3,27 @@ const SKU_dao = require("../database/SKU_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
 const InternalOrder = require("../modules/InternalOrder");
 const EzWhException = require("../modules/EzWhException.js");
+const {getSKUById} = require("../database/SKU_dao");
+const {createInternalOrderSKUItem} = require("../database/InternalOrder_dao");
 
 class InternalOrderService {
     constructor() {
     }
 
     async createInternalOrder(issueDate, products, customerID) {
-        const lastID = await dao.createInternalOrder(issueDate, customerID);
-        for (let product of products) {
-            await dao.createInternalOrderProduct(lastID, product.SKUId, product.qty)
+        try{
+            for (let product of products){//Discard order Before inserting in InternalOrder table if SKUID not found
+                let sku = await SKU_dao.getSKUById(product.SKUId);
+                if (sku === undefined) {
+                    throw EzWhException.InternalError;
+                }
+            }
+            const lastID = await dao.createInternalOrder(issueDate, customerID);
+            for (let product of products) {
+                await dao.createInternalOrderProduct(lastID, product.SKUId, product.description , product.price, product.qty);
+            }
+        }catch (err) {
+            throw EzWhException.InternalError;
         }
     }
 
@@ -95,19 +107,37 @@ class InternalOrderService {
         return internalOrder;
     }
 
-    async modifyInternalOrder(ID, newState, products) {
-        const internalOrder = await this.getInternalOrderByID(ID);
-        if (internalOrder === undefined) {
-            return undefined;
+    async modifyInternalOrder(id, newState) {
+        try{
+            const internalOrder = await dao.getInternalOrderByID(id);
+            if (internalOrder === undefined) {
+                throw EzWhException.NotFound;
+            }
+            await dao.modifyInternalOrderState(id, newState);
         }
-        await dao.modifyInternalOrderState(ID, newState);
-        if (products && newState === "COMPLETED") {
-            // await dao.deleteInternalOrderSKUItemByInternalOrderID(ID);
-            for (let p of products) {
-                await dao.createInternalOrderSKUItem(ID, p.RFID);
+        catch(err){
+            if (err === EzWhException.NotFound) throw EzWhException.NotFound;
+            else throw EzWhException.InternalError;
+        }
+
+    }
+
+    async completeInternalOrder(id , newState, products){
+        try{
+            const internalOrder = await dao.getInternalOrderByID(id);
+            if (internalOrder === undefined) {
+                throw EzWhException.NotFound;
+            }
+            await dao.modifyInternalOrderState(id, newState);
+            for (let product in products){
+                await createInternalOrderSKUItem(id,product.SkuID, product.RFID)
             }
         }
-        return true;
+        catch{
+            if (err === EzWhException.NotFound) throw EzWhException.NotFound;
+            else throw EzWhException.InternalError;
+
+        }
     }
 
     async deleteInternalOrder(ID) {
