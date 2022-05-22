@@ -2,6 +2,7 @@ const dao = require("../database/InternalOrder_dao");
 const SKU_dao = require("../database/SKU_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
 const InternalOrder = require("../modules/InternalOrder");
+const User_dao = require("../database/User_dao");
 const EzWhException = require("../modules/EzWhException.js");
 
 class InternalOrderService {
@@ -9,8 +10,20 @@ class InternalOrderService {
     }
 
     async createInternalOrder(issueDate, products, customerID) {
+        const customer = await User_dao.getUserByID(customerID);
+        if (customer===undefined){
+            console.log(`Customer with UserID ${customerID} not found!`);
+            throw EzWhException.EntryNotAllowed;
+        }
         const lastID = await dao.createInternalOrder(issueDate, customerID);
         for (let product of products) {
+            const SKU = await SKU_dao.getSKUById(product.SKUId);
+            if (SKU===undefined){
+                console.log(`SKUID ${product.SKUId} not found!`);
+                await dao.deleteInternalOrder(lastID);
+                console.log(`InternalOrder ${lastID} deleted for rollback!`)
+                throw EzWhException.EntryNotAllowed;
+            }
             await dao.createInternalOrderProduct(lastID, product.SKUId, product.qty)
         }
     }
