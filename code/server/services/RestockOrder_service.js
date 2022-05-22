@@ -10,10 +10,13 @@ class RestockOrderService {
     }
 
     async getRestockOrderProducts(ID) {
+        // console.log("inside getRestockOrderProducts!");
+        // console.log(`ID is ${ID}`);
         const productsJson = await dao.getRestockOrderProductsByRestockOrderID(ID);
         let products = []
         for (let p of productsJson) {
             const itemID = p.ItemID;
+            // console.log(`ItemID is ${p.ItemID}`);
             let item = await Item_dao.getItemByID(itemID);
             item = item[0];
             const product = {
@@ -24,6 +27,7 @@ class RestockOrderService {
             }
             products.push(product);
         }
+        // console.log(products);
         return products;
     }
 
@@ -41,13 +45,15 @@ class RestockOrderService {
     }
 
     async getRestockOrders(state) {
-        let restockOrderIDs = await dao.getRestockOrders(state);
-        let restockOrders = [];
-        for (let r of restockOrderIDs) {
-            const id = r.RestockOrderID;
-            const restockOrder = await this.getRestockOrderByID(id);
-            restockOrders.push(restockOrder);
+        let restockOrders = await dao.getRestockOrders(state);
+        // console.log(restockOrders);
+        for (let restockOrder of restockOrders){
+            const products = await this.getRestockOrderProducts(restockOrder.id);
+            const skuItems = await this.getRestockOrderSKUItems(restockOrder.id);
+            restockOrder.concatProducts(products);
+            restockOrder.concatSKUItems(skuItems);
         }
+        console.log(JSON.stringify(restockOrders, null, "  "));
         return restockOrders;
     }
 
@@ -58,10 +64,9 @@ class RestockOrderService {
         }
         const products = await this.getRestockOrderProducts(id);
         const skuItems = await this.getRestockOrderSKUItems(id);
-        // console.log(products)
         restockOrder.concatProducts(products);
         restockOrder.concatSKUItems(skuItems);
-        // console.log(restockOrder)
+        console.log(JSON.stringify(restockOrder, null, "  "));
         return restockOrder;
     }
 

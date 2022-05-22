@@ -3,14 +3,20 @@ const RestockOrder = require("../modules/RestockOrder");
 exports.getRestockOrders = (state) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        let sql = `SELECT RestockOrderID FROM RestockOrder`;
+        let sql = `SELECT * FROM RestockOrder`;
         if (state) sql += ` where State = '${state}'`;
         sql += `;`;
         dbConnection.all(sql, function (err, rows) {
             if (err) {
                 reject(err);
             } else {
-                resolve(rows);
+                resolve(rows.map((row) => new RestockOrder(
+                    row.RestockOrderID,
+                    row.IssueDate,
+                    row.State,
+                    row.SupplierID,
+                    row.TransportNote
+                )));
             }
         });
     });

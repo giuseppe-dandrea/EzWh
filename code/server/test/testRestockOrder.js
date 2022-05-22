@@ -128,6 +128,7 @@ function getRestockOrders(expectedHTTPStatus, expectedLength, expectedRestockOrd
                         /*expectedRestockOrders.some((restOrd) => {
                             return compareRestockOrder(restOrd, ro)
                         }).should.be.equal(true);*/
+                        // ro should be in expectedRestockOrders array
                         expectedRestockOrders.should.include(ro);
                     }
                 }
