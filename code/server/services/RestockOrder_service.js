@@ -87,6 +87,8 @@ class RestockOrderService {
             // console.log(`>>Item is ${item}!`);
             if (item === undefined) {
                 console.log(`>>Item with SKUID ${product.SKUId} and SupplierID ${supplierID} not found!`);
+                await dao.deleteRestockOrder(restockOrderID);
+                console.log(`RestockOrder ${restockOrderID} deleted for rollback!`)
                 throw EzWhException.EntryNotAllowed;
             }
             else{

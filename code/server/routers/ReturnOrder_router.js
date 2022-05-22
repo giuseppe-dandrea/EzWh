@@ -14,6 +14,7 @@ router.post(
   body("restockOrderId").isInt({ min: 1 }),
   async (req, res) => {
     const validationErrors = validationResult(req);
+    // 
     if (!validationErrors.isEmpty() || !dayjs(req.body.returnDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid()) {
       return res.status(422).end();
     }
@@ -23,6 +24,7 @@ router.post(
     } catch (err) {
       console.log(err);
       if (err === EzWhException.NotFound) return res.status(404).end();
+      else if  (err === EzWhException.EntryNotAllowed) return res.status(422).end();
       else return res.status(503).end();
     }
 });
