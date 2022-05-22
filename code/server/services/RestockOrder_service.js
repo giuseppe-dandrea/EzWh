@@ -80,6 +80,9 @@ class RestockOrderService {
         const restockOrderID = await dao.createRestockOrder(issueDate, supplierID);
         // console.log(`>>ResstockOrderID is ${restockOrderID}!`);
         for (let product of products) {
+            if(product.SKUId===undefined || product.description===undefined||
+                product.price===undefined || product.qty===undefined)
+                throw EzWhException.EntryNotAllowed;
             const item = await Item_dao.getItemBySKUIDAndSupplierID(product.SKUId, supplierID);
             // console.log(`>>Item is ${item}!`);
             if (item === undefined) {
