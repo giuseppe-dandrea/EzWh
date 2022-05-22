@@ -97,17 +97,10 @@ router.post("/restockOrder",
 
 router.put("/restockOrder/:ID",
   param("ID").isInt({ min:1 }),
-  body("newState").isString(),
+  body("newState").isIn(states),
   async (req, res) => {
     const validationErrors = validationResult(req);
-    if (!validationErrors.isEmpty()||(
-      res.body.newState!==states[0]&&
-      res.body.newState!==states[1]&&
-      res.body.newState!==states[2]&&
-      res.body.newState!==states[3]&&
-      res.body.newState!==states[4]&&
-      res.body.newState!==states[5]
-    )) {
+    if (!validationErrors.isEmpty()) {
       return res.status(422).end();
     }
     try {

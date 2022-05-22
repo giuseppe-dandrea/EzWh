@@ -6,7 +6,7 @@ chai.use(chaiHttp);
 chai.should();
 
 const app = require('../server');
-var agent = chai.request.agent(app);
+const agent = chai.request.agent(app);
 
 const states = ["ISSUED", "DELIVERY", "DELIVERED",
     "TESTED", "COMPLETEDRETURN", "COMPLETED"];
@@ -125,11 +125,9 @@ function getRestockOrders(expectedHTTPStatus, expectedLength, expectedRestockOrd
                         ro.should.haveOwnProperty("supplierId");
                         ro.should.haveOwnProperty("skuItems");
                         ro.skuItems.should.be.an('array');
-                        /*expectedRestockOrders.some((restOrd) => {
+                        expectedRestockOrders.some((restOrd) => {
                             return compareRestockOrder(restOrd, ro)
-                        }).should.be.equal(true);*/
-                        // ro should be in expectedRestockOrders array
-                        expectedRestockOrders.should.include(ro);
+                        }).should.be.true;
                     }
                 }
                 done();
@@ -157,10 +155,9 @@ function getRestockOrdersIssued(expectedHTTPStatus, expectedLength, expectedRest
                         ro.should.haveOwnProperty("skuItems");
                         ro.skuItems.should.be.an('array');
                         ro.skuItems.should.have.lengthOf(0);
-                        /*expectedRestockOrders.some((restOrd) => {
-                            return compareRestockOrder(JSON.stringify(restOrd), ro)
-                        }).should.be.equal(true);*/
-                        expectedRestockOrders.should.include(ro);
+                        expectedRestockOrders.some((restOrd) => {
+                            return compareRestockOrder(restOrd, ro)
+                        }).should.be.equal(true);
                     }
                 }
                 done();
@@ -184,8 +181,7 @@ function getRestockOrder(expectedHTTPStatus, id, expectedRestockOrder) {
                         res.body.should.haveOwnProperty("supplierId");
                         res.body.should.haveOwnProperty("skuItems");
                         res.body.skuItems.should.be.an('array');
-                        res.body.should.be.equal(expectedRestockOrder);
-                        //compareRestockOrder(JSON.stringify(expectedRestockOrder), res.body).should.be.equal(true);
+                        compareRestockOrder(expectedRestockOrder, res.body).should.be.true;
                     }
                     done();
                 });
@@ -348,37 +344,38 @@ function deleteItem(expectedHTTPStatus, id) {
 }
 function compareRestockOrder(expectedRO, actualRO) {
     let cmp_flag = true;
-    if (expectedRO.issueDate != actualRO.issueDate) {
+    console.log(expectedRO.issueDate, actualRO.issueDate)
+    if (expectedRO.issueDate !== actualRO.issueDate) {
         console.log("issueDate");
         return false;
     }
-    if (expectedRO.state != actualRO.state) {
+    if (expectedRO.state !== actualRO.state) {
         console.log("state");
         return false;
     }
-    if (expectedRO.products.length != actualRO.products.length) {
+    if (expectedRO.products.length !== actualRO.products.length) {
         console.log("product length");
         return false;
     }
     for (let i = 0; i < expectedRO.products.length; i++) {
-        exppr = expectedRO.products[i];
+        let exppr = expectedRO.products[i];
         cmp_flag = actualRO.products.some((p) => {
-            return p.SKUId == exppr.SKUId &&
-                p.description == exppr.description &&
-                p.price == exppr.price &&
-                p.qty == exppr.qty;
+            return p.SKUId === exppr.SKUId &&
+                p.description === exppr.description &&
+                p.price === exppr.price &&
+                p.qty === exppr.qty;
         });
         if (!cmp_flag) {
             console.log("product " + i.toString());
             return false;
         }
     }
-    if (expectedRO.supplierId != actualRO.supplierId) {
+    if (expectedRO.supplierId !== actualRO.supplierId) {
         console.log("supplierId");
         return false;
     }
-    if (expectedRO.transportNote != undefined &&
-        expectedRO.transportNote.deliveryDate != actualRO.transportNote.deliveryDate) {
+    if (expectedRO.transportNote !== undefined &&
+        expectedRO.transportNote.deliveryDate !== actualRO.transportNote.deliveryDate) {
         console.log("TransportNote");
         return false;
     }
@@ -390,15 +387,15 @@ function compareRestockOrder(expectedRO, actualRO) {
 }
 function compareReturnItems(expectedRI, actualRI) {
     let cmp_flag = true;
-    if (expectedRI.length != actualRI.length) {
+    if (expectedRI.length !== actualRI.length) {
         console.log("Return Item lengnt");
         return false;
     }
     for (let i = 0; i < expectedRI.length; i++) {
-        exppr = expectedRI[i];
+        let exppr = expectedRI[i];
         cmp_flag = actualRI.some((p) => {
-            return p.SKUId == exppr.SKUId &&
-                p.rfid == exppr.rfid;
+            return p.SKUId === exppr.SKUId &&
+                p.rfid === exppr.rfid;
         });
         if (!cmp_flag) {
             console.log("Sku item " + i.toString());

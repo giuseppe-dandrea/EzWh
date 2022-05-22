@@ -20,7 +20,7 @@ class RestockOrderService {
             let item = await Item_dao.getItemByID(itemID);
             item = item[0];
             const product = {
-                "SKUId": item.id,
+                "SKUId": item.skuId,
                 "description": item.description,
                 "price": item.price,
                 "qty": p.QTY,
@@ -86,8 +86,10 @@ class RestockOrderService {
         // console.log(`>>ResstockOrderID is ${restockOrderID}!`);
         for (let product of products) {
             if(product.SKUId===undefined || product.description===undefined||
-                product.price===undefined || product.qty===undefined)
+                product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId)) {
+                await dao.deleteRestockOrder(restockOrderID);
                 throw EzWhException.EntryNotAllowed;
+            }
             const item = await Item_dao.getItemBySKUIDAndSupplierID(product.SKUId, supplierID);
             // console.log(`>>Item is ${item}!`);
             if (item === undefined) {
