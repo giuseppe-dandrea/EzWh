@@ -320,76 +320,77 @@ function testDeleteSKUItem(expectedStatus, rfid) {
         });
     });
 }
+describe("TEST SKUItem API", function () {
+    describe("Adding SKU to test", function () {
+        for (let sku of skus)
+            testCreateSKU(201, sku);
+    });
 
-describe("Adding SKU to test", function () {
-    for (let sku of skus)
-        testCreateSKU(201, sku);
-});
-
-describe("Testing POST APIs" , function (){
-    testDeleteAllSKUItems(204);
-    //Correct Posts
-    testCreateSKUItem(201, postSKUItems[0]);
-    testCreateSKUItem(201, postSKUItems[1]);
-    testCreateSKUItem(201, postSKUItems[2]);
-    testCreateSKUItem(201, postSKUItems[3]);
-    testCreateSKUItem(201, postSKUItems[4]);
-    testCreateSKUItem(201, postSKUItems[5]);
-
-
-    //False Posts
-    testCreateSKUItem(422, falsePostSKUItems[0]);
-    testCreateSKUItem(404, falsePostSKUItems[1]);
-    testCreateSKUItem(422, falsePostSKUItems[2]);
-    testCreateSKUItem(503, falsePostSKUItems[3]);
-    testCreateSKUItem(422, falsePostSKUItems[4]);
-    testCreateSKUItem(422, falsePostSKUItems[5]);
-    testCreateSKUItem(422, falsePostSKUItems[6]);
-    testCreateSKUItem(422, falsePostSKUItems[7]);
-    testCreateSKUItem(422, falsePostSKUItems[8]);
-});
+    describe("Testing POST APIs" , function (){
+        testDeleteAllSKUItems(204);
+        //Correct Posts
+        testCreateSKUItem(201, postSKUItems[0]);
+        testCreateSKUItem(201, postSKUItems[1]);
+        testCreateSKUItem(201, postSKUItems[2]);
+        testCreateSKUItem(201, postSKUItems[3]);
+        testCreateSKUItem(201, postSKUItems[4]);
+        testCreateSKUItem(201, postSKUItems[5]);
 
 
-describe("Testing PUT APIs" ,function (){
-    prepare();
+        //False Posts
+        testCreateSKUItem(422, falsePostSKUItems[0]);
+        testCreateSKUItem(404, falsePostSKUItems[1]);
+        testCreateSKUItem(422, falsePostSKUItems[2]);
+        testCreateSKUItem(503, falsePostSKUItems[3]);
+        testCreateSKUItem(422, falsePostSKUItems[4]);
+        testCreateSKUItem(422, falsePostSKUItems[5]);
+        testCreateSKUItem(422, falsePostSKUItems[6]);
+        testCreateSKUItem(422, falsePostSKUItems[7]);
+        testCreateSKUItem(422, falsePostSKUItems[8]);
+    });
 
-    //Correct Puts
-    testModifySKUItem(200,"98987676545434567876543434540987", putSKUItems[0]);
-    testModifySKUItem(200,"45678987654567899876543456543456", putSKUItems[1]);
-    testModifySKUItem(200,"12345678901234567890123456789015", putSKUItems[2]);
 
-    //false puts
-    testModifySKUItem(404,"12345678905432567890123456789015", putSKUItems[0]);//not found rfid
-    testModifySKUItem(422,"98987676545434567876543434540987", falsePutSKUItems[0]);
-    testModifySKUItem(422,"98987676545434567876543434540987", falsePutSKUItems[1]);
-    testModifySKUItem(422,"98987676545434567876543434540987", falsePutSKUItems[2]);
-    testModifySKUItem(503,"98987676545434567876543434540987", falsePutSKUItems[3]);
-    testModifySKUItem(422,"98987676545434567876543434540987", falsePutSKUItems[4]);
-    testModifySKUItem(422,"9898767654543456784540987", putSKUItems[2]);//RFID Validation
-    testModifySKUItem(422,"a string", putSKUItems[2]);//RFID Validation
+    describe("Testing PUT APIs" ,function (){
+        prepare();
 
-})
-describe("Testing GET APIs ", function(){
-    prepare();
-    //Get ALL
-    testGetAllSKUItems(200, 6);
+        //Correct Puts
+        testModifySKUItem(200,"98987676545434567876543434540987", putSKUItems[0]);
+        testModifySKUItem(200,"45678987654567899876543456543456", putSKUItems[1]);
+        testModifySKUItem(200,"12345678901234567890123456789015", putSKUItems[2]);
 
-    //get by ID
-    testGetSKUItemById(200,2, 3)
-    testGetSKUItemById(200,1, 0)
-    testGetSKUItemById(200,3, 1)
+        //false puts
+        testModifySKUItem(404,"12345678905432567890123456789015", putSKUItems[0]);//not found rfid
+        testModifySKUItem(422,"98987676545434567876543434540987", falsePutSKUItems[0]);
+        testModifySKUItem(422,"98987676545434567876543434540987", falsePutSKUItems[1]);
+        testModifySKUItem(422,"98987676545434567876543434540987", falsePutSKUItems[2]);
+        testModifySKUItem(503,"98987676545434567876543434540987", falsePutSKUItems[3]);
+        testModifySKUItem(422,"98987676545434567876543434540987", falsePutSKUItems[4]);
+        testModifySKUItem(422,"9898767654543456784540987", putSKUItems[2]);//RFID Validation
+        testModifySKUItem(422,"a string", putSKUItems[2]);//RFID Validation
 
-    //Get By RFID
-    testGetSKUItemByRFID(200,"98987676545434567876543434540987" );
-    testGetSKUItemByRFID(404,"98987676545434012876543434540912" );
-    testGetSKUItemByRFID(422,"98987676545434012876543434643432540987" );
-    testGetSKUItemByRFID(422,"A String" );
+    })
+    describe("Testing GET APIs ", function(){
+        prepare();
+        //Get ALL
+        testGetAllSKUItems(200, 6);
 
-})
+        //get by ID
+        testGetSKUItemById(200,2, 3)
+        testGetSKUItemById(200,1, 0)
+        testGetSKUItemById(200,3, 1)
 
-describe("Deleting SKU used to test", function () {
-    for (let i = 0; i < skus.length; i++)
-        testDeleteSKU(204, i+1);
+        //Get By RFID
+        testGetSKUItemByRFID(200,"98987676545434567876543434540987" );
+        testGetSKUItemByRFID(404,"98987676545434012876543434540912" );
+        testGetSKUItemByRFID(422,"98987676545434012876543434643432540987" );
+        testGetSKUItemByRFID(422,"A String" );
+
+    })
+
+    describe("Deleting SKU used to test", function () {
+        for (let i = 0; i < skus.length; i++)
+            testDeleteSKU(204, i+1);
+    })
 })
 
 

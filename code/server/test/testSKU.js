@@ -291,92 +291,94 @@ function testDeleteSKU(expectedStatus, id) {
   });
 }
 
-describe("Testing POST APIs" , function (){
-  prepare();
-  //Correct Posts
-  testCreateSKU(201, postSKUs[0]);
-  testCreateSKU(201, postSKUs[1]);
-  testCreateSKU(201, postSKUs[2]);
+describe("TEST SKU API", function () {
+  describe("Testing POST APIs" , function (){
+    prepare();
+    //Correct Posts
+    testCreateSKU(201, postSKUs[0]);
+    testCreateSKU(201, postSKUs[1]);
+    testCreateSKU(201, postSKUs[2]);
 
-  //False Posts
-  testCreateSKU(422, falsePostSKUs[0]); //missing values
-  testCreateSKU(422, falsePostSKUs[1]); //empty Object
-  testCreateSKU(422, falsePostSKUs[2]); //wrong values in body validation
+    //False Posts
+    testCreateSKU(422, falsePostSKUs[0]); //missing values
+    testCreateSKU(422, falsePostSKUs[1]); //empty Object
+    testCreateSKU(422, falsePostSKUs[2]); //wrong values in body validation
+  })
+
+  describe("Testing GET APIs ", function(){
+    prepare();
+    //Correct Posts
+    testCreateSKU(201, postSKUs[0]);
+    testCreateSKU(201, postSKUs[1]);
+    testCreateSKU(201, postSKUs[2]);
+
+    //Get ALL
+    testGetAllSKUs(200);
+
+
+
+    //Correct Gets
+    testGetSKUById(200, 1);
+    testGetSKUById(200, 2);
+    testGetSKUById(200, 3);
+
+    //False Gets
+    testGetSKUById(404, 4); //Wrong ID
+    testGetSKUById(422, "asa"); //Wrong Id Validation
+  })
+
+  describe("Testing PUT APIs" ,function (){
+    prepare();
+    //Correct Posts
+    testCreateSKU(201, postSKUs[0]);
+    testCreateSKU(201, postSKUs[1]);
+    testCreateSKU(201, postSKUs[2]);
+
+    //Correct Puts
+    testModifySKU(200, 1, putSKUs[0]);
+    testModifySKU(200, 2, putSKUs[1]);
+    testModifySKU(200, 3, putSKUs[2]);
+    testModifySKUPosition(200 , 1 , {position : "111122223333"});
+
+
+    //False Puts
+    testModifySKUPosition(422 , 3 , {position : "777788889999"});//Not Enough position
+
+    testModifySKU(404, 12, putSKUs[0]);
+    testModifySKU(422, 1, falsePutSKUs[3]); //not enough position
+    testModifySKU(422, 1, falsePutSKUs[0]); //missing fields
+    testModifySKU(422, 1, falsePutSKUs[2]); //missing fields
+    testModifySKU(422, 2, falsePutSKUs[1]); //empty object
+  })
+
+  describe("Add Position to SKU", function (){
+    prepare();
+    //Correct Posts
+    testCreateSKU(201, postSKUs[0]);
+    testCreateSKU(201, postSKUs[1]);
+    testCreateSKU(201, postSKUs[2]);
+
+    //Correct
+    testModifySKUPosition(200, 1 , {position : "111122223333"});
+    testModifySKUPosition(200, 2 , {position : "444455556666"});
+
+    //False
+    testModifySKUPosition(404 , 9 , {position : "777788889999"}); //SKU Not found
+    testModifySKUPosition(404 , 1 , {position : "777712349999"}); //Position Not found
+    testModifySKUPosition(422 , "fbd" , {position : "777712349999"}); //Id Validation
+    testModifySKUPosition(422 , 2 , {position : "777712354323449999"}); //PositionID Validation
+    testModifySKUPosition(422 , 3 , {position : "777788889999"}); //Not Enough position
+    testModifySKUPosition(422 , 2 , {position : "111122223333"});//Position already assigned
+
+
+
+  })
+
+  describe("Delete SKU",function() {
+    testDeleteSKU(204,1);
+    testDeleteSKU(204,2);
+    testDeleteSKU(204,3);
+  });
 })
-
-describe("Testing GET APIs ", function(){
-  prepare();
-  //Correct Posts
-  testCreateSKU(201, postSKUs[0]);
-  testCreateSKU(201, postSKUs[1]);
-  testCreateSKU(201, postSKUs[2]);
-
-  //Get ALL
-  testGetAllSKUs(200);
-
-
-
-  //Correct Gets
-  testGetSKUById(200, 1);
-  testGetSKUById(200, 2);
-  testGetSKUById(200, 3);
-
-  //False Gets
-  testGetSKUById(404, 4); //Wrong ID
-  testGetSKUById(422, "asa"); //Wrong Id Validation
-})
-
-describe("Testing PUT APIs" ,function (){
-  prepare();
-  //Correct Posts
-  testCreateSKU(201, postSKUs[0]);
-  testCreateSKU(201, postSKUs[1]);
-  testCreateSKU(201, postSKUs[2]);
-
-  //Correct Puts
-  testModifySKU(200, 1, putSKUs[0]);
-  testModifySKU(200, 2, putSKUs[1]);
-  testModifySKU(200, 3, putSKUs[2]);
-  testModifySKUPosition(200 , 1 , {position : "111122223333"});
-
-
-  //False Puts
-  testModifySKUPosition(422 , 3 , {position : "777788889999"});//Not Enough position
-
-  testModifySKU(404, 12, putSKUs[0]);
-  testModifySKU(422, 1, falsePutSKUs[3]); //not enough position
-  testModifySKU(422, 1, falsePutSKUs[0]); //missing fields
-  testModifySKU(422, 1, falsePutSKUs[2]); //missing fields
-  testModifySKU(422, 2, falsePutSKUs[1]); //empty object
-})
-
-describe("Add Position to SKU", function (){
-  prepare();
-  //Correct Posts
-  testCreateSKU(201, postSKUs[0]);
-  testCreateSKU(201, postSKUs[1]);
-  testCreateSKU(201, postSKUs[2]);
-
-  //Correct
-  testModifySKUPosition(200, 1 , {position : "111122223333"});
-  testModifySKUPosition(200, 2 , {position : "444455556666"});
-
-  //False
-  testModifySKUPosition(404 , 9 , {position : "777788889999"}); //SKU Not found
-  testModifySKUPosition(404 , 1 , {position : "777712349999"}); //Position Not found
-  testModifySKUPosition(422 , "fbd" , {position : "777712349999"}); //Id Validation
-  testModifySKUPosition(422 , 2 , {position : "777712354323449999"}); //PositionID Validation
-  testModifySKUPosition(422 , 3 , {position : "777788889999"}); //Not Enough position
-  testModifySKUPosition(422 , 2 , {position : "111122223333"});//Position already assigned
-
-
-
-})
-
-describe("test",function(){
-  testDeleteSKU(204,1);
-});
-
-
 
 
