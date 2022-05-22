@@ -15,6 +15,33 @@ function testDeleteAllSKUItems(expectedStatus) {
     });
 }
 
+let skus = [
+  {
+    description: "a new sku",
+    weight: 5,
+    volume: 6,
+    notes: "first SKU",
+    availableQuantity: 5,
+    price: 10.99,
+  },
+  {
+    description: "2 another new sku",
+    weight: 1,
+    volume: 1,
+    notes: "second",
+    availableQuantity: 1,
+    price: 12.99,
+  },
+  {
+    description: "3 another new sku",
+    weight: 50,
+    volume: 50,
+    notes: "third",
+    availableQuantity: 900,
+    price: 13.99,
+  },
+];
+
 
 let postSKUItems = [
     {
@@ -163,6 +190,29 @@ let falsePutSKUItems = [
 
 ];
 
+function testCreateSKU(expectedStatus, postSKU) {
+  describe("POST /api/sku", function () {
+    it("Adding a new SKU", function (done) {
+      agent
+        .post("/api/sku")
+        .send(postSKU)
+        .end(function (err, res) {
+          if (err) done(err);
+          res.should.have.status(expectedStatus);
+          done();
+        });
+    });
+  });
+}
+
+function testDeleteSKU(expectedStatus, id) {
+  it(`Deleting SKU ID:${id}`, function (done) {
+    agent.delete(`/api/skus/${id}`).then(function (res) {
+      res.should.have.status(expectedStatus);
+      done();
+    });
+  });
+}
 
 function testCreateSKUItem(expectedStatus, postSKUItem) {
     describe("POST /api/skuitem", function () {
@@ -271,6 +321,11 @@ function testDeleteSKUItem(expectedStatus, rfid) {
     });
 }
 
+describe("Adding SKU to test", function () {
+    for (let sku of skus)
+        testCreateSKU(201, sku);
+});
+
 describe("Testing POST APIs" , function (){
     testDeleteAllSKUItems(204);
     //Correct Posts
@@ -332,6 +387,10 @@ describe("Testing GET APIs ", function(){
 
 })
 
+describe("Deleting SKU used to test", function () {
+    for (let i = 0; i < skus.length; i++)
+        testDeleteSKU(204, i+1);
+})
 
 
 function prepare(){
