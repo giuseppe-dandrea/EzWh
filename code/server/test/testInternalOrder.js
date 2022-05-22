@@ -350,25 +350,25 @@ let internalOrderIssued3 = {
     { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 3 }],
     "customerId": 8
 };
-let internalOrderError1 = {
-    "issueDate": "2021/11 09:33",
+let internalOrderError1 = {//Wrong date Validation (422)
+    "issueDate": "2019/11 09:33",
     "products": [{ "SKUId": 2, "description": "second sku", "price": 10.99, "qty": 3 },
     { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 3 }],
     "customerId": 8
 };
-let internalOrderError2 = {
-    "issueDate": "2021/11/29 09:33",
+let internalOrderError2 = {//SKUID not found (503)
+    "issueDate": "2018/11/29 09:33",
     "products": [{ "SKUId": 5, "description": "second sku", "price": 10.99, "qty": 3 },
     { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 3 }],
     "customerId": 8
 };
-let internalOrderError3 = {
+let internalOrderError3 = {//description is int , Shouldn't be allowed ?
     "issueDate": "2021/11/29 09:33",
     "products": [{ "SKUId": 2, "description": 5, "price": 10.99, "qty": 3 },
     { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 3 }],
     "customerId": 8
 };
-let internalOrderError4 = {
+let internalOrderError4 = {//price is String
     "issueDate": "2021/11/29 09:33",
     "products": [{ "SKUId": 2, "description": "second sku", "price": "abc", "qty": 3 },
     { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 3 }],
@@ -477,114 +477,51 @@ let internalOrderCompleted1 = {
     { "SKUId": 2, "description": "second sku", "price": 10.99, "RFID": "12345678901234567890123456789027" }],
     "customerId": 7
 }
-function prepare() {
-    describe('preparing environment', () => {
-        it('inserting values', function () {
-            newUser(201, customer1);
-            newUser(201, customer2);
-            newUser(201, supplier1);
-            newSKU(201, SKU1);
-            newSKU(201, SKU2);
-            newSKU(201, SKU3);
-            newSKUItem(201, SKUItem1);
-            newSKUItem(201, SKUItem2);
-            newSKUItem(201, SKUItem3);
-            newSKUItem(201, SKUItem4);
-            newSKUItem(201, SKUItem5);
-            newSKUItem(201, SKUItem6);
-            newSKUItem(201, SKUItem7);
-            newSKUItem(201, SKUItem8);
-            newSKUItem(201, SKUItem9);
-            newSKUItem(201, SKUItem10);
-            newSKUItem(201, SKUItem11);
-        });
-    });
-}
-function clean() {
-    describe('cleaning environment', () => {
-        it('deleting values', function () {
-            deleteUser(204, customer1.username, customer1.type);
-            deleteUser(204, customer2.username, customer2.type);
-            deleteUser(204, supplier1.username, supplier1.type);
-            deleteSKUItem(204, SKUItem1.RFID);
-            deleteSKUItem(204, SKUItem2.RFID);
-            deleteSKUItem(204, SKUItem3.RFID);
-            deleteSKUItem(204, SKUItem4.RFID);
-            deleteSKUItem(204, SKUItem5.RFID);
-            deleteSKUItem(204, SKUItem6.RFID);
-            deleteSKUItem(204, SKUItem7.RFID);
-            deleteSKUItem(204, SKUItem8.RFID);
-            deleteSKUItem(204, SKUItem9.RFID);
-            deleteSKUItem(204, SKUItem10.RFID);
-            deleteSKUItem(204, SKUItem11.RFID);
-            deleteSKU(204, 1);
-            deleteSKU(204, 2);
-            deleteSKU(204, 3);
-        });
-    });
+
+function prepare(){
+    //Deleting
+    deleteUser(204, customer1.username, customer1.type);
+    deleteUser(204, customer2.username, customer2.type);
+    deleteUser(204, supplier1.username, supplier1.type);
+    deleteSKUItem(204, SKUItem1.RFID);
+    deleteSKUItem(204, SKUItem2.RFID);
+    deleteSKUItem(204, SKUItem3.RFID);
+    deleteSKUItem(204, SKUItem4.RFID);
+    deleteSKUItem(204, SKUItem5.RFID);
+    deleteSKUItem(204, SKUItem6.RFID);
+    deleteSKUItem(204, SKUItem7.RFID);
+    deleteSKUItem(204, SKUItem8.RFID);
+    deleteSKUItem(204, SKUItem9.RFID);
+    deleteSKUItem(204, SKUItem10.RFID);
+    deleteSKUItem(204, SKUItem11.RFID);
+    deleteSKU(204, 1);
+    deleteSKU(204, 2);
+    deleteSKU(204, 3);
+
+    //Creating
+
+    newUser(201, customer1);
+    newUser(201, customer2);
+    newUser(201, supplier1);
+    newSKU(201, SKU1);
+    newSKU(201, SKU2);
+    newSKU(201, SKU3);
+    newSKUItem(201, SKUItem1);
+    newSKUItem(201, SKUItem2);
+    newSKUItem(201, SKUItem3);
+    newSKUItem(201, SKUItem4);
+    newSKUItem(201, SKUItem5);
+    newSKUItem(201, SKUItem6);
+    newSKUItem(201, SKUItem7);
+    newSKUItem(201, SKUItem8);
+    newSKUItem(201, SKUItem9);
+    newSKUItem(201, SKUItem10);
+    newSKUItem(201, SKUItem11);
 }
 
-describe('API Test: InternalOrder', () => {
+describe("Testing POST APIs", function(){
     prepare();
-
-    describe('testing create/get/delete internal orders - success', () => {
-        newInternalOrder(201, internalOrderIssued1);
-        newInternalOrder(201, internalOrderIssued2);
-        newInternalOrder(201, internalOrderIssued3);
-        getInternalOrdersByStatus(200, 3, expectedInternalOrders, "");
-        getInternalOrdersByStatus(200, 3, expectedInternalOrders, "Issued");
-        getInternalOrder(200, 1, { ...internalOrderIssued1, "state": states[0] });
-        getInternalOrder(200, 2, { ...internalOrderIssued1, "state": states[0] });
-        getInternalOrder(200, 3, { ...internalOrderIssued1, "state": states[0] });
-        deleteInternalOrder(204, 1);
-        getInternalOrdersByStatus(200, 2, [
-            { ...internalOrderIssued2, "state": states[0] },
-            { ...internalOrderIssued3, "state": states[0] }
-        ], "");
-        getInternalOrder(404, 1);
-        getInternalOrdersByStatus(200, 2, [
-            { ...internalOrderIssued2, "state": states[0] },
-            { ...internalOrderIssued3, "state": states[0] }
-        ], "Issued");
-        getInternalOrdersByStatus(200, 0, [], "Accepted");
-        deleteInternalOrder(204, 2);
-        deleteInternalOrder(204, 3);
-        deleteInternalOrder(204, 3);
-        getInternalOrdersByStatus(200, 0, [], "");
-        getInternalOrdersByStatus(200, 0, [], "Issued");
-        getInternalOrdersByStatus(200, 0, [], "Accepted");
-    });
-
-    describe('testing create/get/delete internal orders - failure', () => {
-        newInternalOrder(422, internalOrderError1);
-        newInternalOrder(422, internalOrderError2);
-        newInternalOrder(422, internalOrderError3);
-        newInternalOrder(422, internalOrderError4);
-        newInternalOrder(422, internalOrderError5);
-        newInternalOrder(422, internalOrderError6);
-        newInternalOrder(422, internalOrderError7);
-        newInternalOrder(422, internalOrderError8);
-        newInternalOrder(422, internalOrderError9);
-        newInternalOrder(422, internalOrderError10);
-        newInternalOrder(422, internalOrderError11);
-        newInternalOrder(422, internalOrderError12);
-        newInternalOrder(422, internalOrderError13);
-        newInternalOrder(422, internalOrderError14);
-        newInternalOrder(422, internalOrderError15);
-        newInternalOrder(422, internalOrderError16);
-        newInternalOrder(422, internalOrderError17);
-        newInternalOrder(422, internalOrderError18);
-        newInternalOrder(422, internalOrderError19);
-        getInternalOrder(404, 4);
-        getInternalOrder(422, "abc");
-        getInternalOrder(422, -1);
-        getInternalOrder(422, true);
-        deleteInternalOrder(422, "abc");
-        deleteInternalOrder(422, -1);
-        deleteInternalOrder(422, true);
-    });
-
-    describe('testing put api internal order - successs', () => {
+    //Correct Posts
         newInternalOrder(201, internalOrderIssued1);
         newInternalOrder(201, internalOrderIssued2);
         newInternalOrder(201, internalOrderIssued3);
@@ -625,322 +562,473 @@ describe('API Test: InternalOrder', () => {
                 "SkuId": 2
             }]
         });
-        getInternalOrder(200, 1, internalOrderCompleted1);
-        getInternalOrdersByStatus(200, 1, [
-            { ...internalOrderIssued2, "state": states[1] }
-        ], "Accepted");
-        getInternalOrdersByStatus(200, 1, [
-            { ...internalOrderIssued3, "state": states[0] }
-        ], "Issued");
-        getInternalOrdersByStatus(200, 3, [
-            internalOrderCompleted1,
-            { ...internalOrderIssued2, "state": states[1] },
-            { ...internalOrderIssued3, "state": states[0] }
-        ], "");
-        deleteInternalOrder(204, 1);
-        deleteInternalOrder(204, 2);
-        deleteInternalOrder(204, 3);
-    });
 
-    clean();
+})
 
-    prepare();
+// function prepare() {
+//     describe('preparing environment', () => {
+//         it('inserting values', function () {
+//             newUser(201, customer1);
+//             newUser(201, customer2);
+//             newUser(201, supplier1);
+//             newSKU(201, SKU1);
+//             newSKU(201, SKU2);
+//             newSKU(201, SKU3);
+//             newSKUItem(201, SKUItem1);
+//             newSKUItem(201, SKUItem2);
+//             newSKUItem(201, SKUItem3);
+//             newSKUItem(201, SKUItem4);
+//             newSKUItem(201, SKUItem5);
+//             newSKUItem(201, SKUItem6);
+//             newSKUItem(201, SKUItem7);
+//             newSKUItem(201, SKUItem8);
+//             newSKUItem(201, SKUItem9);
+//             newSKUItem(201, SKUItem10);
+//             newSKUItem(201, SKUItem11);
+//         });
+//     });
+// }
+// function clean() {
+//     describe('cleaning environment', () => {
+//         it('deleting values', function () {
+//             deleteUser(204, customer1.username, customer1.type);
+//             deleteUser(204, customer2.username, customer2.type);
+//             deleteUser(204, supplier1.username, supplier1.type);
+//             deleteSKUItem(204, SKUItem1.RFID);
+//             deleteSKUItem(204, SKUItem2.RFID);
+//             deleteSKUItem(204, SKUItem3.RFID);
+//             deleteSKUItem(204, SKUItem4.RFID);
+//             deleteSKUItem(204, SKUItem5.RFID);
+//             deleteSKUItem(204, SKUItem6.RFID);
+//             deleteSKUItem(204, SKUItem7.RFID);
+//             deleteSKUItem(204, SKUItem8.RFID);
+//             deleteSKUItem(204, SKUItem9.RFID);
+//             deleteSKUItem(204, SKUItem10.RFID);
+//             deleteSKUItem(204, SKUItem11.RFID);
+//             deleteSKU(204, 1);
+//             deleteSKU(204, 2);
+//             deleteSKU(204, 3);
+//         });
+//     });
+// }
+//
+// describe('API Test: InternalOrder', () => {
+//     prepare();
+//
+//     describe('testing create/get/delete internal orders - success', () => {
+//         newInternalOrder(201, internalOrderIssued1);
+//         newInternalOrder(201, internalOrderIssued2);
+//         newInternalOrder(201, internalOrderIssued3);
+//         getInternalOrdersByStatus(200, 3, expectedInternalOrders, "");
+//         getInternalOrdersByStatus(200, 3, expectedInternalOrders, "Issued");
+//         getInternalOrder(200, 1, { ...internalOrderIssued1, "state": states[0] });
+//         getInternalOrder(200, 2, { ...internalOrderIssued1, "state": states[0] });
+//         getInternalOrder(200, 3, { ...internalOrderIssued1, "state": states[0] });
+//         deleteInternalOrder(204, 1);
+//         getInternalOrdersByStatus(200, 2, [
+//             { ...internalOrderIssued2, "state": states[0] },
+//             { ...internalOrderIssued3, "state": states[0] }
+//         ], "");
+//         getInternalOrder(404, 1);
+//         getInternalOrdersByStatus(200, 2, [
+//             { ...internalOrderIssued2, "state": states[0] },
+//             { ...internalOrderIssued3, "state": states[0] }
+//         ], "Issued");
+//         getInternalOrdersByStatus(200, 0, [], "Accepted");
+//         deleteInternalOrder(204, 2);
+//         deleteInternalOrder(204, 3);
+//         deleteInternalOrder(204, 3);
+//         getInternalOrdersByStatus(200, 0, [], "");
+//         getInternalOrdersByStatus(200, 0, [], "Issued");
+//         getInternalOrdersByStatus(200, 0, [], "Accepted");
+//     });
+//
+//     describe('testing create/get/delete internal orders - failure', () => {
+//         newInternalOrder(422, internalOrderError1);
+//         newInternalOrder(422, internalOrderError2);
+//         newInternalOrder(422, internalOrderError3);
+//         newInternalOrder(422, internalOrderError4);
+//         newInternalOrder(422, internalOrderError5);
+//         newInternalOrder(422, internalOrderError6);
+//         newInternalOrder(422, internalOrderError7);
+//         newInternalOrder(422, internalOrderError8);
+//         newInternalOrder(422, internalOrderError9);
+//         newInternalOrder(422, internalOrderError10);
+//         newInternalOrder(422, internalOrderError11);
+//         newInternalOrder(422, internalOrderError12);
+//         newInternalOrder(422, internalOrderError13);
+//         newInternalOrder(422, internalOrderError14);
+//         newInternalOrder(422, internalOrderError15);
+//         newInternalOrder(422, internalOrderError16);
+//         newInternalOrder(422, internalOrderError17);
+//         newInternalOrder(422, internalOrderError18);
+//         newInternalOrder(422, internalOrderError19);
+//         getInternalOrder(404, 4);
+//         getInternalOrder(422, "abc");
+//         getInternalOrder(422, -1);
+//         getInternalOrder(422, true);
+//         deleteInternalOrder(422, "abc");
+//         deleteInternalOrder(422, -1);
+//         deleteInternalOrder(422, true);
+//     });
+//
+//     describe('testing put api internal order - successs', () => {
+//         newInternalOrder(201, internalOrderIssued1);
+//         newInternalOrder(201, internalOrderIssued2);
+//         newInternalOrder(201, internalOrderIssued3);
+//         modifyInternalOrder(200, 1, { "newState": states[1] });
+//         modifyInternalOrder(200, 2, { "newState": states[1] });
+//         getInternalOrdersByStatus(200, 2, [
+//             { ...internalOrderIssued1, "state": states[1] },
+//             { ...internalOrderIssued2, "state": states[1] }
+//         ], "Accepted");
+//         getInternalOrdersByStatus(200, 1, [
+//             { ...internalOrderIssued3, "state": states[0] }
+//         ], "Issued");
+//         getInternalOrder(200, 1, { ...internalOrderIssued1, "state": states[1] });
+//         getInternalOrdersByStatus(200, 3, [
+//             { ...internalOrderIssued1, "state": states[1] },
+//             { ...internalOrderIssued2, "state": states[1] },
+//             { ...internalOrderIssued3, "state": states[0] }
+//         ], "");
+//         modifyInternalOrder(200, 1, {
+//             "newState": states[4],
+//             "products": [{
+//                 "RFID": "12345678901234567890123456789015",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         getInternalOrder(200, 1, internalOrderCompleted1);
+//         getInternalOrdersByStatus(200, 1, [
+//             { ...internalOrderIssued2, "state": states[1] }
+//         ], "Accepted");
+//         getInternalOrdersByStatus(200, 1, [
+//             { ...internalOrderIssued3, "state": states[0] }
+//         ], "Issued");
+//         getInternalOrdersByStatus(200, 3, [
+//             internalOrderCompleted1,
+//             { ...internalOrderIssued2, "state": states[1] },
+//             { ...internalOrderIssued3, "state": states[0] }
+//         ], "");
+//         deleteInternalOrder(204, 1);
+//         deleteInternalOrder(204, 2);
+//         deleteInternalOrder(204, 3);
+//     });
+//
+//     clean();
+//
+//     prepare();
+//
+//     describe('testing put api internal order - failure 1', () => {
+//         newInternalOrder(201, internalOrderIssued1);
+//         newInternalOrder(201, internalOrderIssued2);
+//         newInternalOrder(201, internalOrderIssued3);
+//         modifyInternalOrder(200, 1, {
+//             "newState": states[1],
+//             "products": [{
+//                 "RFID": "12345678901234567890123456789015",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         getInternalOrder(200, 1, { ...internalOrderIssued1, "state": states[1] });
+//         modifyInternalOrder(422, 1, { "newState": states[4] });
+//         modifyInternalOrder(200, 1, {
+//             "newState": states[4],
+//             "products": [{
+//                 "RFID": "12345678901234567890123456789015",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         modifyInternalOrder(422, 2, {
+//             "newState": states[4],
+//             "products": [{
+//                 "RFID": "12345678901234567890123456789015",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789037",
+//                 "SkuId": 3
+//             }, {
+//                 "RFID": "12345678901234567890123456789038",
+//                 "SkuId": 3
+//             }, {
+//                 "RFID": "12345678901234567890123456789039",
+//                 "SkuId": 3
+//             }]
+//         });
+//         deleteInternalOrder(204, 1);
+//         deleteInternalOrder(204, 2);
+//         deleteInternalOrder(204, 3);
+//     });
+//
+//     clean();
+//
+//     prepare();
+//
+//     describe('testing put api internal order - failure 2', () => {
+//         newInternalOrder(201, internalOrderIssued1);
+//         newInternalOrder(201, internalOrderIssued2);
+//         newInternalOrder(201, internalOrderIssued3);
+//         modifyInternalOrder(404, 5, { "newState": states[2] });
+//         modifyInternalOrder(422, "abc", { "newState": states[2] });
+//         modifyInternalOrder(422, -5, { "newState": states[2] });
+//         modifyInternalOrder(422, 1, { "state": states[1] });
+//         modifyInternalOrder(422, 1, { "newState": "abc" });
+//         modifyInternalOrder(422, 1, { "newState": 1 });
+//         modifyInternalOrder(422, 1, { "newState": true });
+//         modifyInternalOrder(422, 1, { "newState": states[5], });
+//         modifyInternalOrder(422, 1, {
+//             "newState": states[4],
+//             "product": [{
+//                 "RFID": "12345678901234567890123456789015",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         modifyInternalOrder(422, 1, {
+//             "newState": states[4],
+//             "products": [{
+//                 "RFID": "12345678901234567890123456789",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         modifyInternalOrder(422, 1, {
+//             "newState": states[4],
+//             "products": [{
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         modifyInternalOrder(422, 1, {
+//             "newState": states[4],
+//             "product": [{
+//                 "RFID": "12345678901234567890123456789015",
+//                 "SkuId": "abc"
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         modifyInternalOrder(422, 1, {
+//             "newState": states[4],
+//             "products": [{
+//                 "RFID": "12345678901234567890123456789015",
+//                 "SkuId": true
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         modifyInternalOrder(422, 1, {
+//             "newState": states[4],
+//             "products": [{
+//                 "rfid": "12345678901234567890123456789015",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         modifyInternalOrder(422, 1, {
+//             "newState": states[4],
+//             "products": [{
+//                 "RFID": "12345678901234567890123456789015",
+//                 "SKUId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         modifyInternalOrder(422, 1, {
+//             "newState": false,
+//             "products": [{
+//                 "RFID": "12345678901234567890123456789015",
+//                 "SKUId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         modifyInternalOrder(200, 1, {
+//             "newState": states[1],
+//             "products": [{
+//                 "RFID": "1234567890123456789012345",
+//                 "SKUId": false
+//             }, {
+//                 "RFID": "12345678901234567890123456789016",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789017",
+//                 "SkuId": 1
+//             }, {
+//                 "RFID": "12345678901234567890123456789025",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789026",
+//                 "SkuId": 2
+//             }, {
+//                 "RFID": "12345678901234567890123456789027",
+//                 "SkuId": 2
+//             }]
+//         });
+//         deleteInternalOrder(204, 1);
+//         deleteInternalOrder(204, 2);
+//         deleteInternalOrder(204, 3);
+//     });
 
-    describe('testing put api internal order - failure 1', () => {
-        newInternalOrder(201, internalOrderIssued1);
-        newInternalOrder(201, internalOrderIssued2);
-        newInternalOrder(201, internalOrderIssued3);
-        modifyInternalOrder(200, 1, {
-            "newState": states[1],
-            "products": [{
-                "RFID": "12345678901234567890123456789015",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        getInternalOrder(200, 1, { ...internalOrderIssued1, "state": states[1] });
-        modifyInternalOrder(422, 1, { "newState": states[4] });
-        modifyInternalOrder(200, 1, {
-            "newState": states[4],
-            "products": [{
-                "RFID": "12345678901234567890123456789015",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        modifyInternalOrder(422, 2, {
-            "newState": states[4],
-            "products": [{
-                "RFID": "12345678901234567890123456789015",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789037",
-                "SkuId": 3
-            }, {
-                "RFID": "12345678901234567890123456789038",
-                "SkuId": 3
-            }, {
-                "RFID": "12345678901234567890123456789039",
-                "SkuId": 3
-            }]
-        });
-        deleteInternalOrder(204, 1);
-        deleteInternalOrder(204, 2);
-        deleteInternalOrder(204, 3);
-    });
-
-    clean();
-
-    prepare();
-
-    describe('testing put api internal order - failure 2', () => {
-        newInternalOrder(201, internalOrderIssued1);
-        newInternalOrder(201, internalOrderIssued2);
-        newInternalOrder(201, internalOrderIssued3);
-        modifyInternalOrder(404, 5, { "newState": states[2] });
-        modifyInternalOrder(422, "abc", { "newState": states[2] });
-        modifyInternalOrder(422, -5, { "newState": states[2] });
-        modifyInternalOrder(422, 1, { "state": states[1] });
-        modifyInternalOrder(422, 1, { "newState": "abc" });
-        modifyInternalOrder(422, 1, { "newState": 1 });
-        modifyInternalOrder(422, 1, { "newState": true });
-        modifyInternalOrder(422, 1, { "newState": states[5], });
-        modifyInternalOrder(422, 1, {
-            "newState": states[4],
-            "product": [{
-                "RFID": "12345678901234567890123456789015",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        modifyInternalOrder(422, 1, {
-            "newState": states[4],
-            "products": [{
-                "RFID": "12345678901234567890123456789",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        modifyInternalOrder(422, 1, {
-            "newState": states[4],
-            "products": [{
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        modifyInternalOrder(422, 1, {
-            "newState": states[4],
-            "product": [{
-                "RFID": "12345678901234567890123456789015",
-                "SkuId": "abc"
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        modifyInternalOrder(422, 1, {
-            "newState": states[4],
-            "products": [{
-                "RFID": "12345678901234567890123456789015",
-                "SkuId": true
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        modifyInternalOrder(422, 1, {
-            "newState": states[4],
-            "products": [{
-                "rfid": "12345678901234567890123456789015",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        modifyInternalOrder(422, 1, {
-            "newState": states[4],
-            "products": [{
-                "RFID": "12345678901234567890123456789015",
-                "SKUId": 1
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        modifyInternalOrder(422, 1, {
-            "newState": false,
-            "products": [{
-                "RFID": "12345678901234567890123456789015",
-                "SKUId": 1
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        modifyInternalOrder(200, 1, {
-            "newState": states[1],
-            "products": [{
-                "RFID": "1234567890123456789012345",
-                "SKUId": false
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        deleteInternalOrder(204, 1);
-        deleteInternalOrder(204, 2);
-        deleteInternalOrder(204, 3);
-    });
-
-    clean();
-});
+    // clean();
+// });

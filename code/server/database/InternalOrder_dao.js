@@ -55,24 +55,24 @@ exports.getInternalOrders = (state) => {
     });
 }
 
-exports.getInternalOrderByID = (ID) => {
+exports.getInternalOrderByID = (id) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `SELECT * FROM InternalOrder where InternalOrderID=${ID};`;
-        dbConnection.get(sql, function (err, row) {
+        const sql = `SELECT * FROM InternalOrder where InternalOrderID=?;`;
+        dbConnection.get(sql,[id], function (err, row) {
             if (err) {
                 reject(err.toString());
             } else {
                 if (row === undefined) {
                     resolve(undefined);
                 } else {
-                    const tds = new InternalOrder(
+                    let IO = new InternalOrder(
                         row.InternalOrderID,
                         row.IssueDate,
                         row.State,
                         row.CustomerID
                     )
-                    resolve(tds);
+                    resolve(IO);
                 }
             }
         });
@@ -82,8 +82,8 @@ exports.getInternalOrderByID = (ID) => {
 exports.getInternalOrderProductByInternalOrderID = (ID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `SELECT * FROM InternalOrderProduct where InternalOrderID=${ID};`;
-        dbConnection.all(sql, function (err, rows) {
+        const sql = `SELECT * FROM InternalOrderProduct where InternalOrderID=?};`;
+        dbConnection.all(sql, [ID],function (err, rows) {
             if (err) {
                 reject(err.toString());
             } else {
@@ -96,8 +96,8 @@ exports.getInternalOrderProductByInternalOrderID = (ID) => {
 exports.getInternalOrderSKUItemByInternalOrderID = (ID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `SELECT * FROM InternalOrderSKUItem where InternalOrderID=${ID};`;
-        dbConnection.all(sql, function (err, rows) {
+        const sql = `SELECT * FROM InternalOrderSKUItem where InternalOrderID=?;`;
+        dbConnection.all(sql,[ID], function (err, rows) {
             if (err) {
                 reject(err);
             } else {

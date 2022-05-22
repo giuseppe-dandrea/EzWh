@@ -3,6 +3,7 @@ const { validationResult, param, body } = require("express-validator");
 const InternalOrderService = require('../services/InternalOrder_service');
 const internalOrderService = new InternalOrderService();
 const dayjs = require("dayjs");
+const EzWhException = require("../modules/EzWhException");
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ router.get("/internalOrders",
   async (req, res) => {
     try{
       const internalOrders = await internalOrderService.getInternalOrders();
-      return res.status(201).json(internalOrders);
+      return res.status(200).json(internalOrders);
     } catch (err) {
       console.log(err);
       return res.status(500).end();
@@ -40,7 +41,7 @@ router.get("/internalOrdersIssued",
   async (req, res) => {
     try{
       const internalOrders = await internalOrderService.getInternalOrdersIssued();
-      return res.status(201).json(internalOrders);
+      return res.status(200).json(internalOrders);
     } catch (err) {
       console.log(err);
       return res.status(500).end();
@@ -51,7 +52,7 @@ router.get("/internalOrdersAccepted",
   async (req, res) => {
     try{
       const internalOrders = await internalOrderService.getInternalOrdersAccepted();
-      return res.status(201).json(internalOrders);
+      return res.status(200).json(internalOrders);
     } catch (err) {
       console.log(err);
       return res.status(500).end();
@@ -86,6 +87,7 @@ router.put("/internalOrders/:id",
           return res.status(200).end();
       }
       else if(req.body.newState === "COMPLETED"){
+          await internalOrderService.modifyInternalOrder(req.params.id, req.body.newState);
           await internalOrderService.completeInternalOrder(req.params.id, req.body.newState, req.body.products);
           return res.status(200).end();
       }
@@ -95,8 +97,11 @@ router.put("/internalOrders/:id",
     // else
     //   return res.status(200).end();
   } catch (err) {
-    console.log(err);
-    return res.status(500).end();
+      if  (err === EzWhException.NotFound) {
+          return res.status(404).end();
+      }
+      else
+          return res.status(500).end();
   }
 });
 

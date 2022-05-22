@@ -32,7 +32,7 @@ class InternalOrderService {
         for (let internalOrder of internalOrders) {
             const state = internalOrder.state;
             let products = [];
-            if (state === "COMPLETED") {
+            if (state !== "COMPLETED") {
                 products = await this.getInternalOrderProducts(internalOrder.id);
             } else {
                 products = await this.getInternalOrderSKUItems(internalOrder.id);
@@ -50,61 +50,72 @@ class InternalOrderService {
         return this.getInternalOrders("ACCEPTED");
     }
 
-    async getInternalOrderProducts(ID) {
-        let products = []
-        let internalOrderProducts = await dao.getInternalOrderSKUItemByInternalOrderID(ID);
-        for (let internalProduct of internalOrderProducts) {
-            let RFID = internalProduct.RFID;
-            let SKU = await SKUItem_dao.getSKUItemByRfid(RFID);
-            if (SKU !== undefined) {
-                let RFID = internalProduct.RFID;
-                let product = {
-                    "SKUId": SKU.SKUID,
-                    "description": SKU.Description,
-                    "price": SKU.Price,
-                    "RFID": RFID,
-                }
-                products.push(product);
-            }
-        }
-        return products;
-    }
+    //TODO add RFID column to Products and Mix both tables
+    // async getInternalOrderSKUItems(ID) {
+    //     let products = []
+    //     let internalOrderProducts = await dao.getInternalOrderSKUItemByInternalOrderID(ID);
+    //     for (let IO of internalOrderProducts) {
+    //         let product = {
+    //             "SKUId": IO.SKUID,
+    //             "description": IO.Description,
+    //             "price": SKU.Price,
+    //             "RFID": RFID,
+    //         }
+    //         let RFID = internalProduct.RFID;
+    //         let SKU = internalProduct.SKUID;
+    //         let product = {
+    //             "SKUId": SKU.SKUID,
+    //             "description": SKU.Description,
+    //             "price": SKU.Price,
+    //             "RFID": RFID,
+    //         products.push(product);
+    //     }
+    //     }
+    //     return products;
+    // }
+    // async getInternalOrderProducts(ID) {
+    //     let products = []
+    //     let internalOrderProducts = await dao.getInternalOrderProductByInternalOrderID(ID);
+    //     for (let internalProduct of internalOrderProducts) {
+    //         let SKUID = internalProduct.SKUID;
+    //         let SKU = await SKU_dao.getSKUById(SKUID);
+    //         if (SKU !== undefined) {
+    //             let QTY = internalProduct.QTY;
+    //             let product = {
+    //                 "SKUId": SKU.SKUID,
+    //                 "description": SKU.Description,
+    //                 "price": SKU.Price,
+    //                 "qty": QTY,
+    //             }
+    //             products.push(product);
+    //         }
+    //     }
+    //     return products;
+    // }
 
-    async getInternalOrderSKUItems(ID) {
-        let products = []
-        let internalOrderProducts = await dao.getInternalOrderProductByInternalOrderID(ID);
-        for (let internalProduct of internalOrderProducts) {
-            let SKUID = internalProduct.SKUID;
-            let SKU = await SKU_dao.getSKUById(SKUID);
-            if (SKU !== undefined) {
-                let QTY = internalProduct.QTY;
-                let product = {
-                    "SKUId": SKU.SKUID,
-                    "description": SKU.Description,
-                    "price": SKU.Price,
-                    "qty": QTY,
-                }
-                products.push(product);
-            }
-        }
-        return products;
-    }
-
+    //GET BY ID
     async getInternalOrderByID(ID) {
-        const internalOrder = await dao.getInternalOrderByID(ID);
-        if (internalOrder === undefined) {
-            return undefined;
-        }
-        const state = internalOrder.state;
-        let products;
-        if (state === "COMPLETED") {
-            products = await this.getInternalOrderProducts(internalOrder.id);
+        try{
+            const IO = await dao.getInternalOrderByID(ID);
+            if (IO === undefined) {
+                throw EzWhException.NotFound;
+            }
+            const state = IO.state;
+            let products;
+            if (state !== "COMPLETED") {
+                products = await this.getInternalOrderProducts(IO.id);
 
-        } else {
-            products = await this.getInternalOrderSKUItems(internalOrder.id);
+            } else {
+                products = await this.getInternalOrderSKUItems(IO.id);
+            }
+            return new InternalOrder(IO.id, IO.issueDate, IO.state ,
+                IO.customerId, products);
         }
-        internalOrder.concatProducts(products)
-        return internalOrder;
+     catch(err){
+            if(err === EzWhException.NotFound) throw EzWhException.NotFound;
+            else throw EzWhException.InternalError;
+
+     }
     }
 
     async modifyInternalOrder(id, newState) {
@@ -133,7 +144,7 @@ class InternalOrderService {
                 await createInternalOrderSKUItem(id,product.SkuID, product.RFID)
             }
         }
-        catch{
+        catch(err){
             if (err === EzWhException.NotFound) throw EzWhException.NotFound;
             else throw EzWhException.InternalError;
 

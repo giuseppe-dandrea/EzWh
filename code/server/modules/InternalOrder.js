@@ -1,5 +1,5 @@
 class InternalOrder{
-    constructor(id, issueDate, state, customerId, products = []){
+    constructor(id, issueDate, state, customerId, products =undefined){
         this.id = id;
         this.issueDate = issueDate;
         this.state = state;
