@@ -86,7 +86,8 @@ class RestockOrderService {
         // console.log(`>>ResstockOrderID is ${restockOrderID}!`);
         for (let product of products) {
             if(product.SKUId===undefined || product.description===undefined||
-                product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId)) {
+                product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId) ||
+                !Number.isInteger(product.qty) || typeof product.price !== "number" ) {
                 await dao.deleteRestockOrder(restockOrderID);
                 throw EzWhException.EntryNotAllowed;
             }

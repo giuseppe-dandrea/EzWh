@@ -111,7 +111,7 @@ class DatabaseConnection {
 
         `CREATE TABLE IF NOT EXISTS TestResult (
 			TestResultID INTEGER NOT NULL PRIMARY KEY ,
-			RFID VARCHAR(20) NOT NULL,
+			RFID VARCHAR(33) NOT NULL,
 			TestDescriptorID INTEGER NOT NULL,
 			Date VARCHAR(20) NOT NULL,
 			Result BOOLEN NOT NULL,
@@ -163,7 +163,7 @@ class DatabaseConnection {
             );`,
 
         `CREATE TABLE IF NOT EXISTS InternalOrderSKUItem (
-            RFID INTEGER NOT NULL,
+            RFID VARCHAR(33) NOT NULL,
             SKUID INTEGER NOT NULL,
             InternalOrderID INTEGER NOT NULL,
             PRIMARY KEY(RFID),
@@ -198,7 +198,7 @@ class DatabaseConnection {
             );`,
 
         `CREATE TABLE IF NOT EXISTS RestockOrderSKUItem (
-            RFID INTEGER NOT NULL,
+            RFID VARCHAR(33) NOT NULL,
             RestockOrderID INTEGER NOT NULL,
             PRIMARY KEY(RFID, RestockOrderID),
             FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
@@ -217,7 +217,7 @@ class DatabaseConnection {
             );`,
         
         `CREATE TABLE IF NOT EXISTS ReturnOrderProduct (
-            RFID VARCHAR(20) NOT NULL,
+            RFID VARCHAR(33) NOT NULL,
             ReturnOrderID INTEGER NOT NULL,
             PRIMARY KEY(RFID, ReturnOrderID),
             FOREIGN KEY (ReturnOrderID) REFERENCES ReturnOrder(ReturnOrderID)

@@ -44,6 +44,7 @@ router.get(
 router.get("/returnOrders/:ID", param("ID"), async (req, res) => {
   try {
     const returnOrder = await returnOrderService.getReturnOrderByID(req.params.ID);
+    if (returnOrder === undefined) return res.status(404).end();
     return res.status(200).json(returnOrder);
   } catch (err) {
     console.log(err);

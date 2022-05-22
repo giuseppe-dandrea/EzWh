@@ -38,11 +38,12 @@ function deleteReturnOrder(expectedHTTPStatus, id) {
     });
 }
 function getReturnOrders(expectedHTTPStatus, expectedLength, expectedReturnOrders) {
-    it('getting all restock orders', function (done) {
+    it('getting all return orders', function (done) {
         agent.get('/api/returnOrders')
             .end(function (err, res) {
                 if (err) done(err);
                 res.should.have.status(expectedHTTPStatus);
+                console.log("============>", res.body)
                 if (expectedHTTPStatus === 200) {
                     res.should.be.json;
                     res.body.should.be.an('array');
@@ -55,7 +56,7 @@ function getReturnOrders(expectedHTTPStatus, expectedLength, expectedReturnOrder
                         ro.should.haveOwnProperty("restockOrderId");
                         ro.products.should.be.an('array');
                         expectedReturnOrders.some((retOrd) => {
-                            compareReturnOrder(retOrd, ro)
+                            return compareReturnOrder(retOrd, ro)
                         }).should.be.equal(true);
                     }
                 }
@@ -82,7 +83,7 @@ function getReturnOrder(expectedHTTPStatus, id, expectedReturnOrder) {
                     done();
                 });
         } else {
-            agent.get(`/api/restockOrders/${id}`)
+            agent.get(`/api/returnOrders/${id}`)
                 .end(function (err, res) {
                     if (err) done(err);
                     res.should.have.status(expectedHTTPStatus);
@@ -288,7 +289,7 @@ function modifyRestockOrderStatus(expectedHTTPStatus, id, status) {
 function addSKUItemList(expectedHTTPStatus, id, SKUItemList) {
     it(`adding skuItem list to restock order ${id}`, function (done) {
         if (SKUItemList !== undefined) {
-            agent.post(`/api/restockOrder/${id}/skuItems`)
+            agent.put(`/api/restockOrder/${id}/skuItems`)
                 .set('content-type', 'application/json')
                 .send(SKUItemList)
                 .end(function (err, res) {
@@ -311,13 +312,13 @@ let restockOrderIssued1 = {
     "issueDate": "2021/11/29 09:33",
     "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 30 },
     { "SKUId": 2, "description": "second sku", "price": 10.99, "qty": 20 }],
-    "supplierId": 1
+    "supplierId": 7
 };
 let restockOrderIssued2 = {
     "issueDate": "2021/11/23",
     "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
     { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
-    "supplierId": 2
+    "supplierId": 8
 };
 let supplier1 = {
     "username": "user1@ezwh.com",
@@ -327,7 +328,7 @@ let supplier1 = {
     "type": "supplier"
 };
 let supplier2 = {
-    "username": "user2@ezwh.com",
+    "username": "user3@ezwh.com",
     "name": "Paul",
     "surname": "Brown",
     "password": "testpassword",
@@ -397,28 +398,28 @@ let item1 = {
     "description": "first sku",
     "price": 10.99,
     "SKUId": 1,
-    "supplierId": 1
+    "supplierId": 7
 };
 let item2 = {
     "id": 2,
     "description": "second sku",
     "price": 10.99,
     "SKUId": 2,
-    "supplierId": 1
+    "supplierId": 7
 };
 let item3 = {
     "id": 3,
     "description": "first sku",
     "price": 10.99,
     "SKUId": 1,
-    "supplierId": 2
+    "supplierId": 8
 };
 let item4 = {
     "id": 4,
     "description": "third sku",
     "price": 10.99,
     "SKUId": 3,
-    "supplierId": 2
+    "supplierId": 8
 };
 let returnOrder1 = {
     "returnDate": "2021/12/29 09:33",
@@ -530,12 +531,14 @@ let SKUItemList1 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789015" }, 
 let SKUItemList2 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789016" }, { "SKUId": 1, "rfid": "12345678901234567890123456789017" }];
 
 function prepare() {
-    describe('preparing environment', () => {
+    describe('Adding Users and SKU to test', () => {
         newUser(201, supplier1);
         newUser(201, supplier2);
         newSKU(201, SKU1);
         newSKU(201, SKU2);
         newSKU(201, SKU3);
+    })
+    describe("Adding SKUItem to test", () => {
         newSKUItem(201, SKUItem1);
         newSKUItem(201, SKUItem2);
         newSKUItem(201, SKUItem3);
@@ -543,12 +546,16 @@ function prepare() {
         newSKUItem(201, SKUItem5);
         newSKUItem(201, SKUItem6);
         newSKUItem(201, SKUItem7);
+    });
+    describe("Adding items and restockOrders", () => {
         newItem(201, item1);
         newItem(201, item2);
         newItem(201, item3);
         newItem(201, item4);
         newRestockOrder(201, restockOrderIssued1);
         newRestockOrder(201, restockOrderIssued2);
+    });
+    describe("Populating restockOrders", () => {
         modifyRestockOrderStatus(200, 1, { "newState": "DELIVERED" });
         modifyRestockOrderStatus(200, 2, { "newState": "DELIVERED" });
         addSKUItemList(200, 1, { "skuItems": SKUItemList1 });
@@ -581,17 +588,20 @@ function clean() {
 describe('API Test: ReturnOrder', function () {
     prepare();
 
-    describe('test returnOrder api - success', () => {
+    describe('test add returnOrder api - success', () => {
         newReturnOrder(201, returnOrder1);
         newReturnOrder(201, returnOrder2);
         getReturnOrders(200, 2, [returnOrder1, returnOrder2]);
         getReturnOrder(200, 1, returnOrder1);
-        getReturnOrder(200, 1, returnOrder2);
+        getReturnOrder(200, 2, returnOrder2);
         deleteReturnOrder(204, 1);
         deleteReturnOrder(204, 2);
         getReturnOrder(404, 1);
         getReturnOrder(404, 2);
-        getReturnOrders(404, 0, []);
+        getReturnOrders(200, 0, []);
+
+    });
+    describe("test delete returnOrder api - success", () => {
     });
 
     describe('test returnOrder api - failure', () => {

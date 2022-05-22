@@ -167,8 +167,8 @@ exports.addSkuItemToRestockOrder = (ID, RFID) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `INSERT INTO RestockOrderSkuItem
       (RFID, RestockOrderID)
-      values (${RFID}, ${ID});`;
-        dbConnection.run(sql, function (err) {
+      values (?, ?);`;
+        dbConnection.run(sql, [RFID, ID], function (err) {
             if (err) {
                 reject(err);
             } else {

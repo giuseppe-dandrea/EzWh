@@ -13,10 +13,16 @@ class ReturnOrderService {
         const restockOrder =  await RestockOrder_dao.getRestockOrderByID(restockOrderID);
         if (restockOrder===undefined){
             console.log(`RestockOrder ${restockOrderID} not found!`);
-            throw EzWhException.EntryNotAllowed;
+            throw EzWhException.NotFound;
         }
         const returnOrderID = await dao.createReturnOrder(returnDate, restockOrderID);
         for (let product of products) {
+            if(product.SKUId===undefined || product.description===undefined|| product.RFID === undefined ||
+                product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId) ||
+                !Number.isInteger(product.qty) || typeof product.price !== "number" ) {
+                await dao.deleteReturnOrder(restockOrderID);
+                throw EzWhException.EntryNotAllowed;
+            }
             const SKUItem = await SKUItem_dao.getSKUItemByRfid(product.RFID);
             if (SKUItem===undefined){
                 console.log(`SKUItem ${product.RFID} not found!`);
@@ -24,6 +30,14 @@ class ReturnOrderService {
                 console.log(`ReturnOrder ${returnOrderID} deleted for rollback!`);
                 throw EzWhException.EntryNotAllowed;
             }
+            const SKU = await SKU_dao.getSKUById(product.SKUId);
+            if (SKU === undefined) {
+                console.log(`SKU ${product.SKUId} not found!`);
+                await dao.deleteReturnOrder(returnOrderID);
+                console.log(`ReturnOrder ${returnOrderID} deleted for rollback!`);
+                throw EzWhException.EntryNotAllowed;
+            }
+            // const SKU = await SKU_dao.getSKUById(product.)
             await dao.createReturnOrderProducts(returnOrderID, product.RFID)
         }
     }
@@ -35,13 +49,13 @@ class ReturnOrderService {
         for (let product of products) {
             const SKUItem = await SKUItem_dao.getSKUItemByRfid(product.RFID);
             console.log(`SKUItem: ${SKUItem}`)
-            const SKU = await SKU_dao.getSKUById(SKUItem.SKUID)
+            const SKU = await SKU_dao.getSKUById(SKUItem.sku)
             console.log(`SKUs: ${SKU}`)
             const returnProduct =
                 {
-                    "SKUId": SKUItem.SKUID,
-                    "description": SKU.Description,
-                    "price": SKU.Price,
+                    "SKUId": SKUItem.sku,
+                    "description": SKU.description,
+                    "price": SKU.price,
                     "RFID": product.RFID,
                 }
             returnProducts.push(returnProduct);
