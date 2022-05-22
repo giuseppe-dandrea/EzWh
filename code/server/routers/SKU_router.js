@@ -10,18 +10,17 @@ const router = express.Router();
 router.get("/skus", async (req, res) => {
   try {
     let skus = await skuService.getSKUs();
-    skus.map((s) => {return {
+    return res.status(200).json(skus.map((s) => {return {
         id: s.id,
         description: s.description,
         weight: s.weight,
         volume: s.volume,
         notes: s.notes,
-        position: s.position ? s.position.id : s.position,
+        position: s.position ? s.position.id : null,
         availableQuantity: s.availableQuantity,
         price: s.price,
         testDescriptors: s.testDescriptors.map((t) => t.id)
-    }});
-    return res.status(200).json(skus);
+    }}));
   } catch (err) {
     if (err === EzWhException.InternalError) return res.status(500).end();
   }
@@ -42,7 +41,7 @@ router.get("/skus/:id", param("id").isInt({min : 1}),
             weight: sku.weight,
             volume: sku.volume,
             notes: sku.notes,
-            position: sku.position ? sku.position.id : sku.position,
+            position: sku.position ? sku.position.id : null,
             availableQuantity: sku.availableQuantity,
             price: sku.price,
             testDescriptors: sku.testDescriptors.map((t) => t.id)
@@ -108,7 +107,6 @@ router.put(
       return res.status(200).end();
     } catch (err) {
       if (err === EzWhException.PositionFull) {
-        //TODO: test when position ready
         return res.status(422).end();
       } else if (err === EzWhException.InternalError) {
         return res.status(503).end();
