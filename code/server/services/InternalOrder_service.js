@@ -13,11 +13,16 @@ class InternalOrderService {
     async createInternalOrder(issueDate, products, customerID) {
         try{//User Verification ?
             for (let product of products){//Discard order Before inserting in InternalOrder table if SKUID not found
+                if(product.SKUId===undefined || product.description===undefined||
+                    product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId) ||
+                    !Number.isInteger(product.qty) || typeof product.price !== "number" ) 
+                    throw EzWhException.EntryNotAllowed;
                 let sku = await SKU_dao.getSKUById(product.SKUId);
                 if (sku === undefined) {
-                    throw EzWhException.InternalError;
+                    throw EzWhException.EntryNotAllowed;
                 }
             }
+            // add customer check
             const lastID = await dao.createInternalOrder(issueDate, customerID);
             for (let product of products) {
                 let sku = await SKU_dao.getSKUById(product.SKUId);

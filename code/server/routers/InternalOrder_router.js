@@ -22,6 +22,7 @@ router.post("/internalOrders",
       return res.status(201).end();
     } catch (err) {
       console.log(err);
+      if(err===EzWhException.EntryNotAllowed) return res.status(422).end();
       return res.status(503).end();
     }
 });

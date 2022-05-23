@@ -59,7 +59,7 @@ function getInternalOrdersByStatus(expectedHTTPStatus, expectedLength, expectedI
                 res.should.have.status(expectedHTTPStatus);
                 if (expectedHTTPStatus === 200) {
                     console.log(expectedInternalOrders);
-                    res.body.should.be.json;
+                    res.should.be.json;
                     res.body.should.be.an('array');
                     res.body.should.have.lengthOf(expectedLength);
                     for (let i = 0; i < expectedLength; i++) {
@@ -88,9 +88,7 @@ function getInternalOrder(expectedHTTPStatus, id, expectedInternalOrder) {
                     if (err) done(err);
                     res.should.have.status(expectedHTTPStatus);
                     if (expectedHTTPStatus === 200) {
-                        res.body.should.be.json;
-                        res.body.should.be.an('array');
-                        res.body.should.have.lengthOf(expectedLength);
+                        res.should.be.json;
                         res.body.should.haveOwnProperty("id");
                         res.body.should.haveOwnProperty("issueDate");
                         res.body.should.haveOwnProperty("state");
@@ -139,7 +137,7 @@ function compareInternalOrder(expectedIO, actualIO) {
             return false;
         }
     }
-    if (expectedIO.customerId !== actualIO.custoemrId) {
+    if (expectedIO.customerId !== actualIO.customerId) {
         console.log(expectedIO.customerId, actualIO.customerId);
         return false;
     }
@@ -658,7 +656,7 @@ describe('API Test: InternalOrder', () => {
         getInternalOrdersByStatus(200, 0, [], "Issued");
         getInternalOrdersByStatus(200, 0, [], "Accepted");
     });
-    /*
+    
     describe('testing create/get/delete internal orders - failure', () => {
         newInternalOrder(422, internalOrderError1);
         newInternalOrder(422, internalOrderError2);
@@ -688,7 +686,8 @@ describe('API Test: InternalOrder', () => {
         deleteInternalOrder(422, true);
     });
 
-    describe('testing put api internal order - successs', () => {
+    /*
+    describe('testing put api internal order - success', () => {
         newInternalOrder(201, internalOrderIssued1);
         newInternalOrder(201, internalOrderIssued2);
         newInternalOrder(201, internalOrderIssued3);
