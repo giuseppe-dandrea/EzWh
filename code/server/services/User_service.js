@@ -55,7 +55,7 @@ class UserService {
             let my_pwd = User.storePassword(password);
             await dao.createUser(email, name, surname, my_pwd, type);
         } catch (err) {
-            console.log("Error in Facade");
+            console.log("User Already Exists!");
             console.log(err);
             if (err === EzWhException.Conflict) throw err;
             throw EzWhException.InternalError;

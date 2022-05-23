@@ -1,8 +1,6 @@
 "use strict";
 const morgan = require('morgan');
 const express = require("express");
-const dbConnection = require("./database/DatabaseConnection");
-dbConnection.getInstance();
 
 
 // init express
