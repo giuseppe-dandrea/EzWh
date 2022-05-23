@@ -50,7 +50,7 @@ class UserService {
         //TODO
         try {
             let u = await dao.getUserByEmail(email, type);
-            console.log(u);
+            // console.log(u);
             if (u !== undefined) throw EzWhException.Conflict;
             let my_pwd = User.storePassword(password);
             await dao.createUser(email, name, surname, my_pwd, type);
