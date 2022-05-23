@@ -3,7 +3,6 @@ chai.should();
 const dbConnection = require("../database/DatabaseConnection");
 const positionsDAO = require("../database/Position_dao");
 const skuDAO = require("../database/SKU_dao");
-const SKU = require("../modules/SKU");
 const Position = require("../modules/Position");
 
 let postPositions = [
@@ -127,6 +126,21 @@ function testModifyPositionID(oldID, newPositionID, newAisleID, newRow, newCol){
 
     })
 }
+function testModifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId){
+    test('Modifying SKU Position', async() => {
+        let ret = await positionsDAO.getPositionByID(positionId);
+        let beforePosition=ret[0];
+        let supposedPosition= {positionID : positionId , aisleID : beforePosition.aisleID, row:beforePosition.row , col:beforePosition.col , maxWeight:beforePosition.maxWeight ,
+            maxVolume:beforePosition.maxVolume , occupiedWeight:newOccupiedWeight , occupiedVolume: newOccupiedVolume, }
+        await positionsDAO.modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId);
+        let res = await positionsDAO.getPositionByID(positionId);
+        let modifiedPosition=res[0];
+        res.length.should.be.equal(1);
+        comparePosition(supposedPosition, modifiedPosition).should.be.true;
+
+    })
+}
+
 
 
 
@@ -161,7 +175,6 @@ describe('Test Position DAO', () => {
     })
     describe('Test POSTs', ()=>{
         beforeAll(async () => {
-            await dbConnection.createConnection();
             await positionsDAO.deleteAllPositions();
 
         })
@@ -173,7 +186,6 @@ describe('Test Position DAO', () => {
 
     describe('Test PUTs', ()=>{
         beforeAll(async () => {
-            await dbConnection.createConnection();
             await positionsDAO.createPosition(postPositions[0]);
 
         })
@@ -184,13 +196,25 @@ describe('Test Position DAO', () => {
     })
     describe('Test PUTs', ()=>{
         beforeAll(async () => {
-            await dbConnection.createConnection();
             await positionsDAO.createPosition(postPositions[0]);
 
         })
        testModifyPositionID(postPositions[0].positionID,"989876765454","9898","7676","5454" );
         afterAll(async ()=>{
             await positionsDAO.deletePosition("989876765454");
+        })
+    })
+
+    describe('Test PUTs', ()=>{
+        beforeAll(async () => {
+            await positionsDAO.createPosition(postPositions[0]);
+            await skuDAO.createSKU("Test SKU for Position", 10, 10, "No notes", 10.21,3);
+
+        })
+        testModifySKUPosition(postPositions[0].positionID ,30 , 30, 1);
+        afterAll(async ()=>{
+            await positionsDAO.deleteAllPositions();
+            await skuDAO.deleteSKU(1);
         })
     })
 
