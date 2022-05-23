@@ -5,6 +5,7 @@ const InternalOrder = require("../modules/InternalOrder");
 const EzWhException = require("../modules/EzWhException.js");
 const {createSKUItem, getSKUItemByRfid} = require("../database/SKUItem_dao");
 const {getSKUById} = require("../database/SKU_dao");
+const User_dao = require("../database/User_dao");
 
 class InternalOrderService {
     constructor() {
@@ -12,14 +13,20 @@ class InternalOrderService {
 
     async createInternalOrder(issueDate, products, customerID) {
         try{//User Verification ?
+            const customer = await User_dao.getUserByID(customerID);
+            if (customer===undefined || customer.type !== "customer"){
+                console.log(`>>Supplier ${customerID} not found!`);
+                throw EzWhException.EntryNotAllowed;
+            }
             for (let product of products){//Discard order Before inserting in InternalOrder table if SKUID not found
                 if(product.SKUId===undefined || product.description===undefined||
                     product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId) ||
-                    !Number.isInteger(product.qty) || typeof product.price !== "number" ) 
+                    !Number.isInteger(product.qty) || product.qty < 0 || typeof product.price !== "number" ||
+                    product.price < 0 || product.SKUId < 0 || typeof product.description !== "string")
                     throw EzWhException.EntryNotAllowed;
                 let sku = await SKU_dao.getSKUById(product.SKUId);
                 if (sku === undefined) {
-                    throw EzWhException.EntryNotAllowed;
+                    throw EzWhException.InternalError;
                 }
             }
             // add customer check
@@ -29,6 +36,7 @@ class InternalOrderService {
                 await dao.createInternalOrderProduct(lastID, product.SKUId, sku.description , sku.price, product.qty);
             }
         }catch (err) {
+            if (err === EzWhException.EntryNotAllowed) throw err;
             throw EzWhException.InternalError;
         }
     }
@@ -88,7 +96,7 @@ class InternalOrderService {
                 "SKUId": sku.id,
                 "description": sku.description,
                 "price": sku.price,
-                "RFID": skuitem.RFID,
+                "RFID": skuitem.rfid,
             }
             products.push(product);
         }
@@ -140,7 +148,7 @@ class InternalOrderService {
     async modifyInternalOrder(id, newState) {
         try{
             const internalOrder = await dao.getInternalOrderByID(id);
-            if (internalOrder === undefined) {
+            if (internalOrder === undefined || internalOrder.length === 0) {
                 throw EzWhException.NotFound;
             }
             await dao.modifyInternalOrderState(id, newState);
@@ -154,13 +162,18 @@ class InternalOrderService {
 
     async completeInternalOrder(id , products){
         try{
-            for (let product in products){
+            if (products === undefined || products.length === 0) throw EzWhException.EntryNotAllowed;
+            for (let product of products){
               //  await getSKUItemByRfid(product.RFID);
-                await dao.createInternalOrderSKUItem(id,product.SkuID, product.RFID)
+                if (product.SkuId === undefined || product.RFID === undefined ||
+                    !Number.isInteger(product.SkuId) || product.RFID.length !== 32) throw EzWhException.EntryNotAllowed;
             }
+            for (let product of products)
+                await dao.createInternalOrderSKUItem(id,product.SkuId, product.RFID)
         }
         catch(err){
-             throw EzWhException.InternalError;
+            if (err === EzWhException.EntryNotAllowed) throw  err;
+            throw EzWhException.InternalError;
 
         }
     }

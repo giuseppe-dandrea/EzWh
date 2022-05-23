@@ -78,7 +78,7 @@ class RestockOrderService {
 
     async createRestockOrder(issueDate, products, supplierID) {
         const supplier = await User_dao.getUserByID(supplierID);
-        if (supplier===undefined){
+        if (supplier===undefined || supplier.type !== "supplier"){
             console.log(`>>Supplier ${supplierID} not found!`);
             throw EzWhException.EntryNotAllowed;
         }
@@ -87,7 +87,8 @@ class RestockOrderService {
         for (let product of products) {
             if(product.SKUId===undefined || product.description===undefined||
                 product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId) ||
-                !Number.isInteger(product.qty) || typeof product.price !== "number" ) {
+                !Number.isInteger(product.qty) || product.qty < 0 || typeof product.price !== "number" ||
+                    product.price < 0 || product.SKUId < 0 || typeof product.description !== "string") {
                 await dao.deleteRestockOrder(restockOrderID);
                 throw EzWhException.EntryNotAllowed;
             }

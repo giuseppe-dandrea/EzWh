@@ -474,6 +474,7 @@ let expectedInternalOrders = [
 ];
 let internalOrderCompleted1 = {
     "issueDate": "2021/11/29 09:33",
+    "state": "COMPLETED",
     "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "RFID": "12345678901234567890123456789015" },
     { "SKUId": 1, "description": "first sku", "price": 10.99, "RFID": "12345678901234567890123456789016" },
     { "SKUId": 1, "description": "first sku", "price": 10.99, "RFID": "12345678901234567890123456789017" },
@@ -482,133 +483,9 @@ let internalOrderCompleted1 = {
     { "SKUId": 2, "description": "second sku", "price": 10.99, "RFID": "12345678901234567890123456789027" }],
     "customerId": 7
 }
-/*
-function prepare(){
-    //Deleting
-    deleteUser(204, customer1.username, customer1.type);
-    deleteUser(204, customer2.username, customer2.type);
-    deleteUser(204, supplier1.username, supplier1.type);
-    deleteSKUItem(204, SKUItem1.RFID);
-    deleteSKUItem(204, SKUItem2.RFID);
-    deleteSKUItem(204, SKUItem3.RFID);
-    deleteSKUItem(204, SKUItem4.RFID);
-    deleteSKUItem(204, SKUItem5.RFID);
-    deleteSKUItem(204, SKUItem6.RFID);
-    deleteSKUItem(204, SKUItem7.RFID);
-    deleteSKUItem(204, SKUItem8.RFID);
-    deleteSKUItem(204, SKUItem9.RFID);
-    deleteSKUItem(204, SKUItem10.RFID);
-    deleteSKUItem(204, SKUItem11.RFID);
-    deleteSKU(204, 1);
-    deleteSKU(204, 2);
-    deleteSKU(204, 3);
-
-    //Creating
-
-    newUser(201, customer1);
-    newUser(201, customer2);
-    newUser(201, supplier1);
-    newSKU(201, SKU1);
-    newSKU(201, SKU2);
-    newSKU(201, SKU3);
-    newSKUItem(201, SKUItem1);
-    newSKUItem(201, SKUItem2);
-    newSKUItem(201, SKUItem3);
-    newSKUItem(201, SKUItem4);
-    newSKUItem(201, SKUItem5);
-    newSKUItem(201, SKUItem6);
-    newSKUItem(201, SKUItem7);
-    newSKUItem(201, SKUItem8);
-    newSKUItem(201, SKUItem9);
-    newSKUItem(201, SKUItem10);
-    newSKUItem(201, SKUItem11);
-}
-
-describe("Testing POST APIs", function () {
-    prepare();
-
-    newInternalOrder(201, internalOrderIssued1);
-    newInternalOrder(201, internalOrderIssued2);
-    newInternalOrder(201, internalOrderIssued3);
-    getInternalOrdersByStatus(200, 3, expectedInternalOrders, "");
-    getInternalOrdersByStatus(200, 3, expectedInternalOrders, "Issued");
-    getInternalOrder(200, 1, { ...internalOrderIssued1, "state": states[0] });
-    getInternalOrder(200, 2, { ...internalOrderIssued1, "state": states[0] });
-    getInternalOrder(200, 3, { ...internalOrderIssued1, "state": states[0] });
-    deleteInternalOrder(204, 1);
-    getInternalOrdersByStatus(200, 2, [
-        { ...internalOrderIssued2, "state": states[0] },
-        { ...internalOrderIssued3, "state": states[0] }
-    ], "");
-    getInternalOrder(404, 1);
-    getInternalOrdersByStatus(200, 2, [
-        { ...internalOrderIssued2, "state": states[0] },
-        { ...internalOrderIssued3, "state": states[0] }
-    ], "Issued");
-
-    describe('testing put api internal order - successs', () => {
-        newInternalOrder(201, internalOrderIssued1);
-        newInternalOrder(201, internalOrderIssued2);
-        newInternalOrder(201, internalOrderIssued3);
-        modifyInternalOrder(200, 1, { "newState": states[1] });
-        modifyInternalOrder(200, 2, { "newState": states[1] });
-        getInternalOrdersByStatus(200, 2, [
-            { ...internalOrderIssued1, "state": states[1] },
-            { ...internalOrderIssued2, "state": states[1] }
-        ], "Accepted");
-        getInternalOrdersByStatus(200, 1, [
-            { ...internalOrderIssued3, "state": states[0] }
-        ], "Issued");
-        getInternalOrder(200, 1, { ...internalOrderIssued1, "state": states[1] });
-        getInternalOrdersByStatus(200, 3, [
-            { ...internalOrderIssued1, "state": states[1] },
-            { ...internalOrderIssued2, "state": states[1] },
-            { ...internalOrderIssued3, "state": states[0] }
-        ], "");
-        modifyInternalOrder(200, 1, {
-            "newState": states[4],
-            "products": [{
-                "RFID": "12345678901234567890123456789015",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789016",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789017",
-                "SkuId": 1
-            }, {
-                "RFID": "12345678901234567890123456789025",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789026",
-                "SkuId": 2
-            }, {
-                "RFID": "12345678901234567890123456789027",
-                "SkuId": 2
-            }]
-        });
-        getInternalOrder(200, 1, internalOrderCompleted1);
-        getInternalOrdersByStatus(200, 1, [
-            { ...internalOrderIssued2, "state": states[1] }
-        ], "Accepted");
-        getInternalOrdersByStatus(200, 1, [
-            { ...internalOrderIssued3, "state": states[0] }
-        ], "Issued");
-        getInternalOrdersByStatus(200, 3, [
-            internalOrderCompleted1,
-            { ...internalOrderIssued2, "state": states[1] },
-            { ...internalOrderIssued3, "state": states[0] }
-        ], "");
-        deleteInternalOrder(204, 1);
-        deleteInternalOrder(204, 2);
-        deleteInternalOrder(204, 3);
-    });
 
 
-})
-*/
-
-describe('API Test: InternalOrder', () => {
+function prepare() {
     describe('preparing environment', () => {
         newUser(201, customer1);
         newUser(201, customer2);
@@ -628,6 +505,105 @@ describe('API Test: InternalOrder', () => {
         newSKUItem(201, SKUItem10);
         newSKUItem(201, SKUItem11);
     });
+}
+
+function clean() {
+    describe('cleaning environment', () => {
+        deleteUser(204, customer1.username, customer1.type);
+        deleteUser(204, customer2.username, customer2.type);
+        deleteUser(204, supplier1.username, supplier1.type);
+        deleteSKUItem(204, SKUItem1.RFID);
+        deleteSKUItem(204, SKUItem2.RFID);
+        deleteSKUItem(204, SKUItem3.RFID);
+        deleteSKUItem(204, SKUItem4.RFID);
+        deleteSKUItem(204, SKUItem5.RFID);
+        deleteSKUItem(204, SKUItem6.RFID);
+        deleteSKUItem(204, SKUItem7.RFID);
+        deleteSKUItem(204, SKUItem8.RFID);
+        deleteSKUItem(204, SKUItem9.RFID);
+        deleteSKUItem(204, SKUItem10.RFID);
+        deleteSKUItem(204, SKUItem11.RFID);
+        deleteSKU(204, 1);
+        deleteSKU(204, 2);
+        deleteSKU(204, 3);
+    });
+}
+
+describe('API Test: InternalOrder', () => {
+    prepare();
+
+    describe("Testing POST APIs", function () {  //TIFA
+        newInternalOrder(201, internalOrderIssued1);
+        newInternalOrder(201, internalOrderIssued2);
+        newInternalOrder(201, internalOrderIssued3);
+        getInternalOrdersByStatus(200, 3, expectedInternalOrders, "");
+        getInternalOrdersByStatus(200, 3, expectedInternalOrders, "Issued");
+        getInternalOrder(200, 1, { ...internalOrderIssued1, "state": states[0] });
+        getInternalOrder(200, 2, { ...internalOrderIssued2, "state": states[0] });
+        getInternalOrder(200, 3, { ...internalOrderIssued3, "state": states[0] });
+        deleteInternalOrder(204, 1);
+        getInternalOrdersByStatus(200, 2, [
+            { ...internalOrderIssued2, "state": states[0] },
+            { ...internalOrderIssued3, "state": states[0] }
+        ], "");
+        getInternalOrder(404, 1);
+        getInternalOrdersByStatus(200, 2, [
+            { ...internalOrderIssued2, "state": states[0] },
+            { ...internalOrderIssued3, "state": states[0] }
+        ], "Issued");
+
+        describe('testing put api internal order - successs', () => {
+            modifyInternalOrder(200, 2, { "newState": states[1] });
+            getInternalOrdersByStatus(200, 1, [
+                { ...internalOrderIssued2, "state": states[1] },
+            ], "Accepted");
+            getInternalOrdersByStatus(200, 1, [
+                { ...internalOrderIssued3, "state": states[0] }
+            ], "Issued");
+            getInternalOrder(200, 2, { ...internalOrderIssued2, "state": states[1] });
+            getInternalOrdersByStatus(200, 2, [
+                { ...internalOrderIssued2, "state": states[1] },
+                { ...internalOrderIssued3, "state": states[0] }
+            ], "");
+            modifyInternalOrder(200, 2, {
+                "newState": states[4],
+                "products": [{
+                    "RFID": "12345678901234567890123456789015",
+                    "SkuId": 1
+                }, {
+                    "RFID": "12345678901234567890123456789016",
+                    "SkuId": 1
+                }, {
+                    "RFID": "12345678901234567890123456789017",
+                    "SkuId": 1
+                }, {
+                    "RFID": "12345678901234567890123456789025",
+                    "SkuId": 2
+                }, {
+                    "RFID": "12345678901234567890123456789026",
+                    "SkuId": 2
+                }, {
+                    "RFID": "12345678901234567890123456789027",
+                    "SkuId": 2
+                }]
+            });
+            getInternalOrder(200, 2, internalOrderCompleted1);
+            getInternalOrdersByStatus(200, 0, null, "Accepted");
+            getInternalOrdersByStatus(200, 1, [
+                { ...internalOrderIssued3, "state": states[0] }
+            ], "Issued");
+            getInternalOrdersByStatus(200, 2, [
+                internalOrderCompleted1,
+                { ...internalOrderIssued3, "state": states[0] }
+            ], "");
+            deleteInternalOrder(204, 1);
+            deleteInternalOrder(204, 2);
+            deleteInternalOrder(204, 3);
+        });
+    })
+
+    clean();
+    prepare();
     
     describe('testing create/get/delete internal orders - success', () => {
         newInternalOrder(201, internalOrderIssued1);
@@ -659,7 +635,7 @@ describe('API Test: InternalOrder', () => {
     
     describe('testing create/get/delete internal orders - failure', () => {
         newInternalOrder(422, internalOrderError1);
-        newInternalOrder(422, internalOrderError2);
+        newInternalOrder(503, internalOrderError2);
         newInternalOrder(422, internalOrderError3);
         newInternalOrder(422, internalOrderError4);
         newInternalOrder(422, internalOrderError5);
@@ -686,7 +662,7 @@ describe('API Test: InternalOrder', () => {
         deleteInternalOrder(422, true);
     });
 
-    /*
+
     describe('testing put api internal order - success', () => {
         newInternalOrder(201, internalOrderIssued1);
         newInternalOrder(201, internalOrderIssued2);
@@ -745,45 +721,9 @@ describe('API Test: InternalOrder', () => {
         deleteInternalOrder(204, 3);
     });
 
-    describe('cleaning environment', () => {
-        deleteUser(204, customer1.username, customer1.type);
-        deleteUser(204, customer2.username, customer2.type);
-        deleteUser(204, supplier1.username, supplier1.type);
-        deleteSKUItem(204, SKUItem1.RFID);
-        deleteSKUItem(204, SKUItem2.RFID);
-        deleteSKUItem(204, SKUItem3.RFID);
-        deleteSKUItem(204, SKUItem4.RFID);
-        deleteSKUItem(204, SKUItem5.RFID);
-        deleteSKUItem(204, SKUItem6.RFID);
-        deleteSKUItem(204, SKUItem7.RFID);
-        deleteSKUItem(204, SKUItem8.RFID);
-        deleteSKUItem(204, SKUItem9.RFID);
-        deleteSKUItem(204, SKUItem10.RFID);
-        deleteSKUItem(204, SKUItem11.RFID);
-        deleteSKU(204, 1);
-        deleteSKU(204, 2);
-        deleteSKU(204, 3);
-    });
+    clean();
 
-    describe('preparing environment', () => {
-        newUser(201, customer1);
-        newUser(201, customer2);
-        newUser(201, supplier1);
-        newSKU(201, SKU1);
-        newSKU(201, SKU2);
-        newSKU(201, SKU3);
-        newSKUItem(201, SKUItem1);
-        newSKUItem(201, SKUItem2);
-        newSKUItem(201, SKUItem3);
-        newSKUItem(201, SKUItem4);
-        newSKUItem(201, SKUItem5);
-        newSKUItem(201, SKUItem6);
-        newSKUItem(201, SKUItem7);
-        newSKUItem(201, SKUItem8);
-        newSKUItem(201, SKUItem9);
-        newSKUItem(201, SKUItem10);
-        newSKUItem(201, SKUItem11);
-    });
+    prepare();
 
     describe('testing put api internal order - failure 1', () => {
         newInternalOrder(201, internalOrderIssued1);
@@ -835,7 +775,7 @@ describe('API Test: InternalOrder', () => {
                 "SkuId": 2
             }]
         });
-        modifyInternalOrder(422, 2, {
+        modifyInternalOrder(503, 2, {
             "newState": states[4],
             "products": [{
                 "RFID": "12345678901234567890123456789015",
@@ -862,45 +802,9 @@ describe('API Test: InternalOrder', () => {
         deleteInternalOrder(204, 3);
     });
 
-    describe('cleaning environment', () => {
-        deleteUser(204, customer1.username, customer1.type);
-        deleteUser(204, customer2.username, customer2.type);
-        deleteUser(204, supplier1.username, supplier1.type);
-        deleteSKUItem(204, SKUItem1.RFID);
-        deleteSKUItem(204, SKUItem2.RFID);
-        deleteSKUItem(204, SKUItem3.RFID);
-        deleteSKUItem(204, SKUItem4.RFID);
-        deleteSKUItem(204, SKUItem5.RFID);
-        deleteSKUItem(204, SKUItem6.RFID);
-        deleteSKUItem(204, SKUItem7.RFID);
-        deleteSKUItem(204, SKUItem8.RFID);
-        deleteSKUItem(204, SKUItem9.RFID);
-        deleteSKUItem(204, SKUItem10.RFID);
-        deleteSKUItem(204, SKUItem11.RFID);
-        deleteSKU(204, 1);
-        deleteSKU(204, 2);
-        deleteSKU(204, 3);
-    });
+    clean();
 
-    describe('preparing environment', () => {
-        newUser(201, customer1);
-        newUser(201, customer2);
-        newUser(201, supplier1);
-        newSKU(201, SKU1);
-        newSKU(201, SKU2);
-        newSKU(201, SKU3);
-        newSKUItem(201, SKUItem1);
-        newSKUItem(201, SKUItem2);
-        newSKUItem(201, SKUItem3);
-        newSKUItem(201, SKUItem4);
-        newSKUItem(201, SKUItem5);
-        newSKUItem(201, SKUItem6);
-        newSKUItem(201, SKUItem7);
-        newSKUItem(201, SKUItem8);
-        newSKUItem(201, SKUItem9);
-        newSKUItem(201, SKUItem10);
-        newSKUItem(201, SKUItem11);
-    });
+    prepare();
 
     describe('testing put api internal order - failure 2', () => {
         newInternalOrder(201, internalOrderIssued1);
@@ -958,7 +862,7 @@ describe('API Test: InternalOrder', () => {
                 "SkuId": 2
             }]
         });
-        modifyInternalOrder(422, 1, {
+        modifyInternalOrder(503, 1, {
             "newState": states[4],
             "products": [{
                 "RFID": "12345678901234567890123456789025",
@@ -1116,25 +1020,6 @@ describe('API Test: InternalOrder', () => {
         deleteInternalOrder(204, 2);
         deleteInternalOrder(204, 3);
     });
-    */
-    describe('cleaning environment', () => {
-        deleteUser(204, customer1.username, customer1.type);
-        deleteUser(204, customer2.username, customer2.type);
-        deleteUser(204, supplier1.username, supplier1.type);
-        deleteSKUItem(204, SKUItem1.RFID);
-        deleteSKUItem(204, SKUItem2.RFID);
-        deleteSKUItem(204, SKUItem3.RFID);
-        deleteSKUItem(204, SKUItem4.RFID);
-        deleteSKUItem(204, SKUItem5.RFID);
-        deleteSKUItem(204, SKUItem6.RFID);
-        deleteSKUItem(204, SKUItem7.RFID);
-        deleteSKUItem(204, SKUItem8.RFID);
-        deleteSKUItem(204, SKUItem9.RFID);
-        deleteSKUItem(204, SKUItem10.RFID);
-        deleteSKUItem(204, SKUItem11.RFID);
-        deleteSKU(204, 1);
-        deleteSKU(204, 2);
-        deleteSKU(204, 3);
-    });
-    
+
+    clean();
 });

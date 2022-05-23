@@ -7,6 +7,8 @@ const EzWhException = require("../modules/EzWhException");
 
 const router = express.Router();
 
+const states = ["ISSUED", "ACCEPTED", "REFUSED", "CANCELED", "COMPLETED"];
+
 router.post("/internalOrders",
   body("issueDate").exists(),
   body("products").isArray(),
@@ -100,7 +102,7 @@ router.get("/internalOrders/:id", param("id").isInt({ min: 1 }), async (req, res
 
 router.put("/internalOrders/:id",
   param("id").isInt({min:1}),
-  body("newState").isString(),
+  body("newState").isIn(states),
   body("products").optional().isArray(),
   async (req, res) => {
       const validationErrors = validationResult(req);
@@ -126,8 +128,11 @@ router.put("/internalOrders/:id",
       if  (err === EzWhException.NotFound) {
           return res.status(404).end();
       }
+      else if (err === EzWhException.EntryNotAllowed) {
+          return res.status(422).end();
+      }
       else
-          return res.status(500).end();
+          return res.status(503).end();
   }
 });
 
@@ -136,6 +141,10 @@ router.delete(
   param("ID").isInt({ min: 1 }),
   async (req, res) => {
     try {
+      const validationErrors = validationResult(req);
+      if (!validationErrors.isEmpty()) {
+          return res.status(422).end();
+      }
       await internalOrderService.deleteInternalOrder(req.params.ID);
       return res.status(204).end();
     } catch (err) {
