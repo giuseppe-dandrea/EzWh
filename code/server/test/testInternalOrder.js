@@ -48,13 +48,6 @@ function modifyInternalOrder(expectedHTTPStatus, id, modifications) {
                     res.should.have.status(expectedHTTPStatus);
                     done();
                 });
-        } else {
-            agent.put(`/api/internalOrders/${id}`)
-                .end(function (err, res) {
-                    if (err) done(err);
-                    res.should.have.status(expectedHTTPStatus);
-                    done();
-                });
         }
     });
 }
@@ -520,8 +513,28 @@ function prepare(){
 }
 
 describe("Testing POST APIs", function(){
-    prepare();
-    //Correct Posts
+        prepare();
+        //Correct Posts
+        newInternalOrder(201, internalOrderIssued1);
+        newInternalOrder(201, internalOrderIssued2);
+        newInternalOrder(201, internalOrderIssued3);
+        getInternalOrdersByStatus(200, 3, expectedInternalOrders, "");
+        getInternalOrdersByStatus(200, 3, expectedInternalOrders, "Issued");
+        getInternalOrder(200, 1, { ...internalOrderIssued1, "state": states[0] });
+        getInternalOrder(200, 2, { ...internalOrderIssued1, "state": states[0] });
+        getInternalOrder(200, 3, { ...internalOrderIssued1, "state": states[0] });
+        deleteInternalOrder(204, 1);
+        getInternalOrdersByStatus(200, 2, [
+            { ...internalOrderIssued2, "state": states[0] },
+            { ...internalOrderIssued3, "state": states[0] }
+        ], "");
+        getInternalOrder(404, 1);
+        getInternalOrdersByStatus(200, 2, [
+            { ...internalOrderIssued2, "state": states[0] },
+            { ...internalOrderIssued3, "state": states[0] }
+        ], "Issued");
+
+    describe('testing put api internal order - successs', () => {
         newInternalOrder(201, internalOrderIssued1);
         newInternalOrder(201, internalOrderIssued2);
         newInternalOrder(201, internalOrderIssued3);
@@ -562,6 +575,23 @@ describe("Testing POST APIs", function(){
                 "SkuId": 2
             }]
         });
+        getInternalOrder(200, 1, internalOrderCompleted1);
+        getInternalOrdersByStatus(200, 1, [
+            { ...internalOrderIssued2, "state": states[1] }
+        ], "Accepted");
+        getInternalOrdersByStatus(200, 1, [
+            { ...internalOrderIssued3, "state": states[0] }
+        ], "Issued");
+        getInternalOrdersByStatus(200, 3, [
+            internalOrderCompleted1,
+            { ...internalOrderIssued2, "state": states[1] },
+            { ...internalOrderIssued3, "state": states[0] }
+        ], "");
+        deleteInternalOrder(204, 1);
+        deleteInternalOrder(204, 2);
+        deleteInternalOrder(204, 3);
+    });
+
 
 })
 

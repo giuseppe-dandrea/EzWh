@@ -29,8 +29,14 @@ router.post("/internalOrders",
 router.get("/internalOrders",
   async (req, res) => {
     try{
-      const internalOrders = await internalOrderService.getInternalOrders();
-      return res.status(200).json(internalOrders);
+      const internalOrders = await internalOrderService.getAllInternalOrders();
+      return res.status(200).json(internalOrders.map((io) => {return {
+          id: io.id,
+          issueDate: io.issueDate,
+          state: io.state,
+          products: io.products,
+          customerId: io.customerId,
+      }}));
     } catch (err) {
       console.log(err);
       return res.status(500).end();
@@ -41,7 +47,13 @@ router.get("/internalOrdersIssued",
   async (req, res) => {
     try{
       const internalOrders = await internalOrderService.getInternalOrdersIssued();
-      return res.status(200).json(internalOrders);
+      return res.status(200).json(internalOrders.map((io) => {return {
+          id: io.id,
+          issueDate: io.issueDate,
+          state: io.state,
+          products: io.products,
+          customerId: io.customerId,
+      }}));
     } catch (err) {
       console.log(err);
       return res.status(500).end();
@@ -52,23 +64,36 @@ router.get("/internalOrdersAccepted",
   async (req, res) => {
     try{
       const internalOrders = await internalOrderService.getInternalOrdersAccepted();
-      return res.status(200).json(internalOrders);
+      return res.status(200).json(internalOrders.map((io) => {return {
+          id: io.id,
+          issueDate: io.issueDate,
+          state: io.state,
+          products: io.products,
+          customerId: io.customerId,
+      }}));
     } catch (err) {
       console.log(err);
       return res.status(500).end();
     }
 });
 
-router.get("/internalOrders/:ID", param("ID").isInt({ min: 1 }), async (req, res) => {
-  try {
-    const internalOrder = await internalOrderService.getInternalOrderByID(req.params.ID);
-    if (internalOrder===undefined)
-      return res.status(404).end();
-    else
-      return res.status(200).json(internalOrder);
+router.get("/internalOrders/:id", param("id").isInt({ min: 1 }), async (req, res) => {
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+        return res.status(422).end();
+    }
+    try {
+    const io = await internalOrderService.getInternalOrderByID(req.params.id);
+      return res.status(200).json({
+          id: io.id,
+          issueDate: io.issueDate,
+          state: io.state,
+          products: io.products,
+          customerId:io.customerId
+      });
   } catch (err) {
-    console.log(err);
-    return res.status(500).end();
+    if(err === EzWhException.NotFound) return res.status(404).end();
+    else return res.status(500).end();
   }
 });
 
@@ -88,7 +113,7 @@ router.put("/internalOrders/:id",
       }
       else if(req.body.newState === "COMPLETED"){
           await internalOrderService.modifyInternalOrder(req.params.id, req.body.newState);
-          await internalOrderService.completeInternalOrder(req.params.id, req.body.newState, req.body.products);
+          await internalOrderService.completeInternalOrder(req.params.id, req.body.products);
           return res.status(200).end();
       }
     // const internalOrder = await internalOrderService.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);

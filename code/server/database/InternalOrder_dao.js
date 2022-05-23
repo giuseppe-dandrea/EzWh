@@ -1,4 +1,6 @@
 const InternalOrder = require("../modules/InternalOrder");
+const {db: dbConnection} = require("./DatabaseConnection");
+
 
 exports.createInternalOrderProduct = (internalOrderID, SKUID,description,price, QTY) => {
     return new Promise((resolve, reject) => {
@@ -34,10 +36,8 @@ exports.createInternalOrder = (issueDate, customerID) => {
 exports.getInternalOrders = (state) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        let sql = `SELECT * FROM InternalOrder`;
-        if (state) sql += ` where State = '${state}'`;
-        sql += `;`;
-        dbConnection.all(sql, function (err, rows) {
+        let sql = `SELECT * FROM InternalOrder  WHERE State = ?;`;
+        dbConnection.all(sql,[state], function (err, rows) {
             if (err) {
                 reject(err);
             } else {
@@ -55,26 +55,19 @@ exports.getInternalOrders = (state) => {
     });
 }
 
+
 exports.getInternalOrderByID = (id) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `SELECT * FROM InternalOrder where InternalOrderID=?;`;
-        dbConnection.get(sql,[id], function (err, row) {
+        dbConnection.all(sql,[id], function (err, rows) {
             if (err) {
                 reject(err.toString());
-            } else {
-                if (row === undefined) {
-                    resolve(undefined);
-                } else {
-                    let IO = new InternalOrder(
-                        row.InternalOrderID,
-                        row.IssueDate,
-                        row.State,
-                        row.CustomerID
-                    )
-                    resolve(IO);
-                }
+                return;
             }
+            const IO = rows.map((r) => new InternalOrder(r.InternalOrderID,
+                    r.IssueDate, r.State, r.CustomerID));
+            resolve(IO);
         });
     });
 }
@@ -82,7 +75,7 @@ exports.getInternalOrderByID = (id) => {
 exports.getInternalOrderProductByInternalOrderID = (ID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `SELECT * FROM InternalOrderProduct where InternalOrderID=?};`;
+        const sql = `SELECT * FROM InternalOrderProduct where InternalOrderID=?;`;
         dbConnection.all(sql, [ID],function (err, rows) {
             if (err) {
                 reject(err.toString());
@@ -109,7 +102,7 @@ exports.getInternalOrderSKUItemByInternalOrderID = (ID) => {
 
 // deleteInternalOrderSKUItemByInternalOrderID(ID){
 //   return new Promise((resolve, reject) => {
-const dbConnection = require("./DatabaseConnection").db;
+//const dbConnection = require("./DatabaseConnection").db;
 //     const sql = `DELETE FROM InternalOrderSKUItem where InternalOrderID=${ID};`;
 //     dbConnection.run(sql, function (err){
 //       if (err) {
