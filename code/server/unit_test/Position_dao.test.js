@@ -106,7 +106,21 @@ function testModifyPosition( oldID, newPositionID, newAisleID, newRow, newCol, n
     test('Modifying Position Data', async() => {
         let supposedPosition = new Position(newPositionID,newAisleID,newRow,newCol,newMaxWeight,newMaxVolume,newOccupiedWeight,newOccupiedVolume);
         await positionsDAO.modifyPosition(oldID,newPositionID,newAisleID,newRow,newCol,newMaxWeight,newMaxVolume,newOccupiedWeight,newOccupiedVolume);
-        let res = await positionsDAO.getPositions();
+        let res = await positionsDAO.getPositionByID(newPositionID);
+        let modifiedPosition=res[0];
+        res.length.should.be.equal(1);
+        comparePosition(supposedPosition, modifiedPosition).should.be.true;
+
+    })
+}
+function testModifyPositionID(oldID, newPositionID, newAisleID, newRow, newCol){
+    test('Modifying Position ID', async() => {
+        let ret = await positionsDAO.getPositionByID(oldID);
+        let beforePosition=ret[0];
+        let supposedPosition= {positionID : newPositionID , aisleID : newAisleID, row:newRow , col:newCol , maxWeight:beforePosition.maxWeight ,
+            maxVolume:beforePosition.maxVolume , occupiedWeight:beforePosition.occupiedWeight , occupiedVolume: beforePosition.occupiedVolume, }
+        await positionsDAO.modifyPositionID(oldID, newPositionID, newAisleID, newRow, newCol);
+        let res = await positionsDAO.getPositionByID(newPositionID);
         let modifiedPosition=res[0];
         res.length.should.be.equal(1);
         comparePosition(supposedPosition, modifiedPosition).should.be.true;
@@ -157,14 +171,26 @@ describe('Test Position DAO', () => {
         })
     })
 
-    describe('Test POSTs', ()=>{
+    describe('Test PUTs', ()=>{
         beforeAll(async () => {
             await dbConnection.createConnection();
+            await positionsDAO.createPosition(postPositions[0]);
 
         })
-        testCreatePosition(postPositions[0]);
+       testModifyPosition(postPositions[0].positionID,"989876765454","9898","7676","5454",1516,1210,222,333);
         afterAll(async ()=>{
             await positionsDAO.deleteAllPositions();
+        })
+    })
+    describe('Test PUTs', ()=>{
+        beforeAll(async () => {
+            await dbConnection.createConnection();
+            await positionsDAO.createPosition(postPositions[0]);
+
+        })
+       testModifyPositionID(postPositions[0].positionID,"989876765454","9898","7676","5454" );
+        afterAll(async ()=>{
+            await positionsDAO.deletePosition("989876765454");
         })
     })
 

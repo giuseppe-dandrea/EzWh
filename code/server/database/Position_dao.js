@@ -87,7 +87,6 @@ exports.modifyPosition = (
     WHERE PositionID = ${oldID};`;
         dbConnection.run(sql, [], (err) => {
             if (err) {
-                console.error(err);
                 reject(err);
             } else resolve();
         });
@@ -100,7 +99,6 @@ exports.modifySKUPosition = (positionId, newOccupiedWeight, newOccupiedVolume, S
         const sql = `UPDATE Position SET OccupiedWeight =${newOccupiedWeight} , OccupiedVolume =${newOccupiedVolume} , SKUID =${SKUId} WHERE PositionID = ${positionId};`;
         dbConnection.run(sql, [], (err) => {
             if (err) {
-                console.error(err);
                 reject(err);
             } else resolve();
         });
@@ -113,7 +111,6 @@ exports.modifyPositionID = (oldID, newPositionID, newAisleID, newRow, newCol) =>
         const sql = `UPDATE Position SET PositionID =${newPositionID} , AisleID = ${newAisleID}, Row =${newRow} , Col =${newCol} WHERE PositionID = ${oldID};`;
         dbConnection.run(sql, [], (err) => {
             if (err) {
-                console.error(err);
                 reject(err);
             } else resolve();
         });
