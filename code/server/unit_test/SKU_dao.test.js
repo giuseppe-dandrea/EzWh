@@ -54,7 +54,7 @@ function compareTestDescriptor(actualTD, expectedTD) {
 
 describe('Test SKU DAO', () => {
     beforeAll(async () => {
-        await dbConnection.getInstance();
+        await dbConnection.createConnection();
         await skuDAO.createSKU("a new sku", 100, 50, "first SKU", 10.99, 50);
     })
     testGetSKUs([new SKU(1, "a new sku", 100, 50, "first SKU", 10.99, 50)]);

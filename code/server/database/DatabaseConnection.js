@@ -5,18 +5,13 @@ const userService = new UserService();
 class DatabaseConnection {
     static db = null;
 
-    static async getInstance() {
+    static async createConnection() {
         if (this.db===null){
             this.db = new sqlite3.Database("./database/ezwh.db", (err) => err && console.log(err));
+            await this.createTables();
+            await this.createHardcodedUsers()
             await this.runSQL(`PRAGMA foreign_keys=on;`);
         }
-        return this.db;
-    }
-
-    static async initiateDB(){
-            await this.createTables();
-            await this.createHardcodedUsers();
-            return;
     }
 
     static async createTables() {

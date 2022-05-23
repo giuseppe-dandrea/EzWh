@@ -1,7 +1,10 @@
 (async ()=>{
     const dbConnection = require("./database/DatabaseConnection");
-    await dbConnection.getInstance();
-    await dbConnection.initiateDB();
+    await dbConnection.createConnection();
     let connectionTest = dbConnection.db;
-    console.log("DB INITIALIZED AND CHECKED !");
+    if (connectionTest !== null)
+        console.log("DB INITIALIZED AND CHECKED !");
+    else {
+        console.log("Problems initializing db");
+    }
 })();

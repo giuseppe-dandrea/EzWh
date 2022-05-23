@@ -8,7 +8,7 @@ const app = new express();
 const port = 3001;
 
 const dbConnection = require("./database/DatabaseConnection");
-dbConnection.getInstance();
+dbConnection.createConnection();
 
 const SKU_router = require("./routers/SKU_router");
 const SKUItem_router = require("./routers/SKUItem_router");
