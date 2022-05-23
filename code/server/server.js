@@ -7,7 +7,9 @@ const express = require("express");
 const app = new express();
 const port = 3001;
 
-  // console.log("Starting server...");
+const dbConnection = require("./database/DatabaseConnection");
+dbConnection.getInstance();
+
 const SKU_router = require("./routers/SKU_router");
 const SKUItem_router = require("./routers/SKUItem_router");
 const Position_router = require("./routers/Position_router");
