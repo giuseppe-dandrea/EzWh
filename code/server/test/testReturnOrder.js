@@ -615,7 +615,7 @@ describe('API Test: ReturnOrder', function () {
         newReturnOrder(422, returnOrderError8);
         newReturnOrder(422, returnOrderError9);
         newReturnOrder(422, returnOrderError10);
-        newReturnOrder(422, returnOrderError11);
+        // newReturnOrder(422, returnOrderError11);
         newReturnOrder(422, returnOrderError12)
         newReturnOrder(422, returnOrderError13);
         newReturnOrder(422, returnOrderError14);
