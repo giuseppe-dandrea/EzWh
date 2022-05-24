@@ -193,8 +193,7 @@ describe('Test SKUItems DAO', () => {
         afterAll(async ()=>{
             await skuitemDAO.deleteSKUItem(postSKUItems[0].RFID);
             await skuitemDAO.deleteAllSKUItems();
-            await skuDAO.deleteSKU(1);
-            await skuDAO.deleteSKU(2);
+            await skuDAO.deleteAllSKUs();
         })
     })
 

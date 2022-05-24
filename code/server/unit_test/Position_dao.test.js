@@ -160,9 +160,13 @@ function comparePosition(actualPosition, expectedPosition) {
 
 
 describe('Test Position DAO', () => {
+    beforeAll(async()=> {
+        await dbConnection.createConnection();
+        await skuDAO.createSKU("Test SKU for Position", 10, 10, "No notes", 10.21,3);
+    })
     describe('Test GETs', ()=>{
         beforeAll(async () => {
-            await dbConnection.createConnection();
+
             await positionsDAO.createPosition(postPositions[0]);
             await positionsDAO.createPosition(postPositions[1]);
             await positionsDAO.createPosition(postPositions[2]);
@@ -208,17 +212,17 @@ describe('Test Position DAO', () => {
     describe('Test PUTs', ()=>{
         beforeAll(async () => {
             await positionsDAO.createPosition(postPositions[0]);
-            await skuDAO.createSKU("Test SKU for Position", 10, 10, "No notes", 10.21,3);
-
         })
         testModifySKUPosition(postPositions[0].positionID ,30 , 30, 1);
         afterAll(async ()=>{
             await positionsDAO.deleteAllPositions();
-            await skuDAO.deleteSKU(1);
+
         })
     })
-
-
+    afterAll(async ()=> {
+        await positionsDAO.deleteAllPositions();
+        await skuDAO.deleteAllSKUs();
+    })
 })
 
 

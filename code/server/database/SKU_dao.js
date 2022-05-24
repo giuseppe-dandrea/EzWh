@@ -1,5 +1,6 @@
 const SKU = require("../modules/SKU");
 const TestDescriptor = require("../modules/TestDescriptor");
+const {db: dbConnection} = require("./DatabaseConnection");
 
 exports.getSKUs = () => {
     return new Promise((resolve, reject) => {
@@ -120,4 +121,16 @@ exports.deleteSKU = (id) => {
             else resolve();
         });
     });
+}
+//USED ONLY FOR TESTING
+exports.deleteAllSKUs = () => {
+    return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
+        const sql = `DELETE FROM SKU `;
+        dbConnection.run(sql, [], (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+
 }
