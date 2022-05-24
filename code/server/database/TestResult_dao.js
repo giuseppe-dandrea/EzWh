@@ -38,13 +38,13 @@ exports.addTestResult = (RFID, idTestDescriptor, date, result) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `INSERT INTO TestResult (RFID, TestDescriptorID, Date, Result)
       VALUES (?, ?, ?, ?)`;
-        dbConnection.run(sql, [RFID, idTestDescriptor, date, result], (err) => {
+        dbConnection.run(sql, [RFID, idTestDescriptor, date, result], function (err) {
             if (err) {
                 console.log("Error in DB");
                 console.log(err);
                 reject(err);
             }
-            resolve();
+            resolve(this.lastID);
         });
     });
 }
@@ -64,9 +64,9 @@ exports.modifyTestResult = (testResult) => {
                     console.log(err);
                     reject(err);
                 }
+            resolve();
             }
         );
-        resolve();
     });
 }
 
