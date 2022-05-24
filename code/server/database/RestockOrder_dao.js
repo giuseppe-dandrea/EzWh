@@ -30,9 +30,7 @@ exports.getRestockOrderByID = (id) => {
             if (err) {
                 reject(err);
             } else {
-                if (row === undefined) {
-                    resolve(undefined);
-                } else {
+                if (row) {
                     const tds = new RestockOrder(
                         row.RestockOrderID,
                         row.IssueDate,
@@ -41,6 +39,9 @@ exports.getRestockOrderByID = (id) => {
                         row.TransportNote
                     );
                     resolve(tds);
+                }
+                else{
+                    resolve(undefined);
                 }
             }
         });
@@ -95,7 +96,7 @@ exports.getRestockOrderReturnItems = (ID) => {
           s.RFID = rop.RFID and
           s.RFID = t.RFID and
           ro.RestockOrderID=${ID} and
-          t.Result = 'false'
+          t.Result = false
           group by s.RFID
           having count(*)>0;`;
                 dbConnection.all(sql, function (err, rows) {
