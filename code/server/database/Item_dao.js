@@ -6,9 +6,7 @@ exports.getItems = () => {
         const sql = "SELECT * FROM Item;";
         dbConnection.all(sql, [], (err, rows) => {
             if (err) {
-                reject(err);
-                return;
-            }
+                reject(err);}
             const tds = rows.map((r) => new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID));
             resolve(tds);
         });
@@ -21,7 +19,6 @@ exports.getItemByID = (id) => {
         dbConnection.all(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
-                return;
             }
             const i = rows.map((r) => new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID));
             resolve(i);
@@ -31,7 +28,7 @@ exports.getItemByID = (id) => {
 exports.getItemBySKUIDAndSupplierID = (SKUID, supplierID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `select ItemID from Item
+        const sql = `select * from Item
       where SKUID=${SKUID} and
       SupplierID=${supplierID}`;
         dbConnection.get(sql, function (err, row) {
@@ -89,4 +86,16 @@ exports.deleteItem = (id) => {
             else resolve();
         });
     });
+}
+//USED ONLY FOR TESTING
+exports.deleteAllItems = () => {
+    return new Promise((resolve, reject) => {
+        const dbConnection = require("./DatabaseConnection").db;
+        const sql = `DELETE FROM Item `;
+        dbConnection.run(sql, [], (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+
 }
