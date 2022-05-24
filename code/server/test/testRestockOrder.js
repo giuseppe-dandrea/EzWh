@@ -600,7 +600,7 @@ let skuItemsError4 = [{ "SKUId": 1, "rfid": 1234567890123456789 }, { "SKUId": 1,
 let skuItemsError5 = [{ "SKUId": 5, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];
 let skuItemsError6 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789030" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];
 
-describe('API Test: RestockOrder', function () {
+describe('TEST RestockOrder API', function () {
     describe('preparing environment', () => {
         newUser(201, supplier1);
         newUser(201, supplier2);

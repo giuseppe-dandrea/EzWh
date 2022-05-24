@@ -529,7 +529,7 @@ function clean() {
     });
 }
 
-describe('API Test: InternalOrder', () => {
+describe('TEST InternalOrder API', () => {
     prepare();
 
     describe("Testing POST APIs", function () {  //TIFA

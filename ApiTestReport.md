@@ -21,7 +21,110 @@ Version:
 
 # Dependency graph 
 
-     <report the here the dependency graph of the classes in EzWH, using plantuml or other tool>
+```plantuml
+
+class server
+
+package routers {
+    class InternalOrder_router
+    class Item_router
+    class Position_router
+    class RestockOrder_router
+    class ReturnOrder_router
+    class SKU_router
+    class SKUItem_router
+    class TestDescriptor_router
+    class TestResult_router
+    class User_router
+}
+
+package services {
+    class InternalOrder_service
+    class Item_service
+    class Position_service
+    class RestockOrder_service
+    class ReturnOrder_service
+    class SKU_service
+    class SKUItem_service
+    class TestDescriptor_service
+    class TestResult_service
+    class User_service
+}
+
+package dao {
+    class InternalOrder_dao
+    class Item_dao
+    class Position_dao
+    class RestockOrder_dao
+    class ReturnOrder_dao
+    class SKU_dao
+    class SKUItem_dao
+    class TestDescriptor_dao
+    class TestResult_dao
+    class User_dao
+}
+
+class DatabaseConnection
+
+server <-- InternalOrder_router
+server <-- Item_router
+server <-- Position_router
+server <-- RestockOrder_router
+server <-- ReturnOrder_router
+server <-- SKU_router
+server <-- SKUItem_router
+server <-- TestDescriptor_router
+server <-- TestResult_router
+server <-- User_router
+
+InternalOrder_router <-- InternalOrder_service
+Item_router <-- Item_service
+Position_router <-- Position_service
+RestockOrder_router <-- RestockOrder_service
+ReturnOrder_router <-- ReturnOrder_service
+SKU_router <-- SKU_service
+SKUItem_router <-- SKUItem_service
+TestDescriptor_router <-- TestDescriptor_service
+TestResult_router <-- TestResult_service
+User_router <-- User_service
+
+InternalOrder_service <-- InternalOrder_dao
+InternalOrder_service <-- SKU_dao
+InternalOrder_service <-- SKUItem_dao
+InternalOrder_service <-- User_dao
+Item_service <-- Item_dao
+Item_service <-- SKU_dao
+Item_service <-- User_dao
+Position_service <-- Position_dao
+RestockOrder_service <-- RestockOrder_dao
+RestockOrder_service <-- Item_dao
+RestockOrder_service <-- SKUItem_dao
+ReturnOrder_service <-- ReturnOrder_dao
+ReturnOrder_service <-- RestockOrder_dao
+ReturnOrder_service <-- SKU_dao
+ReturnOrder_service <-- SKUItem_dao
+SKU_service <-- SKU_dao
+SKU_service <-- Position_dao
+SKUItem_service <-- SKUItem_dao
+SKUItem_service <-- SKU_dao
+TestDescriptor_service <-- TestDescriptor_dao
+TestDescriptor_service <-- SKU_dao
+TestResult_service <-- TestResult_dao
+TestResult_service <-- TestDescriptor_dao
+TestResult_service <-- SKUItem_dao
+User_service <-- User_dao
+
+InternalOrder_dao <-- DatabaseConnection
+Item_dao <-- DatabaseConnection
+Position_dao <-- DatabaseConnection
+RestockOrder_dao <-- DatabaseConnection
+ReturnOrder_dao <-- DatabaseConnection
+SKU_dao <-- DatabaseConnection
+SKUItem_dao <-- DatabaseConnection
+TestDescriptor_dao <-- DatabaseConnection
+TestResult_dao <-- DatabaseConnection
+User_dao <-- DatabaseConnection
+```
      
 # Integration approach
 
@@ -80,21 +183,18 @@ Version:
 # Coverage of Scenarios and FR
 
 
-<Report in the following table the coverage of  scenarios (from official requirements and from above) vs FR. 
-Report also for each of the scenarios the (one or more) API Mocha tests that cover it. >  Mocha test cases should be here code/server/test
-
-
-
-
-| Scenario ID | Functional Requirements covered | Mocha  Test(s) | 
-| ----------- | ------------------------------- | ----------- | 
-|  ..         | FRx                             |             |             
-|  ..         | FRy                             |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-
+| Scenario ID       | Functional Requirements covered | Mocha  Test(s)                                     |
+|-------------------|---------------------------------|----------------------------------------------------| 
+| UC1               | FR2                             | "TEST SKU API" in testSKU.js                       |             
+| UC2               | FR3.1                           | "TEST Position API" in testPosition.js             |             
+| UC3, UC5.1, UC5.3 | FR5.1-5.8                       | "TEST RestockOrder API" in testRestockOrder.js     |   
+| UC4, UC7          | FR1                             | "TEST User API" in testUser.js                     |             
+| UC5.2             | FR5.8.2                         | "Add test results" in testTestResult.js            |
+| UC5.3             | FR5.8                           | "TEST SKUItem API" in testSKUItem.js               |
+| UC6               | FR5.9-5.12                      | "TEST ReturnOrder API" in testReturnOrder.js       |
+| UC9, UC10         | FR6                             | "TEST InternalOrder API" in testInternalOrder.js   |
+| UC11              | FR7                             | "TEST Item API" in testItem.js                     |
+| UC12              | FR3.2                           | "Test TestDescriptor API" in testTestDescriptor.js |
 
 
 # Coverage of Non Functional Requirements
@@ -105,7 +205,8 @@ Report also for each of the scenarios the (one or more) API Mocha tests that cov
 
 ### 
 
-| Non Functional Requirement | Test name |
-| -------------------------- | --------- |
-|                            |           |
-
+| Non Functional Requirement | Test name                              |
+|----------------------------|----------------------------------------|
+| NFR4                       | "TEST Position API" in testPosition.js |
+| NFR6                       | "TEST SKUItem API" in testSKUItem.js   |
+| NFR9                       | "TEST SKUItem API" in testSKUItem.js   |
