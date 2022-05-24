@@ -162,7 +162,7 @@ function comparePosition(actualPos, expectedPos) {
         actualPos.maxWeight === expectedPos.maxWeight &&
         actualPos.maxVolume === expectedPos.maxVolume &&
         actualPos.occupiedWeight === expectedPos.occupiedWeight;
-        //&& actualPos.sku === expectedPos.sku;
+    //&& actualPos.sku === expectedPos.sku;
 }
 
 let td1 = new TestDescriptor(1, "test descriptor 1", "This test is described by...", 1);
@@ -180,7 +180,7 @@ let newPos1_1 = new Position("800234543412", "8002", "3454", "3412", 5000, 5000,
 let SKU1Pos = new SKU(newSKU1.id, newSKU1.description, newSKU1.weight, newSKU1.volume,
     newSKU1.notes, newSKU1.price, newSKU1.availableQuantity, pos1.positionID, newPos1, [td1, td2]);
 let newSKU1Pos = new SKU(newSKU1.id, newSKU1.description, 20, 30,
-        newSKU1.notes, newSKU1.price, 40, pos1.positionID, newPos1_1, [td1, td2]);
+    newSKU1.notes, newSKU1.price, 40, pos1.positionID, newPos1_1, [td1, td2]);
 
 describe('Test SKU Service', () => {
     beforeAll(async () => {
@@ -196,9 +196,9 @@ describe('Test SKU Service', () => {
             await posDAO.createPosition(pos1);
             await posDAO.createPosition(pos2);
             await tdDAO.createTestDescriptor(td1.name,
-                 td1.procedureDescription,td1.idSKU);
-                 await tdDAO.createTestDescriptor(td2.name,
-                    td2.procedureDescription,td2.idSKU);
+                td1.procedureDescription, td1.idSKU);
+            await tdDAO.createTestDescriptor(td2.name,
+                td2.procedureDescription, td2.idSKU);
         });
     });
     describe("test modify sku", () => {
@@ -208,7 +208,7 @@ describe('Test SKU Service', () => {
         testAddSKUPosition(SKU1Pos);
         testModifySKU(newSKU1Pos);
     });
-    
+
     describe('test sku errors', () => {
         testModifySKUError(SKUError1, EzWhException.NotFound);
         testModifySKUError(SKUError2, EzWhException.InternalError);
@@ -219,7 +219,7 @@ describe('Test SKU Service', () => {
         testAddSKUPositionError(2, pos2.positionID, EzWhException.PositionFull);
         testModifySKUError(newSKU1Err, EzWhException.PositionFull);
     })
-    
+
     describe('test delete sku', () => {
         testGetSKUById(1, newSKU1Pos);
         testGetSKUById(2, SKU2);
@@ -227,8 +227,8 @@ describe('Test SKU Service', () => {
         testDeleteSKU(2);
         testGetSKUs([]);
         afterAll(async () => {
-            posDAO.deletePosition(pos1.positionID);
-            posDAO.deletePosition(pos2.positionID);
+            await posDAO.deletePosition(pos1.positionID);
+            await posDAO.deletePosition(pos2.positionID);
         });
     });
     

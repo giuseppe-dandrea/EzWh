@@ -378,6 +378,7 @@ describe("TEST SKU API", function () {
     testDeleteSKU(204,1);
     testDeleteSKU(204,2);
     testDeleteSKU(204,3);
+    DeleteAllPositions(204);
   });
 })
 
