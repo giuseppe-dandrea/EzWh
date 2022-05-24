@@ -24,13 +24,26 @@ const testDescriptorsToModify = [
     new TestDescriptor(3, "ModifiedTest3", "modifiedtest3description", 3),
 ]
 
+const errorCreateTestDescriptor = new TestDescriptor(4, "WrongTest4", "wrongtest4description", 50);
+
+const errorModifyTestDescriptor = new TestDescriptor(3, "WrongTest4", "wrongtest4description", 50);
+
 function compareTestDescriptor(expected, actual) {
     return expected.name === actual.name && expected.procedureDescription === actual.procedureDescription && expected.idSKU === actual.idSKU;
 }
 
-function testCreateTestDescriptor(testDescriptor) {
-    test(`Create testDescriptor ${testDescriptor.id}`, async function () {
-        const id = await TestDescriptorDAO.createTestDescriptor(testDescriptor.name, testDescriptor.procedureDescription, testDescriptor.idSKU);
+function testCreateTestDescriptor(testDescriptor, expectedError) {
+    test(`Create testDescriptor ${testDescriptor.id} ${expectedError ? "error" : ""}`, async function () {
+        let id = undefined;
+        try {
+            id = await TestDescriptorDAO.createTestDescriptor(testDescriptor.name, testDescriptor.procedureDescription, testDescriptor.idSKU);
+        } catch (err) {
+            if (expectedError) {
+                return;
+            } else {
+                throw err;
+            }
+        }
         Number.isInteger(id).should.be.true;
         const getTestDescriptor = await TestDescriptorDAO.getTestDescriptorByID(id);
         compareTestDescriptor(testDescriptor, getTestDescriptor).should.be.true;
@@ -56,9 +69,16 @@ function testGetTestDescriptors(expectedTestDescriptors) {
     });
 }
 
-function testModifyTestDescriptor(newTestDescriptor) {
-    test(`Modify testDescriptor ${newTestDescriptor.id}`, async function () {
-        await TestDescriptorDAO.modifyTestDescriptor(newTestDescriptor);
+function testModifyTestDescriptor(newTestDescriptor, expectedError) {
+    test(`Modify testDescriptor ${newTestDescriptor.id} ${expectedError ? "error" : ""}`, async function () {
+        try {
+            await TestDescriptorDAO.modifyTestDescriptor(newTestDescriptor);
+        } catch(err) {
+            if (expectedError)
+                return;
+            else
+                throw err;
+        }
         const getTestDescriptor = await TestDescriptorDAO.getTestDescriptorByID(newTestDescriptor.id);
         compareTestDescriptor(newTestDescriptor, getTestDescriptor).should.be.true;
     })
@@ -85,6 +105,10 @@ describe("Unit Test TestDescriptor_dao", function () {
     for (let td of testDescriptorsToAdd)
         testModifyTestDescriptor(td);
 
+    testCreateTestDescriptor(errorCreateTestDescriptor, true);
+    testModifyTestDescriptor(errorModifyTestDescriptor, true);
+
     for (let td of testDescriptorsToAdd)
         testDeleteTestDescriptor(td);
+
 })
