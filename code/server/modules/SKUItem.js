@@ -1,34 +1,25 @@
 class SKUItem {
-	constructor(rfid, sku, available, dateOfStock, testResults = undefined) {
+	constructor(rfid, sku, available, dateOfStock) {
 		this.rfid = rfid;
 		this.sku = sku;
 		this.available = available;
 		this.dateOfStock = dateOfStock;
-		if (testResults === undefined) {
-			this.initTestResults();
-		} else {
-			this.testResults = testResults;
-		}
 	}
 
-	initTestResults() {
-		this.testResults = {};
-	}
-
-	addTestResult(testResult) {
-		this.testResults[testResult.id] = testResult;
-	}
-
-	modifyTestResult(id, newIdTestDescriptor, newDate, newResult) {
-		let tmpTestResult = this.testResults[id];
-		tmpTestResult.idTestDescriptor = newIdTestDescriptor;
-		tmpTestResult.date = newDate;
-		tmpTestResult.result = newResult;
-	}
-
-	deleteTestResult(id) {
-		delete this.testResults[id];
-	}
+	// addTestResult(testResult) {
+	// 	this.testResults[testResult.id] = testResult;
+	// }
+	//
+	// modifyTestResult(id, newIdTestDescriptor, newDate, newResult) {
+	// 	let tmpTestResult = this.testResults[id];
+	// 	tmpTestResult.idTestDescriptor = newIdTestDescriptor;
+	// 	tmpTestResult.date = newDate;
+	// 	tmpTestResult.result = newResult;
+	// }
+	//
+	// deleteTestResult(id) {
+	// 	delete this.testResults[id];
+	// }
 }
 
 module.exports = SKUItem;

@@ -66,7 +66,7 @@ exports.deleteSKUItem = (rfid) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `DELETE FROM SKUItem WHERE RFID = ?;`;
-        dbConnection.run(sql, rfid, (err) => {
+        dbConnection.run(sql, [rfid], (err) => {
             if (err) reject(err);
             else resolve(err);
         });
