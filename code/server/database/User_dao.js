@@ -49,8 +49,8 @@ exports.createUser = (email, name, surname, password, type) => {
                 console.log(err);
                 reject(err);
             }
+            resolve(this.lastID);
         });
-        resolve();
     });
 }
 
