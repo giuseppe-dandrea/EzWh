@@ -110,8 +110,8 @@ class DatabaseConnection {
 			Date VARCHAR(20) NOT NULL,
 			Result BOOLEN NOT NULL,
 			UNIQUE (TestResultID, RFID),
-			FOREIGN KEY (RFID) REFERENCES SKUItem(RFID),
-			FOREIGN KEY (TestDescriptorID) REFERENCES TestDescriptor(TestDescriptorID)
+			FOREIGN KEY (RFID) REFERENCES SKUItem(RFID) ON DELETE CASCADE ,
+			FOREIGN KEY (TestDescriptorID) REFERENCES TestDescriptor(TestDescriptorID) ON DELETE CASCADE
 		    );`,
 
         `CREATE TABLE IF NOT EXISTS Item (

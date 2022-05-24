@@ -1,5 +1,5 @@
 class SKU {
-	constructor(id, description, weight, volume, notes, price, availableQuantity, positionID, position = undefined, testDescriptors = undefined) {
+	constructor(id, description, weight, volume, notes, price, availableQuantity, positionID, position = undefined, testDescriptors = []) {
 		this.id = id;
 		this.description = description;
 		this.weight = weight;
@@ -9,17 +9,13 @@ class SKU {
 		this.availableQuantity = availableQuantity;
 		this.positionID = positionID;
 		this.position = position;
-		if (testDescriptors === undefined) {
-			this.initTestDescriptors();
-		} else {
-			this.testDescriptors = testDescriptors;
-		}
+		this.testDescriptors = testDescriptors;
 	}
-
+	/*
 	initTestDescriptors() {
 		this.testDescriptors = [];
 	}
-
+	*/
 	addTestDescriptor(testDescriptor) {
 		this.testDescriptors.push(testDescriptor);
 	}

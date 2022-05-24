@@ -133,8 +133,8 @@ describe('Test SKU DAO', () => {
         testDeleteSKU(2);
         testGetSKUs([]);
         afterAll(async ()=>{
-            posDAO.deletePosition(pos1.positionID);
-            posDAO.deletePosition(pos2.positionID);
+            await posDAO.deletePosition(pos1.positionID);
+            await posDAO.deletePosition(pos2.positionID);
         });
     });
 })

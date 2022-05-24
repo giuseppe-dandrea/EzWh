@@ -7,9 +7,9 @@ const SKU = require("../modules/SKU");
 const SKUDao = require("../database/SKU_dao");
 
 const SKUToAdd = [
-    new SKU(1, "sku1", 100, 100, "none", 2,10),
-    new SKU(2, "sku2", 100, 100, "none", 2,10),
-    new SKU(3, "sku3", 100, 100, "none", 2,10),
+    new SKU(1, "sku1", 100, 100, "none", 2, 10),
+    new SKU(2, "sku2", 100, 100, "none", 2, 10),
+    new SKU(3, "sku3", 100, 100, "none", 2, 10),
 ]
 
 const testDescriptorsToAdd = [
@@ -38,11 +38,9 @@ function testCreateTestDescriptor(testDescriptor, expectedError) {
         try {
             id = await TestDescriptorDAO.createTestDescriptor(testDescriptor.name, testDescriptor.procedureDescription, testDescriptor.idSKU);
         } catch (err) {
-            if (expectedError) {
-                return;
-            } else {
+            if (!expectedError)
                 throw err;
-            }
+            return;
         }
         Number.isInteger(id).should.be.true;
         const getTestDescriptor = await TestDescriptorDAO.getTestDescriptorByID(id);
@@ -73,7 +71,7 @@ function testModifyTestDescriptor(newTestDescriptor, expectedError) {
     test(`Modify testDescriptor ${newTestDescriptor.id} ${expectedError ? "error" : ""}`, async function () {
         try {
             await TestDescriptorDAO.modifyTestDescriptor(newTestDescriptor);
-        } catch(err) {
+        } catch (err) {
             if (expectedError)
                 return;
             else
