@@ -45,8 +45,8 @@ exports.createTestDescriptor = (name, procedureDescription, idSKU) => {
                 console.log(err);
                 reject(err);
             }
+            resolve(this.lastID);
         });
-        resolve();
     });
 }
 
@@ -65,9 +65,9 @@ exports.modifyTestDescriptor = (testDescriptor) => {
                     console.log(err);
                     reject(err);
                 }
+                resolve();
             }
         );
-        resolve();
     });
 }
 

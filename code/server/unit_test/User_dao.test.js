@@ -3,7 +3,6 @@ const should = chai.should();
 const UserDAO = require("../database/User_dao");
 const dbConnection = require("../database/DatabaseConnection");
 const {User} = require("../modules/User");
-jest.setTimeout(5000000);
 
 const hardcodedUsers = [
     new User(2, "Best", "Supplier", "supplier1@ezwh.com", "supplier", "testpassword"),
