@@ -4,6 +4,7 @@ const User_dao = require("../database/User_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
 const RestockOrder = require("../modules/RestockOrder");
 const EzWhException = require("../modules/EzWhException.js");
+const dayjs = require('dayjs');
 
 class RestockOrderService {
     constructor() {
@@ -120,6 +121,10 @@ class RestockOrderService {
         if (restockOrder === undefined) throw EzWhException.NotFound;
         if (restockOrder.state !== "DELIVERED") throw EzWhException.EntryNotAllowed;
         for (let skuItem of skuItems) {
+            if(skuItem.SKUId===undefined||skuItem.rfid===undefined)
+            throw EzWhException.EntryNotAllowed;
+        }
+        for (let skuItem of skuItems) {
             await dao.addSkuItemToRestockOrder(ID, skuItem.rfid);
         }
     }
@@ -127,7 +132,10 @@ class RestockOrderService {
     async addTransportNoteToRestockOrder(ID, transportNote) {
         const restockOrder = await dao.getRestockOrderByID(ID);
         if (restockOrder === undefined) throw EzWhException.NotFound;
-        if (restockOrder.state !== "DELIVERED") throw EzWhException.EntryNotAllowed;
+        if (restockOrder.state !== "DELIVERY") throw EzWhException.EntryNotAllowed;
+        if(transportNote.deliveryDate===undefined ||
+             dayjs(transportNote.deliveryDate).isBefore(dayjs(restockOrder.issueDate)))
+             throw EzWhException.EntryNotAllowed;
         await dao.addTransportNoteToRestockOrder(ID, JSON.stringify(transportNote));
     }
 

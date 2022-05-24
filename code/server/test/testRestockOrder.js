@@ -86,6 +86,8 @@ function addSKUItemList(expectedHTTPStatus, id, SKUItemList) {
 }
 function addTransportNote(expectedHTTPStatus, id, transportNote) {
     it(`adding transport note = ${transportNote} to ${id}`, function (done) {
+        console.log(id);
+        console.log(transportNote);
         if (transportNote !== undefined) {
             agent.post(`/api/restockOrder/${id}/transportNote`)
                 .set('content-type', 'application/json')
@@ -477,26 +479,26 @@ let restockOrderError10 = {
     "supplierId": 15
 };
 let restockOrder1 = {
-    "id":1,
+    "id": 1,
     ...restockOrderIssued1,
     "state": "ISSUED",
     "skuItems": [],
 };
 let restockOrder2 = {
-    "id":2,
+    "id": 2,
     ...restockOrderIssued2,
     "state": "ISSUED",
     "skuItems": []
 };
 let supplier1 = {
-    "username": "user1@ezwh.com",
+    "username": "user2@ezwh.com",
     "name": "John",
     "surname": "Smith",
     "password": "testpassword",
     "type": "supplier"
 };
 let supplier2 = {
-    "username": "user2@ezwh.com",
+    "username": "user3@ezwh.com",
     "name": "Paul",
     "surname": "Brown",
     "password": "testpassword",
@@ -591,14 +593,14 @@ let item4 = {
 };
 let transportNote1 = { "deliveryDate": "2021/12/29" };
 let transportNote2 = { "deliveryDate": "2021/11/29" };
-let skuItems1 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789015" }, { "SKUId": 1, "rfid": "12345678901234567890123456789016" }];
-let skuItems2 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];
-let skuItemsError1 = [{ "SKUId": "abc", "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];
-let skuItemsError2 = [{ "SKUId": 1, "rfid": "123453" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];
-let skuItemsError3 = [{ "SKUId": 1, "rfid": true }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];
-let skuItemsError4 = [{ "SKUId": 1, "rfid": 1234567890123456789 }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];
-let skuItemsError5 = [{ "SKUId": 5, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];
-let skuItemsError6 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789030" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];
+let skuItems1 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789015" }, { "SKUId": 1, "rfid": "12345678901234567890123456789016" }]; //OK
+let skuItems2 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //OK
+let skuItemsError1 = [{ "SKUId": "abc", "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //invalid SKUID
+let skuItemsError2 = [{ "SKUId": 1, "rfid": "123453" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //invalid RFID
+let skuItemsError3 = [{ "SKUId": 1, "rfid": true }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];    //invalid RFID
+let skuItemsError4 = [{ "SKUId": 1, "rfid": 1234567890123456789 }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //invalid RFID??
+let skuItemsError5 = [{ "SKUId": 5, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //SKUID not found
+let skuItemsError6 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789030" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //RFID not found
 
 describe('TEST RestockOrder API', function () {
     describe('preparing environment', () => {
@@ -672,12 +674,15 @@ describe('TEST RestockOrder API', function () {
         deleteRestockOrder(204, 1);
         deleteRestockOrder(204, 2);
     });
-    /*
+
     describe('test transport note', () => {
+        getRestockOrders(200, 0, []);
         newRestockOrder(201, restockOrderIssued1);
+        getRestockOrder(200, 1, restockOrder1);
         newRestockOrder(201, restockOrderIssued2);
-        addTransportNote(422, 1, { "transportNote": transportNote1 });
-        addTransportNote(404, 3, { "transportNote": transportNote1 });
+        getRestockOrder(200, 2, restockOrder2);
+        addTransportNote(422, 1, { "transportNote": transportNote1 }); //ISSUED
+        addTransportNote(404, 3, { "transportNote": transportNote1 }); //NOT FOUND
         modifyRestockOrderStatus(200, 1, { "newState": states[1] });
         addTransportNote(200, 1, { "transportNote": transportNote1 });
         getRestockOrder(200, 1, {
@@ -698,7 +703,7 @@ describe('TEST RestockOrder API', function () {
         addTransportNote(422, 1, { "transportNote": { "deliveryDate": "" } });
         addTransportNote(422, 1, { "transportNote": { "delive": "2021/12/30" } });
         addTransportNote(422, 1, { "transportNote": { "deliveryDate": "abc" } });
-        addTransportNote(422, 1, { "transportNote": { "deliveryDate": "2021/11/28" } });
+        addTransportNote(422, 1, { "transportNote": { "deliveryDate": "2021/11/28" } }); //deliveryDate < IssueDate
         modifyRestockOrderStatus(200, 1, { "newState": states[2] });
         getRestockOrder(200, 1, {
             ...restockOrderIssued1, "state": states[2],
@@ -725,6 +730,11 @@ describe('TEST RestockOrder API', function () {
             ...restockOrderIssued1, "state": states[2],
             "skuItems": skuItems1
         }, restockOrder2]);
+        addSKUItemList(200, 1, { "skuItems": skuItems2 });
+        getRestockOrder(200, 1, {
+            ...restockOrderIssued1, "state": states[2],
+            "skuItems": [...skuItems1, ...skuItems2]
+        });
         getReturnItems(404, 3);
         getReturnItems(422, 1);
         modifyRestockOrderStatus(200, 1, { "newState": states[4] });
@@ -734,7 +744,7 @@ describe('TEST RestockOrder API', function () {
         deleteRestockOrder(204, 1);
         deleteRestockOrder(204, 2);
     })
-    */
+
     describe('cleaning environment', () => {
         deleteItem(204, 1);
         deleteItem(204, 2);
