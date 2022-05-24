@@ -81,7 +81,7 @@ exports.deleteTestDescriptor = (id) => {
                 console.log(err);
                 reject(err);
             }
+            resolve();
         });
-        resolve();
     });
 }

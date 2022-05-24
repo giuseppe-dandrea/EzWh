@@ -89,8 +89,7 @@ describe("Unit Test TestDescriptor_dao", function () {
             await SKUDao.createSKU(sku.description, sku.weight, sku.volume, sku.notes, sku.price, sku.availableQuantity);
     });
     afterAll(async () => {
-        for (let sku of SKUToAdd)
-            await SKUDao.deleteSKU(sku.id);
+        await SKUDao.deleteAllSKUs();
     })
     for (let td of testDescriptorsToAdd)
         testCreateTestDescriptor(td);

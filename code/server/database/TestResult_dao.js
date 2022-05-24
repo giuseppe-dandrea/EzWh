@@ -81,7 +81,7 @@ exports.deleteTestResult = (RFID, id) => {
                 console.log(err);
                 reject(err);
             }
+            resolve();
         });
-        resolve();
     });
 }

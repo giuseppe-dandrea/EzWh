@@ -80,8 +80,8 @@ exports.deleteUser = (email, type) => {
                 console.log(err);
                 reject(err);
             }
+            resolve();
         });
-        resolve();
     });
 }
 

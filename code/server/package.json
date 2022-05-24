@@ -19,6 +19,6 @@
     "start": "node server.js",
     "preapiTest" : "node DBCheck.js",
     "apiTest": "./node_modules/.bin/mocha test --exit",
-    "test": "node_modules/.bin/jest"
+    "test": "node_modules/.bin/jest --runInBand"
   }
 }

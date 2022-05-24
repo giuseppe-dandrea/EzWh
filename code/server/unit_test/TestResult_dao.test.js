@@ -66,7 +66,7 @@ function testCreateTestResult(testResult, expectedError) {
 }
 
 function testGetTestResultsByRFID(expectedTestResults) {
-    test(`Get testDescriptors for RFID ${expectedTestResults[0].rfid}`, async function () {
+    test(`Get testResult for RFID ${expectedTestResults[0].rfid}`, async function () {
         const testResults = [...await TestResultDAO.getTestResultsByRFID(expectedTestResults[0].rfid)];
         testResults.should.be.an("array");
         testResults.length.should.be.equal(expectedTestResults.length);
@@ -77,7 +77,7 @@ function testGetTestResultsByRFID(expectedTestResults) {
 }
 
 function testDeleteTestResult(testResult) {
-    test(`Delete testDescriptor ${testResult.id}`, async function () {
+    test(`Delete testResult ${testResult.id}`, async function () {
         await TestResultDAO.deleteTestResult(testResult.rfid, testResult.id);
         const getTestResult = await TestResultDAO.getTestResultByIDAndRFID(testResult.rfid, testResult.id);
         should.equal(getTestResult, undefined);
@@ -110,13 +110,10 @@ describe("Unit Test TestResult_dao", function () {
             await SKUItemDao.createSKUItem(skuItem.rfid, skuItem.sku, skuItem.dateOfStock);
     });
     afterAll(async () => {
-        for (let sku of SKUToAdd)
-            await SKUDao.deleteSKU(sku.id);
+        await SKUDao.deleteAllSKUs();
+        await SKUItemDao.deleteAllSKUItems();
         for (let td of testDescriptorsToAdd)
             await TestDescriptorDAO.deleteTestDescriptor(td.id);
-        for (let skuItem of SKUItemsToAdd) {
-            await SKUItemDao.deleteSKUItem(skuItem.rfid);
-        }
     });
 
     testCreateTestResult(errorTestResultToAdd, true);
