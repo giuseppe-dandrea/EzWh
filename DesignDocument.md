@@ -777,9 +777,9 @@ participant InternalOrder
 Customer -> EzWh: adds every SKU she wants in every qty to IO
 activate EzWh
 EzWh ->EzWh : C.ID = getUserInfo()
-EzWh -> Service: createInternalOrder(date, <SKU,qty>, C.id)
+EzWh -> Service: InternalOrder_service.createInternalOrder(date, <SKU,qty>, C.id)
 activate Service
-Service ->Database :createInternalOrder(date, <SKU,qty>, C.id)
+Service ->Database : InternalOrder_dao.createInternalOrder(date, <SKU,qty>, C.id)
 activate Database
 Database -> Database : id is generated
 Database ->InternalOrder: new internalOrder(id,issueDate, ISSUED,  <SKU,qty>, C.id)
@@ -787,21 +787,21 @@ activate InternalOrder
 InternalOrder-->Database : InternalOrder
 deactivate InternalOrder
 Database --> Service : InternalOrder
-Service->Database : modifySKU(newAvailableQuantity)
-Service->Database :modifyPosition(newOccupiedWeight , newOccupiedVolume)
-Database --> Service : InternalOrder
+Service->Database : SKU_dao.modifySKU(SKU, newAvailableQuantity)
+Service->Database : Position_dao.modifyPosition(newOccupiedWeight , newOccupiedVolume)
+Database --> Service : Done
 deactivate Database
-Service -->EzWh :InternalOrder
+Service -->EzWh :Done
 deactivate Service
-Service -->Manager :InternalOrder
+Service -->Manager :Done
 EzWh --> Customer : Done
 deactivate EzWh
 
-Manager -> EzWh: Selects new InternalOrder
+Manager -> EzWh: Selects InternalOrder id
 activate EzWh
-EzWh -> Service : modifyInternalOrderState(Accepted)
+EzWh -> Service : InternalOrder_service.modifyInternalOrderState(id, Accepted)
 activate Service
-Service->Database : modifyInternalOrderState(Accepted)
+Service->Database : InternalOrder_dao.modifyInternalOrderState(id, Accepted)
 activate Database
 Database --> Service : done
 deactivate Database
@@ -828,10 +828,10 @@ Supplier -> EzWh: Selects description D, Price P , SKU
 
 EzWh ->EzWh : S.ID = getUserInfo()
 
-EzWh -> Service:createItem(D , SKU, P, S.ID)
+EzWh -> Service: Item_service.createItem(D , SKU, P, S.ID)
 
 activate Service
-Service -> Database: item = createItem(D , P, SKU, S.ID)
+Service -> Database: item = Item_dao.createItem(D , P, SKU, S.ID)
 activate Database
 Database -> Database : id is generated
 Database -> Item : new Item(ID, D , P , SKU , S.ID)
@@ -858,9 +858,9 @@ participant Database
 
 Supplier -> EzWh: Search Item I
 activate EzWh
-EzWh -> Service: getItembyId(id)
+EzWh -> Service: Item_service.getItembyId(id)
 activate Service
-Service -> Database : getItembyId(id)
+Service -> Database : Item_dao.getItembyId(id)
 activate Database
 Database --> Service : Item
 deactivate Database
@@ -871,9 +871,9 @@ deactivate EzWh
 
 Supplier -> EzWh :Selects fot ID newDescription nD, newPrice P
 activate EzWh
-EzWh ->Service : modifyItem(ID,nD,nP)
+EzWh ->Service : Item_service.modifyItem(ID,nD,nP)
 activate Service
-Service ->Database : modifyItem(ID,nD,nP)
+Service ->Database : Item_dao.modifyItem(ID,nD,nP)
 activate Database
 Database --> Service : Done
 deactivate Database
