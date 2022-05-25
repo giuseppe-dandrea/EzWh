@@ -4,6 +4,8 @@ const dbConnection = require("../database/DatabaseConnection");
 const itemDAO = require("../database/Item_dao");
 const userDAO = require("../database/User_dao");
 const skuDAO = require("../database/SKU_dao");
+const skuitemDAO = require("../database/SKUItem_dao");
+const {expect} = require("chai");
 
 let suppliers = [
     {
@@ -47,7 +49,7 @@ const items = [
 ]
 
 function testCreateItem(item){
-    test('Creating new Item', async()=>{
+    test(`Create Item ${item.id}` , async()=>{
         console.log(item);
         await itemDAO.createItem(item);
         let getItems=await itemDAO.getItemByID(item.id);
@@ -57,7 +59,7 @@ function testCreateItem(item){
     })
 }
 function testGetItems(expectedItems) {
-    test('GET All Items', async function () {
+    test('Get All Items', async function () {
         let items = [... await itemDAO.getItems()];
         items.length.should.be.equal(expectedItems.length);
         items.should.be.an('array');
@@ -68,7 +70,7 @@ function testGetItems(expectedItems) {
     });
 }
 function testGetItemByID(id,expectedItem) {
-    test(`GET Item ${id}`, async function () {
+    test(`GET Item by ID ${id}`, async function () {
         let items = [...await itemDAO.getItemByID(id)];
         let item = items[0];
         item.should.be.an('object');
@@ -76,7 +78,7 @@ function testGetItemByID(id,expectedItem) {
     });
 }
 function testGetItemBySKUIDAndSupplierID(SKUId , supplierId ,expectedItem) {
-    test(`GET item by supplier and SKUID`, async function () {
+    test(`Get Item by supplier ${supplierId} and SKUID ${SKUId}`, async function () {
         let item = await itemDAO.getItemBySKUIDAndSupplierID(SKUId,supplierId);
         item.should.be.an('object');
         compareItem(item, expectedItem).should.be.true;
@@ -84,7 +86,7 @@ function testGetItemBySKUIDAndSupplierID(SKUId , supplierId ,expectedItem) {
 }
 
 function testModifyItem(id, newDescription, newPrice ) {
-    test(` Modifying Item`, async function () {
+    test(`Modifying Item ${id}`, async function () {
         let itemsBefore = [...await itemDAO.getItemByID(id)];
         let beforeItem = itemsBefore[0];
         let expectedItem={id:beforeItem.id, description:newDescription , price : newPrice , skuId: beforeItem.skuId , supplierId:beforeItem.supplierId};
@@ -94,6 +96,16 @@ function testModifyItem(id, newDescription, newPrice ) {
         afterItem.should.be.an('object');
         compareItem(afterItem, expectedItem).should.be.true;
     });
+}
+function testDeleteItem(id){
+    test(`Delete Item ${id}`, async() => {
+        await itemDAO.deleteItem(id);
+        let deleted = (await itemDAO.getItemByID(id))[0];
+        expect(deleted).to.be.undefined;
+
+
+
+    })
 }
 
 
@@ -126,12 +138,12 @@ describe('Test Item DAO', () => {
         testGetItemBySKUIDAndSupplierID(1,8,items[2]);
 
         testModifyItem(13,"A new Description",12,21);
+        testDeleteItem(12);
 
 
 
         //BY ID
         afterAll(async ()=>{
-            await itemDAO.deleteItem(12);
             await itemDAO.deleteAllItems();
             await userDAO.deleteUser(suppliers[0].username,suppliers[0].type);
             await userDAO.deleteUser(suppliers[1].username,suppliers[1].type);
