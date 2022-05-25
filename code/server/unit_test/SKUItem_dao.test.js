@@ -3,8 +3,7 @@ chai.should();
 const dbConnection = require("../database/DatabaseConnection");
 const skuitemDAO = require("../database/SKUItem_dao");
 const skuDAO = require("../database/SKU_dao");
-const SKUItem = require("../modules/SKUItem");
-const {modifySKUItem} = require("../database/SKUItem_dao");
+const {expect} = require("chai");
 
 
 let skus = [
@@ -92,7 +91,7 @@ let expectedID = [//only do after modyfing last 2 posts  skuitems to available
 
 
 function testGetSKUItems(expectedAll) {
-    test('GET All SKUItems', async function () {
+    test('Get all SKUItems', async function () {
         let skuItems = [... await skuitemDAO.getSKUItems()];
         skuItems.length.should.be.equal(expectedAll.length);
         skuItems.should.be.an('array');
@@ -103,7 +102,7 @@ function testGetSKUItems(expectedAll) {
     });
 }
 function testGetSKUItemBySKU(SKUID,expectedIDs) {
-    test(`GET SKUItems for SKUID:${SKUID}`, async function () {
+    test(`Get SKUItems for SKUID :${SKUID}`, async function () {
         let skuItems = [...await skuitemDAO.getSKUItemsBySKU(SKUID)];
         skuItems.length.should.be.equal(expectedID.length);
         skuItems.should.be.an('array');
@@ -115,14 +114,14 @@ function testGetSKUItemBySKU(SKUID,expectedIDs) {
 }
 
 function testGetSKUItemByRfid(rfid,expectedRFID) {
-    test(`GET a SKUItem`, async function () {
+    test(`Get a SKUItem by RFID:${rfid}`, async function () {
         let skuItem = await skuitemDAO.getSKUItemByRfid(rfid);
         skuItem.should.be.an('object');
         compareSKUItem(skuItem, expectedRFID).should.be.true;
     });
 }
 function testCreateSKUItem(rfid, SKUId, dateOfStock){
-    test('Creating new SKUItem', async()=>{
+    test('Create SKUItem ${rfid}', async()=>{
         await skuitemDAO.createSKUItem(rfid, SKUId, dateOfStock);
         let getSKUItem=await skuitemDAO.getSKUItemByRfid(rfid);
         const newSKUItem= {RFID : rfid , SKUId:SKUId, DateOfStock: dateOfStock};
@@ -131,7 +130,7 @@ function testCreateSKUItem(rfid, SKUId, dateOfStock){
     })
 }
 function testModifySKUItem( rfid, newRfid, newAvailable, newDateOfStock){
-    test('Modifying SKUItem', async() => {
+    test('Modify SKUItem ${rfid}', async() => {
         let beforeSKUItem = await skuitemDAO.getSKUItemByRfid(rfid);
         let supposedSKUItem = {RFID:newRfid ,SKUId: beforeSKUItem.sku , Available: newAvailable, DateOfStock: newDateOfStock}
         await skuitemDAO.modifySKUItem(rfid, newRfid, newAvailable, newDateOfStock);
@@ -141,21 +140,19 @@ function testModifySKUItem( rfid, newRfid, newAvailable, newDateOfStock){
 
     })
 }
-// function testDeleteSKUItem(rfid){
-//     test('Deleting SKUItem', async() => {
-//         await skuitemDAO.deleteSKUItem(rfid);
-//         let deleted = await skuitemDAO.getSKUItemByRfid(rfid);
-//         expect(deleted).to.be.undefined;
-//
-//
-//
-//     })
-// }
+function testDeleteSKUItem(rfid){
+    test('Delete SKUItem ${rfid}', async() => {
+        await skuitemDAO.deleteSKUItem(rfid);
+        let deleted = await skuitemDAO.getSKUItemByRfid(rfid);
+        expect(deleted).to.be.undefined;
+
+
+
+    })
+}
 
 //new SKUItem(skuItems[i].RFID,skuItems[i].SKUId,skuItems[i].Available, skuItems[i].DateOfStock)
 function compareSKUItem(actualSKUItem, expectedSKUItem) {
-    console.log(expectedSKUItem);
-    console.log(actualSKUItem);
     return actualSKUItem.RFID === expectedSKUItem.rfid &&
         actualSKUItem.SKUId === expectedSKUItem.sku &&
         actualSKUItem.Available === expectedSKUItem.available &&
@@ -163,8 +160,6 @@ function compareSKUItem(actualSKUItem, expectedSKUItem) {
 
 }
 function compareSKUItemID(actualSKUItem, expectedSKUItem) {
-    console.log(expectedSKUItem);
-    console.log(actualSKUItem);
     return actualSKUItem.RFID === expectedSKUItem.rfid &&
         actualSKUItem.SKUId === expectedSKUItem.sku &&
         actualSKUItem.DateOfStock === expectedSKUItem.dateOfStock ;
@@ -188,6 +183,7 @@ describe('Test SKUItems DAO', () => {
         testModifySKUItem(postSKUItems[2].RFID,"98987676545434567876543434540123",1,postSKUItems[2].DateOfStock);
         testModifySKUItem(postSKUItems[3].RFID,"98987676545434567876543434540124",1,postSKUItems[3].DateOfStock);
         testGetSKUItemBySKU(2,expectedID);
+        testDeleteSKUItem(postSKUItems[0].RFID);
 
        //BY ID
         afterAll(async ()=>{

@@ -147,7 +147,6 @@ function testEditTestDescriptor(id, testDescriptor, expectedStatus) {
                 newIdSKU: testDescriptor.idSKU
             })
             .end(function (err, res) {
-                console.log(testDescriptor);
                 if (err)
                     done(err);
                 res.should.have.status(expectedStatus);

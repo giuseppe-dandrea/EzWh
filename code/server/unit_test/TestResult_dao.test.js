@@ -60,7 +60,6 @@ function testCreateTestResult(testResult, expectedError) {
         }
         Number.isInteger(id).should.be.true;
         const getTestResult = await TestResultDAO.getTestResultByIDAndRFID(testResult.rfid, id);
-        console.log(testResult,getTestResult);
         compareTestResult(testResult, getTestResult).should.be.true;
     })
 }

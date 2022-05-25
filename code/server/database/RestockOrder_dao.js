@@ -69,7 +69,6 @@ exports.getRestockOrderSKUItemsByRestockOrderID = (ID) => {
             if (err) {
                 reject(err);
             } else {
-                // console.log(rows);
                 resolve(rows);
             }
         });
@@ -194,9 +193,7 @@ exports.deleteRestockOrder = (ID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `delete from RestockOrder where RestockOrderID=${ID}`;
-        // console.log(sql);
         dbConnection.run(sql, function (err) {
-            // console.log("deleted!")
             if (err) {
                 reject(err);
             }

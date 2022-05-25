@@ -9,10 +9,7 @@ const ReturnOrder_dao = require('../database/ReturnOrder_dao');
 const TestDescriptor_dao = require('../database/TestDescriptor_dao');
 const TestResult_dao = require('../database/TestResult_dao');
 const dbConnection = require("../database/DatabaseConnection");
-const res = require('express/lib/response');
-const { getSuppliers } = require('../database/User_dao');
-const TestDescriptor = require('../modules/TestDescriptor');
-const TestResult = require('../modules/TestResult');
+
 
 const restockOrderSample1 = {
     "id": 1,
@@ -129,7 +126,6 @@ function testGetRestockOrderReturnItems(restockOrder, returnItem){
         await TestResult_dao.addTestResult(SKUItemSampel1.RFID, 1, "", false);  //1 is testdescriptorid
         const getReturnItems = await dao.getRestockOrderReturnItems(restockOrder.id);
         const getReturnItem = getReturnItems[0];
-        console.log(getReturnItems);
         (getReturnItem.rfid === returnItem.rfid &&
             getReturnItem.SKUId === returnItem.SKUId).should.be.true;
     });

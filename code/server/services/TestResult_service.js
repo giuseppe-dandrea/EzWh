@@ -1,7 +1,6 @@
 const dao = require("../database/TestResult_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
 const TestDescriptor_dao = require("../database/TestDescriptor_dao");
-const TestResult = require("../modules/TestResult");
 const EzWhException = require("../modules/EzWhException.js");
 
 class TestResultService {

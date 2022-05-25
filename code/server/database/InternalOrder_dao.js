@@ -147,7 +147,6 @@ exports.deleteInternalOrder = (ID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `delete from InternalOrder where InternalOrderID=${ID}`;
-        // console.log(sql);
         dbConnection.run(sql, [], (err) => {
             if (err) {
                 reject(err);

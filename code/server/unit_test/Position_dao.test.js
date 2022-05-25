@@ -4,6 +4,7 @@ const dbConnection = require("../database/DatabaseConnection");
 const positionsDAO = require("../database/Position_dao");
 const skuDAO = require("../database/SKU_dao");
 const Position = require("../modules/Position");
+const {expect} = require("chai");
 
 let postPositions = [
     {
@@ -67,7 +68,7 @@ let expectedPositions = [
 ];
 
 function testGetPositions(expectedPositions) {
-    test('GET All Positions', async function () {
+    test('Get all Positions', async function () {
         let positions = [... await positionsDAO.getPositions()];
         positions.length.should.be.equal(expectedPositions.length);
         positions.should.be.an('array');
@@ -81,7 +82,7 @@ function testGetPositions(expectedPositions) {
 
 
 function testGetPositionByID(id,expectedPosition) {
-    test(`GET Position ${id}`, async function () {
+    test(`Get Position by ID ${id}`, async function () {
         let positions = [...await positionsDAO.getPositionByID(id)];
         let position = positions[0];
         position.should.be.an('object');
@@ -90,7 +91,7 @@ function testGetPositionByID(id,expectedPosition) {
 }
 
 function testCreatePosition(postPosition){
-    test('Creating new position', async()=>{
+    test(`Create Position ${postPosition.positionID}`, async()=>{
         await positionsDAO.createPosition(postPosition);
         let res = await positionsDAO.getPositions();
         let getPosition=res[0];
@@ -102,7 +103,7 @@ function testCreatePosition(postPosition){
 
 function testModifyPosition( oldID, newPositionID, newAisleID, newRow, newCol, newMaxWeight,
                              newMaxVolume, newOccupiedWeight, newOccupiedVolume){
-    test('Modifying Position Data', async() => {
+    test(`Modify Position Info ${oldID}`, async() => {
         let supposedPosition = new Position(newPositionID,newAisleID,newRow,newCol,newMaxWeight,newMaxVolume,newOccupiedWeight,newOccupiedVolume);
         await positionsDAO.modifyPosition(oldID,newPositionID,newAisleID,newRow,newCol,newMaxWeight,newMaxVolume,newOccupiedWeight,newOccupiedVolume);
         let res = await positionsDAO.getPositionByID(newPositionID);
@@ -113,7 +114,7 @@ function testModifyPosition( oldID, newPositionID, newAisleID, newRow, newCol, n
     })
 }
 function testModifyPositionID(oldID, newPositionID, newAisleID, newRow, newCol){
-    test('Modifying Position ID', async() => {
+    test(`Modify Position ID ${oldID}`, async() => {
         let ret = await positionsDAO.getPositionByID(oldID);
         let beforePosition=ret[0];
         let supposedPosition= {positionID : newPositionID , aisleID : newAisleID, row:newRow , col:newCol , maxWeight:beforePosition.maxWeight ,
@@ -127,7 +128,7 @@ function testModifyPositionID(oldID, newPositionID, newAisleID, newRow, newCol){
     })
 }
 function testModifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId){
-    test('Modifying SKU Position', async() => {
+    test(`Modify SKU ${SKUId} assigned Position ${positionId}`, async() => {
         let ret = await positionsDAO.getPositionByID(positionId);
         let beforePosition=ret[0];
         let supposedPosition= {positionID : positionId , aisleID : beforePosition.aisleID, row:beforePosition.row , col:beforePosition.col , maxWeight:beforePosition.maxWeight ,
@@ -137,6 +138,16 @@ function testModifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume,
         let modifiedPosition=res[0];
         res.length.should.be.equal(1);
         comparePosition(supposedPosition, modifiedPosition).should.be.true;
+
+    })
+}
+function testDeletePosition(id){
+    test(`Delete Position ${id}`, async() => {
+        await positionsDAO.deletePosition(id);
+        let deleted = (await positionsDAO.getPositionByID(id))[0];
+        expect(deleted).to.be.undefined;
+
+
 
     })
 }
@@ -214,6 +225,16 @@ describe('Test Position DAO', () => {
             await positionsDAO.createPosition(postPositions[0]);
         })
         testModifySKUPosition(postPositions[0].positionID ,30 , 30, 1);
+        afterAll(async ()=>{
+            await positionsDAO.deleteAllPositions();
+
+        })
+    })
+    describe('Test Delete', ()=>{
+        beforeAll(async () => {
+            await positionsDAO.createPosition(postPositions[0]);
+        })
+        testDeletePosition(postPositions[0].positionID);
         afterAll(async ()=>{
             await positionsDAO.deleteAllPositions();
 

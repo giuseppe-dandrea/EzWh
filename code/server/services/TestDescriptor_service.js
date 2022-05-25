@@ -1,6 +1,5 @@
 const dao = require("../database/TestDescriptor_dao");
 const SKU_dao = require("../database/SKU_dao");
-const TestDescriptor = require("../modules/TestDescriptor");
 const EzWhException = require("../modules/EzWhException.js");
 
 class TestDescriptorService {

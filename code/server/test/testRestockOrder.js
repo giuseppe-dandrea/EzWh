@@ -1,7 +1,5 @@
-const { expect } = require('chai');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const { Router, json } = require('express');
 chai.use(chaiHttp);
 chai.should();
 
@@ -86,8 +84,6 @@ function addSKUItemList(expectedHTTPStatus, id, SKUItemList) {
 }
 function addTransportNote(expectedHTTPStatus, id, transportNote) {
     it(`adding transport note = ${transportNote} to ${id}`, function (done) {
-        console.log(id);
-        console.log(transportNote);
         if (transportNote !== undefined) {
             agent.put(`/api/restockOrder/${id}/transportNote`)
                 .set('content-type', 'application/json')
@@ -183,7 +179,6 @@ function getRestockOrder(expectedHTTPStatus, id, expectedRestockOrder) {
                         res.body.should.haveOwnProperty("supplierId");
                         res.body.should.haveOwnProperty("skuItems");
                         res.body.skuItems.should.be.an('array');
-                        console.log("========>", expectedRestockOrder, res.body);
                         compareRestockOrder(expectedRestockOrder, res.body).should.be.true;
                     }
                     done();
@@ -346,15 +341,12 @@ function deleteItem(expectedHTTPStatus, id) {
 function compareRestockOrder(expectedRO, actualRO) {
     let cmp_flag = true;
     if (expectedRO.issueDate !== actualRO.issueDate) {
-        console.log("issueDate");
         return false;
     }
     if (expectedRO.state !== actualRO.state) {
-        console.log("state");
         return false;
     }
     if (expectedRO.products !== undefined && expectedRO.products.length !== actualRO.products.length) {
-        console.log("product length");
         return false;
     }
     if (expectedRO.products)
@@ -367,31 +359,25 @@ function compareRestockOrder(expectedRO, actualRO) {
                     p.qty === exppr.qty;
             });
             if (!cmp_flag) {
-                console.log("product " + i.toString());
                 return false;
             }
         }
     if (expectedRO.supplierId !== actualRO.supplierId) {
-        console.log("supplierId");
         return false;
     }
     if (expectedRO.transportNote !== undefined &&
         expectedRO.transportNote.deliveryDate !== JSON.parse(actualRO.transportNote).deliveryDate) {
-        console.log("TransportNote");
         return false;
     }
     if (expectedRO.skuItems && !compareSKUItems(expectedRO.skuItems, actualRO.skuItems)) {
-        console.log("SKUItems");
         return false;
     }
     return true;
 }
 function compareSKUItems(expectedRI, actualRI) {
     let cmp_flag = true;
-    console.log(expectedRI, actualRI)
 
     if (expectedRI.length !== actualRI.length) {
-        console.log("Return Item lengnt");
         return false;
     }
     for (let i = 0; i < expectedRI.length; i++) {
@@ -401,7 +387,6 @@ function compareSKUItems(expectedRI, actualRI) {
                 p.rfid === exppr.rfid;
         });
         if (!cmp_flag) {
-            console.log("Sku item " + i.toString());
             return false;
         };
     }

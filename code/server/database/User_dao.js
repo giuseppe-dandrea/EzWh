@@ -12,8 +12,6 @@ exports.getSuppliers = () => {
         const sql = 'SELECT * FROM User WHERE Type = ?';
         dbConnection.all(sql, "supplier", (err, rows) => {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             const users = rows.map((u) => new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password));
@@ -28,8 +26,6 @@ exports.getUsers = () => {
         const sql = 'SELECT * FROM User WHERE Type <> ?'; // also, ADMIN??
         dbConnection.all(sql, "manager", (err, rows) => {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             const users = rows.map((u) => new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password));
@@ -45,8 +41,6 @@ exports.createUser = (email, name, surname, password, type) => {
       VALUES (?, ?, ?, ?, ?)`;
         dbConnection.run(sql, [name, surname, email, type, password], function (err) {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             resolve(this.lastID);
@@ -61,8 +55,6 @@ exports.modifyUserRights = (email, oldType, newType) => {
          WHERE Email=? AND Type=?`;
         dbConnection.run(sql, [newType, email, oldType], function (err) {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
         });
@@ -76,8 +68,6 @@ exports.deleteUser = (email, type) => {
         const sql = `DELETE FROM User WHERE Email=? AND Type=?`;
         dbConnection.run(sql, [email, type], function (err) {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             resolve();
@@ -91,8 +81,6 @@ exports.getUserByEmail = (email, type) => {
         const sql = `SELECT * FROM User WHERE Email=? AND Type=?`;
         dbConnection.all(sql, [email, type], (err, rows) => {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             const users = rows.map((u) => new User(u.UserID, u.Name, u.Surname, u.Email, u.Type, u.Password));
@@ -107,8 +95,6 @@ exports.getUserByID = (ID) => {
         const sql = `SELECT * FROM User WHERE UserID=?`;
         dbConnection.get(sql, [ID], (err, row) => {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             if (row===undefined){

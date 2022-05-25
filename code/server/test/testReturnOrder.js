@@ -1,7 +1,5 @@
-const { expect } = require('chai');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const { Router } = require('express');
 chai.use(chaiHttp);
 chai.should();
 
@@ -43,7 +41,6 @@ function getReturnOrders(expectedHTTPStatus, expectedLength, expectedReturnOrder
             .end(function (err, res) {
                 if (err) done(err);
                 res.should.have.status(expectedHTTPStatus);
-                console.log("============>", res.body)
                 if (expectedHTTPStatus === 200) {
                     res.should.be.json;
                     res.body.should.be.an('array');
@@ -73,7 +70,6 @@ function getReturnOrder(expectedHTTPStatus, id, expectedReturnOrder) {
                     res.should.have.status(expectedHTTPStatus);
                     if (expectedHTTPStatus === 200) {
                         res.should.be.json;
-                        console.log(res.body);
                         res.body.should.haveOwnProperty("returnDate");
                         res.body.should.haveOwnProperty("products");
                         res.body.should.haveOwnProperty("restockOrderId");

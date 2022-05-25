@@ -1,9 +1,7 @@
 const dao = require("../database/InternalOrder_dao");
 const SKU_dao = require("../database/SKU_dao");
-const SKUItem_dao = require("../database/SKUItem_dao");
-const InternalOrder = require("../modules/InternalOrder");
 const EzWhException = require("../modules/EzWhException.js");
-const {createSKUItem, getSKUItemByRfid} = require("../database/SKUItem_dao");
+const { getSKUItemByRfid} = require("../database/SKUItem_dao");
 const {getSKUById} = require("../database/SKU_dao");
 const User_dao = require("../database/User_dao");
 

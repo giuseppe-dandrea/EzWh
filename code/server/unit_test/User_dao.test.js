@@ -32,19 +32,18 @@ function compareUser(expected, actual) {
 }
 
 function testGetUsers(expectedUsers) {
-    test("Get all users", async function () {
+    test("Get all Users", async function () {
         const users = [...await UserDAO.getUsers()];
         users.should.be.an("array");
         users.length.should.be.equal(expectedUsers.length);
         for (let user of users) {
-            console.log(user);
             expectedUsers.some((u) => compareUser(u, user)).should.be.true;
         }
     });
 }
 
 function testGetSuppliers(expectedSuppliers) {
-    test("Get all suppliers", async function () {
+    test("Get all Suppliers", async function () {
         const suppliers = [...await UserDAO.getSuppliers()];
         suppliers.should.be.an("array");
         suppliers.length.should.be.equal(expectedSuppliers.length);
@@ -55,17 +54,16 @@ function testGetSuppliers(expectedSuppliers) {
 }
 
 function testCreateUser(user) {
-    test(`Create ${user.type} ${user.email} and get by id`, async function () {
+    test(`Create User ${user.type} ${user.email} `, async function () {
         const id = await UserDAO.createUser(user.email, user.name, user.surname, User.storePassword(user.password), user.type);
         Number.isInteger(id).should.be.true;
         const getUser = await UserDAO.getUserByID(id);
-        console.log(user, getUser);
         compareUser(user, getUser).should.be.true;
     });
 }
 
 function testDeleteUser(user) {
-    test(`Delete ${user.type} ${user.email} and get by id`, async function () {
+    test(`Delete User${user.type} ${user.email} `, async function () {
         await UserDAO.deleteUser(user.email, user.type);
         const getUser = await UserDAO.getUserByID(user.id);
         should.equal(getUser, undefined);
@@ -73,7 +71,7 @@ function testDeleteUser(user) {
 }
 
 function testGetUserByEmail(user) {
-    test(`Get user ${user.email}`, async function () {
+    test(`Get User ${user.email}`, async function () {
         const getUser = await UserDAO.getUserByEmail(user.email, user.type);
         compareUser(user, getUser).should.be.true;
     })
