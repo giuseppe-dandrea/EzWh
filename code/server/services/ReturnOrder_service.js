@@ -37,7 +37,8 @@ class ReturnOrderService {
                 throw EzWhException.EntryNotAllowed;
             }
             // const SKU = await SKU_dao.getSKUById(product.)
-            await dao.createReturnOrderProducts(returnOrderID, product.RFID)
+            await dao.createReturnOrderProducts(returnOrderID, product.RFID);
+            await SKUItem_dao.modifySKUItem(SKUItem.rfid ,SKUItem.rfid , 0 , SKUItem.dateOfStock );
         }
     }
 
