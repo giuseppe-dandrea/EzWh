@@ -2,10 +2,12 @@ const chai = require('chai');
 chai.should();
 const skuDAO = require('../database/SKU_dao');
 const posDAO = require('../database/Position_dao');
+const tdDAO = require("../database/TestDescriptor_dao");
 const SKU = require("../modules/SKU");
 const Position = require("../modules/Position");
 const dbConnection = require("../database/DatabaseConnection");
 const { expect } = require('chai');
+const TestDescriptor = require('../modules/TestDescriptor');
 
 function testGetSKUs(expectedSKUs) {
     test('get all skus', async function () {
@@ -22,9 +24,9 @@ function testGetTestDescriptorsBySKUID(id, expectedTestDescriptors) {
     test(`get test descriptors of SKUid = ${id}`, async function () {
         let tds = await skuDAO.getTestDescriptorsBySKUID(id);
         //console.log(tds);
-        tds.should.be.equal(expectedTestDescriptors.length);
+        tds.length.should.be.equal(expectedTestDescriptors.length);
         for (let i = 0; i < expectedTestDescriptors.length; i++)
-            expect(expectedTestDescriptors.some((td) => {
+            (expectedTestDescriptors.some((td) => {
                 return compareTestDescriptor(tds[i], td)
             })).should.be.true;
     });
@@ -85,9 +87,7 @@ function compareSKU(actualSKU, expectedSKU) {
             actualSKU.availableQuantity === expectedSKU.availableQuantity &&
             actualSKU.positionID == expectedSKU.positionID &&
             actualSKU.position == expectedSKU.position &&
-            actualSKU.price === expectedSKU.price &&
-            actualSKU.testDescriptors.sort().join(",") ===
-            expectedSKU.testDescriptors.sort().join(",");
+            actualSKU.price === expectedSKU.price;
 }
 
 function compareTestDescriptor(actualTD, expectedTD) {
@@ -105,6 +105,12 @@ let SKU1Pos = new SKU(newSKU1.id, newSKU1.description, newSKU1.weight, newSKU1.v
     newSKU1.notes, newSKU1.price, newSKU1.availableQuantity, pos1.positionID);
 let SKU2Pos = new SKU(SKU2.id, SKU2.description, SKU2.weight, SKU2.volume,
         SKU2.notes, SKU2.price, SKU2.availableQuantity, pos2.positionID);
+let td1 = new TestDescriptor(1, "Test1", "procedure 1", 1);
+let td2 = new TestDescriptor(2, "Test2", "procedure 2", 1);
+let td3 = new TestDescriptor(3, "Test3", "procedure 3", 1);
+let td4 = new TestDescriptor(4, "Test4", "procedure 4", 2);
+let td5 = new TestDescriptor(5, "Test5", "procedure 5", 2);
+let td6 = new TestDescriptor(6, "Test6", "procedure 6", 2);
 
 describe('Test SKU DAO', () => {
     beforeAll(async () => {
@@ -121,9 +127,17 @@ describe('Test SKU DAO', () => {
         afterAll(async () => {
             await posDAO.createPosition(pos1);
             await posDAO.createPosition(pos2);
+            await tdDAO.createTestDescriptor(td1.name,td1.procedureDescription, td1.idSKU);
+            await tdDAO.createTestDescriptor(td2.name,td2.procedureDescription, td2.idSKU);
+            await tdDAO.createTestDescriptor(td3.name,td3.procedureDescription, td3.idSKU);
+            await tdDAO.createTestDescriptor(td4.name,td4.procedureDescription, td4.idSKU);
+            await tdDAO.createTestDescriptor(td5.name,td5.procedureDescription, td5.idSKU);
+            await tdDAO.createTestDescriptor(td6.name,td6.procedureDescription, td6.idSKU);
         });
     })
     describe('test modify/delete SKU', () => {
+        testGetTestDescriptorsBySKUID(1, [td1, td2, td3]);
+        testGetTestDescriptorsBySKUID(2, [td4, td5, td6]);
         testModifySKU(newSKU1);
         testGetSKUs([newSKU1, SKU2]);
         testAddSKUPosition(SKU1Pos);
@@ -135,6 +149,12 @@ describe('Test SKU DAO', () => {
         afterAll(async ()=>{
             await posDAO.deletePosition(pos1.positionID);
             await posDAO.deletePosition(pos2.positionID);
+            await tdDAO.deleteTestDescriptor(1);
+            await tdDAO.deleteTestDescriptor(2);
+            await tdDAO.deleteTestDescriptor(3);
+            await tdDAO.deleteTestDescriptor(4);
+            await tdDAO.deleteTestDescriptor(5);
+            await tdDAO.deleteTestDescriptor(6);
         });
     });
 })
