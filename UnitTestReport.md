@@ -160,8 +160,7 @@ Version:
 
 ### Code coverage report
 
-    <Add here the screenshot report of the statement and branch coverage obtained using
-    the coverage tool. >
+![Image](Diagrams/Coverage.JPG "Coverage Report")
 
 
 ### Loop coverage analysis
