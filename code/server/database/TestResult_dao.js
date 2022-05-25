@@ -6,8 +6,6 @@ exports.getTestResultsByRFID = (RFID) => {
         const sql = `SELECT * FROM TestResult WHERE RFID=?`;
         dbConnection.all(sql, [RFID], (err, rows) => {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, r.Date, r.Result));
@@ -23,8 +21,7 @@ exports.getTestResultByIDAndRFID = (RFID, id) => {
        AND TestResultID=?`;
         dbConnection.all(sql, [RFID, id], (err, rows) => {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
+
                 reject(err);
             }
             const trs = rows.map((r) => new TestResult(r.RFID, r.TestResultID, r.TestDescriptorID, r.Date, r.Result));
@@ -40,8 +37,6 @@ exports.addTestResult = (RFID, idTestDescriptor, date, result) => {
       VALUES (?, ?, ?, ?)`;
         dbConnection.run(sql, [RFID, idTestDescriptor, date, result], function (err) {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             resolve(this.lastID);
@@ -60,8 +55,6 @@ exports.modifyTestResult = (testResult) => {
             [testResult.idTestDescriptor, testResult.date, testResult.result, testResult.id, testResult.rfid],
             function (err) {
                 if (err) {
-                    console.log("Error in DB");
-                    console.log(err);
                     reject(err);
                 }
             resolve();
@@ -77,8 +70,7 @@ exports.deleteTestResult = (RFID, id) => {
        TestResultID=? AND RFID=?`;
         dbConnection.run(sql, [id, RFID], function (err) {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
+
                 reject(err);
             }
             resolve();

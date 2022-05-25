@@ -1,23 +1,17 @@
 const chai = require('chai');
 chai.should();
 const skuDAO = require('../database/SKU_dao');
-const posDAO = require('../database/Position_dao');
 const RetODAO = require('../database/ReturnOrder_dao');
 const RestODAO = require("../database/RestockOrder_dao");
 const UserDAO = require("../database/User_dao");
 const SKUItemDAO = require("../database/SKUItem_dao");
-const SKU = require("../modules/SKU");
-const Position = require("../modules/Position");
-const ReturnOrder = require("../modules/ReturnOrder");
 const dbConnection = require("../database/DatabaseConnection");
 const { expect } = require('chai');
-const { User } = require('../modules/User');
 
 function testCreateReturnOrder(expectedRO) {
     test('create returnOrder', async function () {
         await RetODAO.createReturnOrder(expectedRO.returnDate, expectedRO.restockOrderId);
         let actualRO = await RetODAO.getReturnOrderByID(expectedRO.id);
-        console.log(actualRO);
         compareRO(actualRO, expectedRO).should.be.true;
     });
 }
@@ -76,8 +70,6 @@ function testGetReturnOrderProduct(id, products) {
 function testGetReturnOrders(expectedROs) {
     test('get all return orders', async function () {
         let ros = await RetODAO.getReturnOrders();
-        console.log(expectedROs);
-        console.log(ros);
         ros.length.should.be.equal(expectedROs.length);
         for (let i = 0; i < expectedROs.length; i++)
             expectedROs.some((ro) => {
@@ -87,7 +79,6 @@ function testGetReturnOrders(expectedROs) {
 }
 
 function testGetReturnOrderByID(expectedRO) {
-    console.log(expectedRO);
     test(`get return order with id = ${expectedRO.id}`, async function () {
         let ro = await RetODAO.getReturnOrderByID(expectedRO.id);
         compareRO(ro, expectedRO).should.be.true;

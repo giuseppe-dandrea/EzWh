@@ -6,8 +6,6 @@ exports.getTestDescriptors = () => {
         const sql = "SELECT * FROM TestDescriptor";
         dbConnection.all(sql, [], (err, rows) => {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
                 return;
             }
@@ -23,8 +21,7 @@ exports.getTestDescriptorByID = (id) => {
         const sql = "SELECT * FROM TestDescriptor WHERE TestDescriptorID=?";
         dbConnection.all(sql, [id], (err, rows) => {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
+
                 reject(err);
                 return;
             }
@@ -41,8 +38,6 @@ exports.createTestDescriptor = (name, procedureDescription, idSKU) => {
       VALUES (?, ?, ?)`;
         dbConnection.run(sql, [name, procedureDescription, idSKU], function (err) {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             resolve(this.lastID);
@@ -61,8 +56,7 @@ exports.modifyTestDescriptor = (testDescriptor) => {
             [testDescriptor.name, testDescriptor.procedureDescription, testDescriptor.idSKU, testDescriptor.id],
             function (err) {
                 if (err) {
-                    console.log("Error in DB");
-                    console.log(err);
+
                     reject(err);
                 }
                 resolve();
@@ -77,8 +71,6 @@ exports.deleteTestDescriptor = (id) => {
         const sql = `DELETE FROM TestDescriptor WHERE TestDescriptorID=?`;
         dbConnection.run(sql, [id], function (err) {
             if (err) {
-                console.log("Error in DB");
-                console.log(err);
                 reject(err);
             }
             resolve();

@@ -90,7 +90,6 @@ exports.deleteReturnOrder = (ID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `delete from ReturnOrder where ReturnOrderID=${ID}`;
-        console.log(sql);
         dbConnection.run(sql, [], (err) => {
             if (err) {
                 reject(err);

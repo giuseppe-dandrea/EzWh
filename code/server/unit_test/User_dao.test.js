@@ -37,7 +37,6 @@ function testGetUsers(expectedUsers) {
         users.should.be.an("array");
         users.length.should.be.equal(expectedUsers.length);
         for (let user of users) {
-            console.log(user);
             expectedUsers.some((u) => compareUser(u, user)).should.be.true;
         }
     });
@@ -59,7 +58,6 @@ function testCreateUser(user) {
         const id = await UserDAO.createUser(user.email, user.name, user.surname, User.storePassword(user.password), user.type);
         Number.isInteger(id).should.be.true;
         const getUser = await UserDAO.getUserByID(id);
-        console.log(user, getUser);
         compareUser(user, getUser).should.be.true;
     });
 }

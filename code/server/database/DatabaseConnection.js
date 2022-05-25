@@ -29,7 +29,6 @@ class DatabaseConnection {
       await userService.createUser("qualityEmployee1@ezwh.com", "Creed", "Bratton", "testpassword", "qualityEmployee");
       await userService.createUser("user1@ezwh.com", "John", "Doe", "testpassword", "customer");
     } catch (err) {
-      // console.log("Hardcoded users already added");
     }
   }
 

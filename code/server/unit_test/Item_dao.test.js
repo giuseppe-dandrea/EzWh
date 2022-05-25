@@ -49,7 +49,6 @@ const items = [
 
 function testCreateItem(item){
     test(`Create Item ${item.id}` , async()=>{
-        console.log(item);
         await itemDAO.createItem(item);
         let getItems=await itemDAO.getItemByID(item.id);
         let getItem=getItems[0];

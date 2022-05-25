@@ -23,7 +23,6 @@ function testGetSKUs(expectedSKUs) {
 function testGetTestDescriptorsBySKUID(id, expectedTestDescriptors) {
     test(`Get test descriptors of SKUID ${id}`, async function () {
         let tds = await skuDAO.getTestDescriptorsBySKUID(id);
-        //console.log(tds);
         tds.length.should.be.equal(expectedTestDescriptors.length);
         for (let i = 0; i < expectedTestDescriptors.length; i++)
             (expectedTestDescriptors.some((td) => {

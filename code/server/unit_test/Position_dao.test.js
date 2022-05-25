@@ -4,7 +4,6 @@ const dbConnection = require("../database/DatabaseConnection");
 const positionsDAO = require("../database/Position_dao");
 const skuDAO = require("../database/SKU_dao");
 const Position = require("../modules/Position");
-const skuitemDAO = require("../database/SKUItem_dao");
 const {expect} = require("chai");
 
 let postPositions = [

@@ -1,7 +1,5 @@
 const dao = require("../database/SKU_dao");
-const SKU = require("../modules/SKU");
 const Position_dao = require("../database/Position_dao");
-const TestDescriptor = require("../modules/TestDescriptor");
 const EzWhException = require("../modules/EzWhException.js");
 
 class SKUService {

@@ -2,7 +2,6 @@ const dao = require("../database/RestockOrder_dao");
 const Item_dao = require("../database/Item_dao");
 const User_dao = require("../database/User_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
-const RestockOrder = require("../modules/RestockOrder");
 const EzWhException = require("../modules/EzWhException.js");
 const dayjs = require('dayjs');
 

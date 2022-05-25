@@ -1,6 +1,5 @@
 const dao = require("../database/SKUItem_dao");
 const SKU_dao = require("../database/SKU_dao");
-const SKUItem = require("../modules/SKUItem");
 const EzWhException = require("../modules/EzWhException.js");
 
 class SKUItemService {

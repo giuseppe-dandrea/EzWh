@@ -1,6 +1,5 @@
 const chai = require('chai');
 chai.should();
-const skuDAO = require('../database/SKU_dao');
 const posDAO = require('../database/Position_dao');
 const tdDAO = require('../database/TestDescriptor_dao');
 const SKU = require("../modules/SKU");
@@ -8,15 +7,12 @@ const SKUService = require("../services/SKU_service");
 const skuService = new SKUService();
 const Position = require("../modules/Position");
 const dbConnection = require("../database/DatabaseConnection");
-const { expect } = require('chai');
 const EzWhException = require('../modules/EzWhException');
 const TestDescriptor = require('../modules/TestDescriptor');
 
 function testGetSKUs(expectedSKUs) {
     test("get all SKUs", async function () {
         let skus = await skuService.getSKUs();
-        console.log(skus);
-        console.log(expectedSKUs);
         skus.length.should.be.equal(expectedSKUs.length);
         for (let i = 0; i < expectedSKUs.length; i++)
             expectedSKUs.some((sku) => {
@@ -121,8 +117,6 @@ function testDeleteSKU(id) {
 }
 
 function compareSKU(actualSKU, expectedSKU) {
-    //console.log(expectedSKU);
-    //console.log(actualSKU);
     if (expectedSKU === undefined) return true;
     else {
         let cmp = actualSKU.description === expectedSKU.description &&
@@ -151,8 +145,6 @@ function compareTestDescriptor(actualTD, expectedTD) {
 }
 
 function comparePosition(actualPos, expectedPos) {
-    //console.log(actualPos);
-    //console.log(expectedPos);
     if (expectedPos == undefined && actualPos == undefined) return true;
     if (expectedPos == undefined || actualPos == undefined) return false;
     return actualPos.positionID === expectedPos.positionID &&

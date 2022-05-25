@@ -3,8 +3,6 @@ chai.should();
 const dbConnection = require("../database/DatabaseConnection");
 const skuitemDAO = require("../database/SKUItem_dao");
 const skuDAO = require("../database/SKU_dao");
-const SKUItem = require("../modules/SKUItem");
-const {modifySKUItem} = require("../database/SKUItem_dao");
 const {expect} = require("chai");
 
 

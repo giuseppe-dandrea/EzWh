@@ -1,7 +1,5 @@
-const { expect } = require('chai');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const { Router } = require('express');
 chai.use(chaiHttp);
 chai.should();
 
@@ -58,7 +56,6 @@ function getInternalOrdersByStatus(expectedHTTPStatus, expectedLength, expectedI
                 if (err) done(err);
                 res.should.have.status(expectedHTTPStatus);
                 if (expectedHTTPStatus === 200) {
-                    console.log(expectedInternalOrders);
                     res.should.be.json;
                     res.body.should.be.an('array');
                     res.body.should.have.lengthOf(expectedLength);
@@ -70,7 +67,6 @@ function getInternalOrdersByStatus(expectedHTTPStatus, expectedLength, expectedI
                         io.should.haveOwnProperty("products");
                         io.products.should.be.an('array');
                         io.should.haveOwnProperty("customerId");
-                        console.log(io);
                         expectedInternalOrders.some((intOrd) => {
                             return compareInternalOrder(intOrd, io)
                         }).should.be.true;
@@ -112,15 +108,12 @@ function getInternalOrder(expectedHTTPStatus, id, expectedInternalOrder) {
 function compareInternalOrder(expectedIO, actualIO) {
     let cmp_flag = true;
     if (expectedIO.issueDate !== actualIO.issueDate) {
-        console.log(expectedIO.issueDate, actualIO.issueDate);
         return false;
     }
     if (expectedIO.state !== actualIO.state) {
-        console.log(expectedIO.state, actualIO.state);
         return false;
     }
     if (expectedIO.products.length !== actualIO.products.length) {
-        console.log(expectedIO.product.length, actualIO.product.length);
         return false;
     }
     for (let i = 0; i < expectedIO.products.length; i++) {
@@ -133,12 +126,10 @@ function compareInternalOrder(expectedIO, actualIO) {
                     (p.qty !== undefined && p.qty === exppr.qty));
         });
         if (!cmp_flag) {
-            console.log(expectedIO.products[i], actualIO.products);
             return false;
         }
     }
     if (expectedIO.customerId !== actualIO.customerId) {
-        console.log(expectedIO.customerId, actualIO.customerId);
         return false;
     }
     return true;
