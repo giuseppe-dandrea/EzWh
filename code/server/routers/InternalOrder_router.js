@@ -137,7 +137,7 @@ router.put("/internalOrders/:id",
 });
 
 router.delete(
-  "/InternalOrders/:ID",
+  "/internalOrders/:ID",
   param("ID").isInt({ min: 1 }),
   async (req, res) => {
     try {
