@@ -83,8 +83,8 @@ function compareSKU(actualSKU, expectedSKU) {
             actualSKU.volume === expectedSKU.volume &&
             actualSKU.notes === expectedSKU.notes &&
             actualSKU.availableQuantity === expectedSKU.availableQuantity &&
-            actualSKU.positionID === expectedSKU.positionID &&
-            actualSKU.position === expectedSKU.position &&
+            actualSKU.positionID == expectedSKU.positionID &&
+            actualSKU.position == expectedSKU.position &&
             actualSKU.price === expectedSKU.price;
 }
 
@@ -101,8 +101,8 @@ let pos1 = new Position("800234543412", "8002", "3454", "3412", 1000, 1000);
 let pos2 = new Position("801234543412", "8012", "3454", "3412", 1000, 1000);
 let SKU1Pos = new SKU(newSKU1.id, newSKU1.description, newSKU1.weight, newSKU1.volume,
     newSKU1.notes, newSKU1.price, newSKU1.availableQuantity, pos1.positionID);
-// let SKU2Pos = new SKU(SKU2.id, SKU2.description, SKU2.weight, SKU2.volume,
-//         SKU2.notes, SKU2.price, SKU2.availableQuantity, pos2.positionID);
+let SKU2Pos = new SKU(SKU2.id, SKU2.description, SKU2.weight, SKU2.volume,
+        SKU2.notes, SKU2.price, SKU2.availableQuantity, pos2.positionID);
 let td1 = new TestDescriptor(1, "Test1", "procedure 1", 1);
 let td2 = new TestDescriptor(2, "Test2", "procedure 2", 1);
 let td3 = new TestDescriptor(3, "Test3", "procedure 3", 1);
