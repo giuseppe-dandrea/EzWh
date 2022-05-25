@@ -70,6 +70,8 @@ router.get(
       return res.status(200).json(returnItems);
     } catch (err) {
       console.log(err);
+      if (err === EzWhException.NotFound) return res.status(404).end();
+      else if (err === EzWhException.EntryNotAllowed) return res.status(422).end();
       return res.status(500).end();
     }
   }

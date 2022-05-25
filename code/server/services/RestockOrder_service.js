@@ -39,7 +39,7 @@ class RestockOrderService {
             const RFID = s.RFID;
             const SKU = await SKUItem_dao.getSKUItemByRfid(RFID);
             const SKUID = SKU.SKUID;
-            const skuItem = {"RFID": RFID, "SKUId": SKUID}
+            const skuItem = {"rfid": RFID, "SKUId": SKU.sku}
             skuItems.push(skuItem);
         }
         return skuItems;
@@ -72,6 +72,9 @@ class RestockOrderService {
     }
 
     async getRestockOrderReturnItems(id) {
+        let restockOrder = await dao.getRestockOrderByID(id);
+        if (restockOrder === undefined) throw EzWhException.NotFound;
+        if (restockOrder.state !== "COMPLETEDRETURN") throw EzWhException.EntryNotAllowed;
         let restockOrderReturnItems = await dao.getRestockOrderReturnItems(id);
         if (restockOrderReturnItems === undefined) throw EzWhException.NotFound;
         else return restockOrderReturnItems;
@@ -122,7 +125,10 @@ class RestockOrderService {
         if (restockOrder.state !== "DELIVERED") throw EzWhException.EntryNotAllowed;
         for (let skuItem of skuItems) {
             if(skuItem.SKUId===undefined||skuItem.rfid===undefined)
-            throw EzWhException.EntryNotAllowed;
+                throw EzWhException.EntryNotAllowed;
+            let getSkuItem = await SKUItem_dao.getSKUItemByRfid(skuItem.rfid);
+            if (getSkuItem === undefined || getSkuItem.sku !== skuItem.SKUId)
+                throw EzWhException.EntryNotAllowed;
         }
         for (let skuItem of skuItems) {
             await dao.addSkuItemToRestockOrder(ID, skuItem.rfid);
@@ -133,7 +139,7 @@ class RestockOrderService {
         const restockOrder = await dao.getRestockOrderByID(ID);
         if (restockOrder === undefined) throw EzWhException.NotFound;
         if (restockOrder.state !== "DELIVERY") throw EzWhException.EntryNotAllowed;
-        if(transportNote.deliveryDate===undefined ||
+        if(transportNote.deliveryDate===undefined || !dayjs(transportNote.deliveryDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid() ||
              dayjs(transportNote.deliveryDate).isBefore(dayjs(restockOrder.issueDate)))
              throw EzWhException.EntryNotAllowed;
         await dao.addTransportNoteToRestockOrder(ID, JSON.stringify(transportNote));

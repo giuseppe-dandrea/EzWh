@@ -66,7 +66,7 @@ function modifyRestockOrderStatus(expectedHTTPStatus, id, status) {
 function addSKUItemList(expectedHTTPStatus, id, SKUItemList) {
     it(`adding skuItem list to restock order ${id}`, function (done) {
         if (SKUItemList !== undefined) {
-            agent.post(`/api/restockOrder/${id}/skuItems`)
+            agent.put(`/api/restockOrder/${id}/skuItems`)
                 .set('content-type', 'application/json')
                 .send(SKUItemList)
                 .end(function (err, res) {
@@ -75,7 +75,7 @@ function addSKUItemList(expectedHTTPStatus, id, SKUItemList) {
                     done();
                 });
         } else {
-            agent.post(`/api/restockOrder/${id}/skuItems`)
+            agent.put(`/api/restockOrder/${id}/skuItems`)
                 .end(function (err, res) {
                     if (err) done(err);
                     res.should.have.status(expectedHTTPStatus);
@@ -89,7 +89,7 @@ function addTransportNote(expectedHTTPStatus, id, transportNote) {
         console.log(id);
         console.log(transportNote);
         if (transportNote !== undefined) {
-            agent.post(`/api/restockOrder/${id}/transportNote`)
+            agent.put(`/api/restockOrder/${id}/transportNote`)
                 .set('content-type', 'application/json')
                 .send(transportNote)
                 .end(function (err, res) {
@@ -98,7 +98,7 @@ function addTransportNote(expectedHTTPStatus, id, transportNote) {
                     done();
                 });
         } else {
-            agent.post(`/api/restockOrder/${id}/transportNote`)
+            agent.put(`/api/restockOrder/${id}/transportNote`)
                 .end(function (err, res) {
                     if (err) done(err);
                     res.should.have.status(expectedHTTPStatus);
@@ -183,6 +183,7 @@ function getRestockOrder(expectedHTTPStatus, id, expectedRestockOrder) {
                         res.body.should.haveOwnProperty("supplierId");
                         res.body.should.haveOwnProperty("skuItems");
                         res.body.skuItems.should.be.an('array');
+                        console.log("========>", expectedRestockOrder, res.body);
                         compareRestockOrder(expectedRestockOrder, res.body).should.be.true;
                     }
                     done();
@@ -209,12 +210,10 @@ function getReturnItems(expectedHTTPStatus, id, expectedLength, expectedReturnIt
                     res.body.should.have.lengthOf(expectedLength);
                     for (let i = 0; i < expectedLength; i++) {
                         let ri = res.body[i];
-                        ri.should.haveOwnProperty("SKUid");
-                        ri.shoudl.haveOwnProperty("rfid");
-                        expectedReturnItems.some((retItem) => {
-                            compareRestockOrder(retItem, ri)
-                        }).should.be.equal(true);
+                        ri.should.haveOwnProperty("SKUId");
+                        ri.should.haveOwnProperty("rfid");
                     }
+                    compareSKUItems(expectedReturnItems, res.body).should.be.true;
                 }
                 done();
             });
@@ -346,7 +345,6 @@ function deleteItem(expectedHTTPStatus, id) {
 }
 function compareRestockOrder(expectedRO, actualRO) {
     let cmp_flag = true;
-    console.log(expectedRO.issueDate, actualRO.issueDate)
     if (expectedRO.issueDate !== actualRO.issueDate) {
         console.log("issueDate");
         return false;
@@ -355,40 +353,43 @@ function compareRestockOrder(expectedRO, actualRO) {
         console.log("state");
         return false;
     }
-    if (expectedRO.products.length !== actualRO.products.length) {
+    if (expectedRO.products !== undefined && expectedRO.products.length !== actualRO.products.length) {
         console.log("product length");
         return false;
     }
-    for (let i = 0; i < expectedRO.products.length; i++) {
-        let exppr = expectedRO.products[i];
-        cmp_flag = actualRO.products.some((p) => {
-            return p.SKUId === exppr.SKUId &&
-                p.description === exppr.description &&
-                p.price === exppr.price &&
-                p.qty === exppr.qty;
-        });
-        if (!cmp_flag) {
-            console.log("product " + i.toString());
-            return false;
+    if (expectedRO.products)
+        for (let i = 0; i < expectedRO.products.length; i++) {
+            let exppr = expectedRO.products[i];
+            cmp_flag = actualRO.products.some((p) => {
+                return p.SKUId === exppr.SKUId &&
+                    p.description === exppr.description &&
+                    p.price === exppr.price &&
+                    p.qty === exppr.qty;
+            });
+            if (!cmp_flag) {
+                console.log("product " + i.toString());
+                return false;
+            }
         }
-    }
     if (expectedRO.supplierId !== actualRO.supplierId) {
         console.log("supplierId");
         return false;
     }
     if (expectedRO.transportNote !== undefined &&
-        expectedRO.transportNote.deliveryDate !== actualRO.transportNote.deliveryDate) {
+        expectedRO.transportNote.deliveryDate !== JSON.parse(actualRO.transportNote).deliveryDate) {
         console.log("TransportNote");
         return false;
     }
-    if (!compareReturnItems(expectedRO.skuItems, actualRO.skuItems)) {
+    if (expectedRO.skuItems && !compareSKUItems(expectedRO.skuItems, actualRO.skuItems)) {
         console.log("SKUItems");
         return false;
     }
     return true;
 }
-function compareReturnItems(expectedRI, actualRI) {
+function compareSKUItems(expectedRI, actualRI) {
     let cmp_flag = true;
+    console.log(expectedRI, actualRI)
+
     if (expectedRI.length !== actualRI.length) {
         console.log("Return Item lengnt");
         return false;
@@ -592,7 +593,7 @@ let item4 = {
     "supplierId": 8
 };
 let transportNote1 = { "deliveryDate": "2021/12/29" };
-let transportNote2 = { "deliveryDate": "2021/11/29" };
+let transportNote2 = { "deliveryDate": "2021/12/28" };
 let skuItems1 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789015" }, { "SKUId": 1, "rfid": "12345678901234567890123456789016" }]; //OK
 let skuItems2 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //OK
 let skuItemsError1 = [{ "SKUId": "abc", "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //invalid SKUID
@@ -601,6 +602,86 @@ let skuItemsError3 = [{ "SKUId": 1, "rfid": true }, { "SKUId": 1, "rfid": "12345
 let skuItemsError4 = [{ "SKUId": 1, "rfid": 1234567890123456789 }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //invalid RFID??
 let skuItemsError5 = [{ "SKUId": 5, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //SKUID not found
 let skuItemsError6 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789030" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //RFID not found
+
+const testDescriptors = [
+    {
+        name: "Test descriptor 1",
+        procedureDescription: "Check the external of the product",
+        idSKU: 1
+    },
+    {
+        name: "Test descriptor 2",
+        procedureDescription: "The product has 4 legs?",
+        idSKU: 1
+    }
+]
+
+const testResults = [
+    {
+        rfid: "12345678901234567890123456789015",
+        idTestDescriptor: 1,
+        Date: "2021/10/29 12:30",
+        Result: false
+    },
+    {
+        rfid: "12345678901234567890123456789016",
+        idTestDescriptor: 2,
+        Date: "2021/10/15 12:30",
+        Result: false
+    }
+]
+
+function testAddNewTestDescriptor(testDescriptor, expectedStatus) {
+    it("Posting /api/testDescriptor", function (done) {
+        agent.post('/api/testDescriptor')
+            .set('content-type', 'application/json')
+            .send(testDescriptor)
+            .end(function (err, res) {
+                if (err)
+                    done(err);
+                res.should.have.status(expectedStatus);
+                done();
+            });
+    });
+}
+
+function testDeleteTestDescriptor(id, expectedStatus) {
+    it(`Deleting /api/testDescriptor/${id}`, function (done) {
+        agent.delete(`/api/testDescriptor/${id}`)
+            .end(function (err, res) {
+                if (err)
+                    done(err);
+                res.should.have.status(expectedStatus);
+                done();
+            });
+    });
+}
+
+function testAddNewTestResult(testResult, expectedStatus) {
+    it("post /api/skuitems/testResult", function (done) {
+        agent.post('/api/skuitems/testResult')
+            .set('content-type', 'application/json')
+            .send(testResult)
+            .end(function (err, res) {
+                if (err)
+                    done(err);
+                res.should.have.status(expectedStatus);
+                done();
+            });
+    });
+}
+
+function testDeleteTestResult(id, rfid, expectedStatus) {
+    it(`delete /api/skuitems/${rfid}/testResult/${id}`, function (done) {
+        agent.delete(`/api/skuitems/${rfid}/testResult/${id}`)
+            .end(function (err, res) {
+                if (err)
+                    done(err);
+                res.should.have.status(expectedStatus);
+                done();
+            });
+    });
+}
 
 describe('TEST RestockOrder API', function () {
     describe('preparing environment', () => {
@@ -620,6 +701,10 @@ describe('TEST RestockOrder API', function () {
         newItem(201, item2);
         newItem(201, item3);
         newItem(201, item4);
+        for (let td of testDescriptors)
+            testAddNewTestDescriptor(td, 201);
+        for (let tr of testResults)
+            testAddNewTestResult(tr, 201);
     });
 
     describe('test insert/get/delete restockOrder api', () => {
@@ -738,7 +823,7 @@ describe('TEST RestockOrder API', function () {
         getReturnItems(404, 3);
         getReturnItems(422, 1);
         modifyRestockOrderStatus(200, 1, { "newState": states[4] });
-        getReturnItems(200, 1, skuItems1);
+        getReturnItems(200, 1, skuItems1.length, skuItems1);
         getReturnItems(422, true);
         getReturnItems(422, "abc");
         deleteRestockOrder(204, 1);
@@ -762,6 +847,10 @@ describe('TEST RestockOrder API', function () {
         deleteSKU(204, 1);
         deleteSKU(204, 2);
         deleteSKU(204, 3);
+        for (let i; i < testDescriptors.length; i++)
+            testDeleteTestDescriptor(i+1, 204)
+        for (let i; i < testResults.length; i++)
+            testDeleteTestResult(i+1, 201);
     });
 
 });

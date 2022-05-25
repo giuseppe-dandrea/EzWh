@@ -39,8 +39,7 @@ exports.getRestockOrderByID = (id) => {
                         row.TransportNote
                     );
                     resolve(tds);
-                }
-                else{
+                } else {
                     resolve(undefined);
                 }
             }
@@ -80,38 +79,36 @@ exports.getRestockOrderSKUItemsByRestockOrderID = (ID) => {
 exports.getRestockOrderReturnItems = (ID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const select_sql = `select RestockOrderID from RestockOrder where RestockOrderID=${ID}`
-        dbConnection.all(select_sql, (err, rows) => {
-            if (err) {
-                reject(err);
-            } else {
-                if (rows.length === 0) {
-                    resolve(undefined);
-                }
-                const sql = `select s.SKUID, s.RFID from ReturnOrder as ro
-          inner join ReturnOrderProduct as rop
+        // const select_sql = `select RestockOrderID from RestockOrder where RestockOrderID=${ID}`
+        // dbConnection.all(select_sql, (err, rows) => {
+        //     if (err) {
+        //         reject(err);
+        //     } else {
+        //         if (rows.length === 0) {
+        //             resolve(undefined);
+        //         }
+        const sql = `select s.SKUID, s.RFID from RestockOrderSKUItem as rosi
           inner join SKUItem as s
           inner join TestResult as t
-          where ro.ReturnOrderID = rop.ReturnOrderID and
-          s.RFID = rop.RFID and
-          s.RFID = t.RFID and
-          ro.RestockOrderID=${ID} and
+          where s.RFID = rosi.RFID and
+          t.RFID = rosi.RFID and
+          rosi.RestockOrderID=${ID} and
           t.Result = false
-          group by s.RFID
+          group by s.SKUID, s.RFID
           having count(*)>0;`;
-                dbConnection.all(sql, function (err, rows) {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-                    const tds = rows.map(
-                        (r) =>
-                            ({"SKUId": r.SKUID, "rfid": r.RFID})
-                    );
-                    resolve(tds);
-                });
+        dbConnection.all(sql, function (err, rows) {
+            if (err) {
+                reject(err);
+                return;
             }
+            const tds = rows.map(
+                (r) =>
+                    ({"SKUId": r.SKUID, "rfid": r.RFID})
+            );
+            resolve(tds);
         });
+        // }
+        // });
     });
 }
 
