@@ -1,8 +1,8 @@
 # Integration and API Test Report
 
-Date:
+Date: 2022/05/25
 
-Version:
+Version: 1.0
 
 # Contents
 
@@ -12,9 +12,8 @@ Version:
 
 - [Tests](#tests)
 
-- [Scenarios](#scenarios)
-
 - [Coverage of scenarios and FR](#scenario-coverage)
+
 - [Coverage of non-functional requirements](#nfr-coverage)
 
 
@@ -128,21 +127,14 @@ User_dao <-- DatabaseConnection
      
 # Integration approach
 
-    <Write here the integration sequence you adopted, in general terms (top down, bottom up, mixed) and as sequence
-    (ex: step1: class A, step 2: class A+B, step 3: class A+B+C, etc)> 
-    <Some steps may  correspond to unit testing (ex step1 in ex above), presented in other document UnitTestReport.md>
-    <One step will  correspond to API testing>
-
-    We adopted a bottom-up integration approach, firstly we tested the functions in database folder (<Unit>_dao.js files) that have no dependencies, then we tested at api level without mockups. To test database functions we imported others to create and delete entries in tables due to foreign key constraint.
-    step1: <Unit>_dao.js (unit tests)
-    step2: API tests without mockups 
+We adopted a bottom-up integration approach, firstly we tested the functions in database folder (*Unit*_dao.js files) that have no dependencies, then we tested at api level without mockups. To test database functions we imported other DAO Classes to create and delete entries in tables due to foreign key constraint.
+step1: *Unit*_dao.js (unit tests)
+step2: API tests without mockups 
     
 
 
 #  Integration Tests
 
-   <define below a table for each integration step. For each integration step report the group of classes under test, and the names of
-     Jest test cases applied to them, and the mock ups used, if any> Jest test cases should be here code/server/unit_test
 
 ## Step 1
 | Classes  | mock up used |Jest test cases |
@@ -159,7 +151,7 @@ User_dao <-- DatabaseConnection
 |User_dao|-|User_dao.test|
 
 ## Step 2
-| Classes  | mock up used |Jest test cases |
+| Classes  | mock up used | API test cases |
 |--|--|--|
 |InternalOrder_router|-|testInternalOrder|
 |Item_router|-|testItem|
@@ -172,33 +164,6 @@ User_dao <-- DatabaseConnection
 |TestResult_router|-|testTestResult|
 |User_router|-|testUser|
 
-
-
-## Step n 
-
-   
-| Classes  | mock up used |Jest test cases |
-|--|--|--|
-||||
-
-
-
-
-# API testing - Scenarios
-
-
-<If needed, define here additional scenarios for the application. Scenarios should be named
- referring the UC in the OfficialRequirements that they detail>
-
-## Scenario UCx.y
-
-| Scenario |  name |
-| ------------- |:-------------:| 
-|  Precondition     |  |
-|  Post condition     |   |
-| Step#        | Description  |
-|  1     |  ... |  
-|  2     |  ... |
 
 
 
@@ -222,13 +187,20 @@ User_dao <-- DatabaseConnection
 # Coverage of Non Functional Requirements
 
 
-<Report in the following table the coverage of the Non Functional Requirements of the application - only those that can be tested with automated testing frameworks.>
-
-
 ### 
 
-| Non Functional Requirement | Test name                              |
-|----------------------------|----------------------------------------|
-| NFR4                       | "TEST Position API" in testPosition.js |
-| NFR6                       | "TEST SKUItem API" in testSKUItem.js   |
-| NFR9                       | "TEST SKUItem API" in testSKUItem.js   |
+| Non Functional Requirement | Test name                                        |
+|----------------------------|--------------------------------------------------|
+| NFR4                       | "TEST Position API" in testPosition.js           |
+| NFR6                       | "TEST SKUItem API" in testSKUItem.js             |
+|                            | "TEST TestResult API" in testTestResult.js       |
+|                            | "TEST RestockOrder API" in testRestockOrder.js   |
+|                            | "TEST ReturnOrder API" in testReturnOrder.js     |
+|                            | "TEST InternalOrder API" in testInternalOrder.js |
+|                            | "TEST SKUItem API" in testSKUItem.js             |
+| NFR9                       | "TEST SKUItem API" in testSKUItem.js             |
+|                            | "TEST TestResult API" in testTestResult.js       |
+|                            | "TEST RestockOrder API" in testRestockOrder.js   |
+|                            | "TEST ReturnOrder API" in testReturnOrder.js     |
+|                            | "TEST InternalOrder API" in testInternalOrder.js |
+|                            | "TEST SKUItem API" in testSKUItem.js             |
