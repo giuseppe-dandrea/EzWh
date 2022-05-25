@@ -67,9 +67,7 @@ class InternalOrderService {
             } else {
                 products = await this.getInternalOrderSKUItems(internalOrder.id);
             }
-            for (let p of products) {
-                internalOrder.addProduct(p);
-            }
+            internalOrder.concatProducts(products);
         }
         console.log(internalOrders);
         return internalOrders;
@@ -133,9 +131,7 @@ class InternalOrderService {
             } else {
                 products = await this.getInternalOrderSKUItems(ID);
             }
-            for (let p of products) {
-                IO.addProduct(p);
-            }
+            IO.concatProducts(products)
             return IO;
         }
      catch(err){

@@ -6,9 +6,7 @@ class InternalOrder{
         this.customerId = customerId;
         this.products = products;
     }
-    addProduct(product){
-        this.products.push(product);
-    }
+
     concatProducts(products){
         this.products = this.products.concat(products);
     }

@@ -18,16 +18,8 @@ class RestockOrder {
     this.skuItems = skuItems;
   }
 
-  addProduct(product){
-    this.products.push(product);
-  }
-
   concatProducts(products){
     this.products = this.products.concat(products);
-  }
-
-  addSKUItem(SKUItem){
-    this.skuItems.push(SKUItem);
   }
 
   concatSKUItems(SKUItems){
