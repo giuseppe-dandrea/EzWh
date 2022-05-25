@@ -148,32 +148,32 @@ function testGetAllPositions(expectedStatus, expectedNumber) {
   });
 }
 
-// function testGetPositionById(expectedStatus, id) {
-//   describe(`get /api/skus/${id}`, function () {
-//     it(`Getting /api/skus/${id}`, function (done) {
-//       agent.get(`/api/skus/${id}`).end(function (err, res) {
-//         if (err) {
-//           done(err);
-//         }
-//         if (res.body.status === 200) {
-//           res.should.be.json;
-//           res.body.should.be.an("object");
-//           res.body.should.haveOwnProperty("description");
-//           res.body.should.haveOwnProperty("weight");
-//           res.body.should.haveOwnProperty("volume");
-//           res.body.should.haveOwnProperty("price");
-//           res.body.should.haveOwnProperty("notes");
-//           res.body.should.haveOwnProperty("position");
-//           res.body.should.haveOwnProperty("availableQuantity");
-//           res.body.should.haveOwnProperty("testDescriptors");
-//           res.body.testDescriptors.should.be.a("array");
-//           res.should.have.status(expectedStatus);
-//         }
-//         done();
-//       });
-//     });
-//   });
-// }
+function testGetPositionById(expectedStatus, id) {
+  describe(`get /api/skus/${id}`, function () {
+    it(`Getting /api/skus/${id}`, function (done) {
+      agent.get(`/api/skus/${id}`).end(function (err, res) {
+        if (err) {
+          done(err);
+        }
+        if (res.body.status === 200) {
+          res.should.be.json;
+          res.body.should.be.an("object");
+          res.body.should.haveOwnProperty("description");
+          res.body.should.haveOwnProperty("weight");
+          res.body.should.haveOwnProperty("volume");
+          res.body.should.haveOwnProperty("price");
+          res.body.should.haveOwnProperty("notes");
+          res.body.should.haveOwnProperty("position");
+          res.body.should.haveOwnProperty("availableQuantity");
+          res.body.should.haveOwnProperty("testDescriptors");
+          res.body.testDescriptors.should.be.a("array");
+          res.should.have.status(expectedStatus);
+        }
+        done();
+      });
+    });
+  });
+}
 
 /***POST***/
 
@@ -268,6 +268,9 @@ describe("TEST Position API", function () {
         testCreatePosition(201, postPositions[2]);
 
         testGetAllPositions(200,3);
+
+        for (let postPosition of postPositions)
+            testGetPositionById(200, postPosition.positionID);
     })
 
     describe("Testing PUT APIs" ,function (){
