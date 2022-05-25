@@ -6,7 +6,7 @@ Version:
 
 # Contents
 
-- [Dependency graph](#dependency graph)
+- [Dependency graph](#dependency-graph)
 
 - [Integration approach](#integration)
 
@@ -132,6 +132,10 @@ User_dao <-- DatabaseConnection
     (ex: step1: class A, step 2: class A+B, step 3: class A+B+C, etc)> 
     <Some steps may  correspond to unit testing (ex step1 in ex above), presented in other document UnitTestReport.md>
     <One step will  correspond to API testing>
+
+    We adopted a bottom-up integration approach, firstly we tested the functions in database folder (<Unit>_dao.js files) that have no dependencies, then we tested at api level without mockups. To test database functions we imported others to create and delete entries in tables due to foreign key constraint.
+    step1: <Unit>_dao.js (unit tests)
+    step2: API tests without mockups 
     
 
 
@@ -143,13 +147,31 @@ User_dao <-- DatabaseConnection
 ## Step 1
 | Classes  | mock up used |Jest test cases |
 |--|--|--|
-||||
-
+|InternalOrder_dao|-|InternalOrder_dao.test|
+|Item_dao|-|Item_dao.test|
+|Position_dao|-|Position_dao.test|
+|RestockOrder_dao|-|RestockOrder_dao.test|
+|ReturnOrder_dao|-|ReturnOrder_dao.test|
+|SKU_dao|-|SKU_dao.test|
+|SKUItem_dao|-|SKUItem_dao.test|
+|TestDescriptor_dao|-|TestDescriptor_dao.test|
+|TestResult_dao|-|TestResult_dao.test|
+|User_dao|-|User_dao.test|
 
 ## Step 2
 | Classes  | mock up used |Jest test cases |
 |--|--|--|
-||||
+|InternalOrder_router|-|testInternalOrder|
+|Item_router|-|testItem|
+|Position_router|-|testPosition|
+|RestockOrder_router|-|testRestockOrder|
+|ReturnOrder_router|-|testReturnOrder|
+|SKU_router|-|testSKU|
+|SKUItem_router|-|testSKUItem|
+|TestDescriptor_router|-|testTestDescriptor|
+|TestResult_router|-|testTestResult|
+|User_router|-|testUser|
+
 
 
 ## Step n 
