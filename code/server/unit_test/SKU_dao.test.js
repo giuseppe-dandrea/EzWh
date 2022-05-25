@@ -10,7 +10,7 @@ const { expect } = require('chai');
 const TestDescriptor = require('../modules/TestDescriptor');
 
 function testGetSKUs(expectedSKUs) {
-    test('get all skus', async function () {
+    test('Get All SKUs', async function () {
         let skus = await skuDAO.getSKUs();
         skus.length.should.be.equal(expectedSKUs.length);
         for (let i = 0; i < expectedSKUs.length; i++)
@@ -21,7 +21,7 @@ function testGetSKUs(expectedSKUs) {
 }
 
 function testGetTestDescriptorsBySKUID(id, expectedTestDescriptors) {
-    test(`get test descriptors of SKUid = ${id}`, async function () {
+    test(`Get test descriptors of SKUID`, async function () {
         let tds = await skuDAO.getTestDescriptorsBySKUID(id);
         //console.log(tds);
         tds.length.should.be.equal(expectedTestDescriptors.length);
@@ -33,7 +33,7 @@ function testGetTestDescriptorsBySKUID(id, expectedTestDescriptors) {
 }
 
 function testCreateSKU(expectedSKU) {
-    test('create sku', async function () {
+    test('Create SKU', async function () {
         await skuDAO.createSKU(expectedSKU.description, expectedSKU.weight,
             expectedSKU.volume, expectedSKU.notes, expectedSKU.price,
             expectedSKU.availableQuantity);
@@ -43,14 +43,14 @@ function testCreateSKU(expectedSKU) {
 }
 
 function testGetSKUById(id, expectedSKU) {
-    test(`get sku with id=${id}`, async function () {
+    test(`Get SKU by ID`, async function () {
         let sku = await skuDAO.getSKUById(id);
         compareSKU(sku, expectedSKU).should.be.true;
     });
 }
 
 function testModifySKU(expectedSKU) {
-    test(`modify sku with id=${expectedSKU.id}`, async function () {
+    test(`Modify SKU`, async function () {
         await skuDAO.modifySKU(expectedSKU.id, expectedSKU.description,
             expectedSKU.weight, expectedSKU.volume, expectedSKU.notes, expectedSKU.price,
             expectedSKU.availableQuantity);
@@ -60,7 +60,7 @@ function testModifySKU(expectedSKU) {
 }
 
 function testAddSKUPosition(expectedSKU) {
-    test(`add position with id=${expectedSKU.positionID} to sku with id=${expectedSKU.id}`, async function () {
+    test(`Add position to SKU `, async function () {
         await skuDAO.addSKUPosition(expectedSKU.id, expectedSKU.positionID);
         let sku = await skuDAO.getSKUById(expectedSKU.id);
         compareSKU(sku, expectedSKU).should.be.true;
@@ -68,7 +68,7 @@ function testAddSKUPosition(expectedSKU) {
 }
 
 function testDeleteSKU(id) {
-    test(`delete SKU with id = ${id}`, async () => {
+    test(`Delete SKU`, async () => {
         await skuDAO.deleteSKU(id);
         let sku = await skuDAO.getSKUById(id);
         expect(sku).to.be.undefined;

@@ -81,11 +81,16 @@ Version:
     <For traceability write the class and method name that contains the test case>
 
 
-| Unit name | Jest test case |
-|--|--|
-|||
-|||
-||||
+| Class name | Unit name                 | Jest File | Jest test case                |
+|------------|---------------------------|-----------|-------------------------------|
+| SKU_dao    | getSKUs                   | SKU_dao   | Get all SKUs                  |
+|            | getTestDescriptorsBySKUID | SKU_dao   | Get test descriptors of SKUID |
+|            | createSKU                 | SKU_dao   | Create SKU                    |
+|            | getSKUById                | SKU_dao   | Get SKU by ID                 |
+|            | modifySKU                 | SKU_dao   | Modify SKU                    |
+|            | addSKUPosition            | SKU_dao   | Add position to SKU           |
+|            | deleteSKU                 | SKU_dao   | Delete SKU                    |
+
 
 ### Code coverage report
 
