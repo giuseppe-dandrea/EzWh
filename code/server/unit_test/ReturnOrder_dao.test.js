@@ -33,12 +33,18 @@ function testCreateReturnOrderError(expectedRO) {
     });
 }
 
-function testCreateReturnOrderProducts(products) {
+function testCreateReturnOrderProducts(id, products) {
     test('create returnOrder product', async function () {
         for (let i = 0; i < products.length; i++) {
             await RetODAO.createReturnOrderProducts(products[i].ReturnOrderID,
                 products[i].RFID);
         }
+        let actualProducts = await RetODAO.getReturnOrderProducts(id);
+        for (let i = 0; i < products.length; i++)
+            (products.some((p) => {
+                return p.RFID === actualProducts[i].RFID &&
+                    p.ReturnOrderID == actualProducts[i].ReturnOrderID;
+            })).should.be.true;
     });
 }
 
@@ -261,11 +267,11 @@ describe("Test ReturnOrder DAO", () => {
         testGetReturnOrderByID(returnOrder2);
         testCreateReturnOrderError(returnOrder3);
         testGetReturnOrders([returnOrder1, returnOrder2]);
-        testCreateReturnOrderProducts(products1);
-        testCreateReturnOrderProducts(products2);
+        testCreateReturnOrderProducts(1, products1);
+        testCreateReturnOrderProducts(2, products2);
         testGetReturnOrderProduct(1, products1);
         testGetReturnOrderProduct(2, products2);
-        testCreateReturnOrderProductsError(2, products3);
+        testCreateReturnOrderProductsError(products3);
         testDeleteReturnOrder(1);
         testDeleteReturnOrder(2);
         testGetReturnOrders([]);
