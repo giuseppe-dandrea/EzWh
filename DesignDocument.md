@@ -542,9 +542,9 @@ note over Database: id is generated\nby database
 participant SKU
 
 Manager -> EzWh: Selects description D, weight W, volume V,\nnotes N, price P, availableQuantity Q
-EzWh -> Service: createSKU(D, W, V, N, P, Q)
+EzWh -> Service: SKU_service.createSKU(D, W, V, N, P, Q)
 activate Service
-Service -> Database: createSKU(D, W, V, N, P, Q)
+Service -> Database: SKU_dao.createSKU(D, W, V, N, P, Q)
 activate Database
 Database -> Database : id is generated
 Database -> SKU: new SKU(id, D, W, V, N, P, Q)
@@ -558,7 +558,7 @@ deactivate Service
 EzWh --> Manager : Done
 ```
 
-## Scenario 1-3 - Modify SKU weight and volume
+## Scenario 1-3 - Modify SKU description, weight, volume, notes, price and availableQuantity
 
 ```plantuml
 actor Manager
@@ -568,37 +568,16 @@ participant Service
 participant Database
 participant SKU
 
-Manager -> EzWh: Selects SKU S, description D, newWeight W, newVolume V,\nnotes N, price, P, availableQuantity Q
-EzWh -> Service: modifySKU(S, D, W, V, N, P, Q)
-Service -> Database : sku = getSKUById(S)
+Manager -> EzWh: Selects SKU S, NewDescription D, newWeight W, newVolume V,\nnewNotes N, NewPrice, P, NewAvailableQuantity Q
+EzWh -> Service: SKU_service.modifySKU(S, D, W, V, N, P, Q)
+Service -> Database : SKU_dao.getSKUById(S)
 activate Database
 Database -> Service : SKU
 deactivate Database
-Service -> SKU: sku.setDescription(D)
+Service -> SKU: SKU_dao.modifySKU(S, D, W, V, N, P, Q)
 activate SKU
 SKU --> Service: Done
 deactivate SKU
-Service -> SKU: sku.setWeight(W)
-activate SKU
-SKU --> Service: Done
-deactivate SKU
-Service -> SKU: sku.setVolume(V)
-activate SKU
-SKU --> Service: Done
-deactivate SKU
-Service -> SKU: sku.setNotes(N)
-activate SKU
-SKU --> Service: Done
-deactivate SKU
-Service -> SKU: sku.setPrice(P)
-activate SKU
-SKU --> Service: Done
-deactivate SKU
-Service -> SKU: sku.setAvailableQuantity(Q)
-Service -> Database : modifySKU(sku)
-activate Database
-Database --> Service : Done
-deactivate Database
 Service --> EzWh : Done
 EzWh --> Manager : Done
 ```
@@ -614,9 +593,9 @@ participant Database
 participant Position
 
 Manager -> EzWh: Selects positionId P, aisleId A, row R,\ncol C, maxWeight W, maxVolume V
-EzWh -> Service: createPosition(P, A, R, C, W, V)
+EzWh -> Service: Position_service.createPosition(P, A, R, C, W, V)
 activate Service
-Service -> Database: createPosition(P, A, R, C, W, V)
+Service -> Database: Position_dao.createPosition(P, A, R, C, W, V)
 activate Database
 Database-> Position: new Position(P, A, R, C, W, V)
 activate Position
@@ -639,9 +618,9 @@ participant Service
 participant Database
 
 Manager -> EzWh: Selects positionId P and newPositionId N
-EzWh -> Service: modifyPositionId(P, N)
+EzWh -> Service: Position_service.modifyPositionId(P, N)
 activate Service
-Service -> Database : modifyPositionId(P, N)
+Service -> Database : Position_dao.modifyPositionId(P, N)
 activate Database
 Database --> Service : Done
 deactivate Database
@@ -660,17 +639,31 @@ participant Service
 participant Database
 note over Database: id is generated\nby database
 participant RestockOrder
+participant Item
 
-Manager -> EzWh: Creates Restock Order, inserts issueDate D,\nItem I, quantity Q and Supplier SP
-EzWh -> Service: CreateRestockOrder(D, Map<I, Q>, SP)
+Manager -> EzWh: Creates Restock Order, inserts issueDate D,\nList<Object{SKUId S, quantity Q}>,\nquantity Q and Supplier SP
+EzWh -> Service: RestockOrder_service.CreateRestockOrder(\nD, List<Object{SI, Q}>, SP)
 activate Service
-Service -> Database: restockOrder = CreateRestockOrder (D, Map<I, Q>, SP)
+Service -> Database: restockOrder =\nRestockOrder_dao.CreateRestockOrder (D, SP)
 activate Database
-Database -> RestockOrder: new RestockOrder(id, D, Map<I, Q>, SP)
+Database -> RestockOrder: new RestockOrder(id, D, state, SP, transportNote)
 activate RestockOrder
 RestockOrder --> Database: RestockOrder
 Deactivate RestockOrder
 Database --> Service: RestockOrder
+deactivate Database
+Service -> Service: ForEach List<Object{SI, Q}>
+Service -> Database: item = Item_dao.getItemBySKUIDAndSupplierID(SI, SP)
+activate Database
+Database -> Item: new Item(id, description, price, SKUId, SP)
+activate Item
+Item --> Database: Item
+deactivate Item
+Database --> Service: Item
+deactivate Database
+Service -> Database: RestockOrder_dao.createRestockOrderProduct(\nitem.id, restockOrder.id, Q)
+activate Database
+Database --> Service: Done
 deactivate Database
 Service --> EzWh: Done
 deactivate Service
