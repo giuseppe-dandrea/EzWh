@@ -711,46 +711,50 @@ participant SkuItem
 participant ReturnOrder
 
 
-Manager -> EzWh: System provide RFID of SKU items\nthat not passed quality tests
-EzWh -> Service: getRestockOrderById()
+Manager -> EzWh: M inserts RO.ID
+EzWh -> Service: RestockOrder_service.getRestockOrderReturnItems()
 activate Service
-Service -> Database: restockOrder = getRestockOrderById(id)
+Service -> Database: RestockOrder_dao.getRestockOrderById(id)
 activate Database
-Database -> RestockOrder: new RestockOrder(id, issueDate, state,\nproducts, supplierId, transportNote, skuItems)
+Database -> RestockOrder : new RestockOrder
 activate RestockOrder
 RestockOrder --> Database: RestockOrder
 Deactivate RestockOrder
+
 Database --> Service: RestockOrder
 deactivate Database
-Service -> SkuItem: skuItems = restockOrder.getSkuItems()
+Service -> Database: RestockOrder_dao.getRestockOrderReturnItems()
+activate Database
+Database -> SkuItem : new SKUItem
 activate SkuItem
-SkuItem --> Service: List<SkuItem>
+
+
+SkuItem --> Database: SkuItem
+
 deactivate SkuItem
+Database --> Service :List<SkuItem>
+deactivate Database
 Service --> EzWh: List<SkuItem>
 deactivate Service
 EzWh --> Manager: List<SkuItem>
 
 Manager -> EzWh: Create Return Order and\ninsert SKU Items to be returned
-EzWh -> Service: createReturnOrder(date, products, restockorderid)
+EzWh -> Service: ReturnOrder_service.createReturnOrder(returnDate, products, restockOrderID)
 activate Service
-Service -> Database: returnOrder = createReturnOrder(date, products, restockorderid)
+Service -> Database: ReturnOrder_dao.createReturnOrder(returnDate, restockOrderID)
 activate Database
-Database -> ReturnOrder: new ReturnOrder(id, date, products, restockOrderId)
+Database -> ReturnOrder: new ReturnOrder
 activate ReturnOrder
 ReturnOrder --> Database: ReturnOrder
 Deactivate ReturnOrder
 Database --> Service: ReturnOrder
 deactivate Database
-Service -> SkuItem: Foreach skuItem in products\n  skuItem.setAvailable(False)
-activate SkuItem
-SkuItem --> Service: Done
-Deactivate SkuItem
-Service -> Database: Foreach skuItem in products\n  modifySkuItem(skuItem)
+Service -> Database: Foreach skuItem in products\n  SKUItem_dao.modifySKUItem(rfid ,rfid , 0 , dateOfStock );
 activate Database
 Database --> Service: Done
 Deactivate Database
-deactivate Service
 Service --> EzWh: Done
+deactivate Service
 EzWh --> Manager: Done
 ```
 
