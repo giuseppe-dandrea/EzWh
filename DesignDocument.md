@@ -168,9 +168,6 @@ package modules {
 		+ date
 		+ result
 	}
-	class TransportNote {
-	    + shipmentDate
-	}
 }
 
 package database {
@@ -459,7 +456,6 @@ package services {
 }
 
 services --- EzWhException
-RestockOrder --- TransportNote
 User --- UserTypes
 
 InternalOrder_dao --- InternalOrder
@@ -512,21 +508,22 @@ User_service --- User_dao
 ```
 -->
 
-This design is based on the Facade pattern, in this way the API can communicate only with the Facade class that works as an interface between all the other classes.
-DbHelper is the interface for the database and is used to obtain persistance.
+This design is based on the Facade pattern, in this way the API can communicate only with the service classes that works as an interface between all the other classes and the database.
+Modules are used to describe the objects and are returned by DAOs.
+DAOs are the interfaces for the database that is used to obtain persistence.
 
 # Verification traceability matrix
 
-| FR    | EzWh | DbHelper | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder | TransportNote |
-| ---   | :--: | :------: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: | :-----------: |
-| FR1   |  x   |    x     |  x   |     |         |                |            |          |      |              |               |             |			      |
-| FR2   |  x   |    x     |      |  x  |         |       x        |            |     x    |      |              |               |             |			      |
-| FR3.1 |  x   |    x     |      |  x  |         |                |            |     x    |      |              |               |             |			      |
-| FR3.2 |  x   |    x     |      |     |         |       x        |     x      |          |      |              |               |             |			      |
-| FR4   |  x   |    x     |  x   |     |         |                |            |          |      |              |               |             |		 	      |
-| FR5   |  x   |    x     |      |  x  |    x    |                |            |          |  x   |      x       |               |      x      |       x       |
-| FR6   |  x   |    x     |      |  x  |    x    |                |            |          |      |              |       x       |             |			      |
-| FR7   |  x   |    x     |  x   |  x  |         |                |            |          |  x   |              |               |             |			      |
+| FR    | Services | Database | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder |
+| ---   | :------: | :------: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: |
+| FR1   |    x     |    x     |  x   |     |         |                |            |          |      |              |               |             |
+| FR2   |    x     |    x     |      |  x  |         |       x        |            |     x    |      |              |               |             |
+| FR3.1 |    x     |    x     |      |  x  |         |                |            |     x    |      |              |               |             |
+| FR3.2 |    x     |    x     |      |     |         |       x        |     x      |          |      |              |               |             |
+| FR4   |    x     |    x     |  x   |     |         |                |            |          |      |              |               |             |
+| FR5   |    x     |    x     |      |  x  |    x    |                |            |          |  x   |      x       |               |      x      |
+| FR6   |    x     |    x     |      |  x  |    x    |                |            |          |      |              |       x       |             |
+| FR7   |    x     |    x     |  x   |  x  |         |                |            |          |  x   |              |               |             |
 
 # Verification sequence diagrams
 

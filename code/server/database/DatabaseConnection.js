@@ -124,13 +124,7 @@ class DatabaseConnection {
             FOREIGN KEY (SKUID) REFERENCES SKU(SKUID) ON DELETE CASCADE ,
     		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
             );`,
-        
-        `CREATE TABLE IF NOT EXISTS TransportNote (
-    		ShipmentDate VARCHAR(100) NOT NULL, 
-    		RestockOrderID INTEGER NOT NULL ,
-    		PRIMARY KEY (RestockOrderID),
-            FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
-		    );`,
+
         
         `CREATE TABLE IF NOT EXISTS InternalOrder (
             InternalOrderID INTEGER NOT NULL,

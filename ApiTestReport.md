@@ -203,4 +203,3 @@ step2: API tests without mockups
 |                            | "TEST RestockOrder API" in testRestockOrder.js   |
 |                            | "TEST ReturnOrder API" in testReturnOrder.js     |
 |                            | "TEST InternalOrder API" in testInternalOrder.js |
-|                            | "TEST SKUItem API" in testSKUItem.js             |
