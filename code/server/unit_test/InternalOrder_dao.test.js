@@ -103,7 +103,7 @@ function compareInternalOrderSKUItem(expected, actual) {
 }
 
 function testCreateInternalOrder(internalOrder, expectedError) {
-    test(`Create internalOrder ${internalOrder.id}`, async function() {
+    test(`Create InternalOrder`, async function() {
         let id = undefined;
         try {
             id = await InternalOrderDAO.createInternalOrder(internalOrder.issueDate, internalOrder.customerId)
@@ -125,7 +125,7 @@ function testCreateInternalOrder(internalOrder, expectedError) {
 }
 
 function testDeleteInternalOrder(internalOrder) {
-    test(`Delete internalOrder ${internalOrder.id}`, async function () {
+    test(`Delete InternalOrder ${internalOrder.id}`, async function () {
         await InternalOrderDAO.deleteInternalOrder(internalOrder.id);
         const getInternalOrder = await InternalOrderDAO.getInternalOrderByID(internalOrder.id);
         should.equal(getInternalOrder.length, 0);
@@ -133,7 +133,7 @@ function testDeleteInternalOrder(internalOrder) {
 }
 
 function testGetInternalOrders(state, expectedInternalOrders) {
-    test(`Get internalOrders with state=${state}`, async function () {
+    test(`Get InternalOrders with state=${state}`, async function () {
         let getInternalOrders = await InternalOrderDAO.getInternalOrders(state);
         for (let internalOrder of getInternalOrders) {
             expectedInternalOrders.some((io) => compareInternalOrder(io, internalOrder)).should.be.true;

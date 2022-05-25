@@ -4,7 +4,6 @@ const dbConnection = require("../database/DatabaseConnection");
 const itemDAO = require("../database/Item_dao");
 const userDAO = require("../database/User_dao");
 const skuDAO = require("../database/SKU_dao");
-const skuitemDAO = require("../database/SKUItem_dao");
 const {expect} = require("chai");
 
 let suppliers = [
@@ -86,7 +85,7 @@ function testGetItemBySKUIDAndSupplierID(SKUId , supplierId ,expectedItem) {
 }
 
 function testModifyItem(id, newDescription, newPrice ) {
-    test(`Modifying Item ${id}`, async function () {
+    test(`Modify Item ${id}`, async function () {
         let itemsBefore = [...await itemDAO.getItemByID(id)];
         let beforeItem = itemsBefore[0];
         let expectedItem={id:beforeItem.id, description:newDescription , price : newPrice , skuId: beforeItem.skuId , supplierId:beforeItem.supplierId};
