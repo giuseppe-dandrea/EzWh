@@ -38,8 +38,8 @@ router.post(
   body("aisleID").exists().isString().isNumeric().isLength({ min: 4, max: 4 }),
   body("row").exists().isString().isNumeric().isLength({ min: 4, max: 4 }),
   body("col").exists().isString().isNumeric().isLength({ min: 4, max: 4 }),
-  body("maxWeight").exists().isInt(),
-  body("maxVolume").exists().isInt(),
+  body("maxWeight").exists().isInt({min : 0}),
+  body("maxVolume").exists().isInt({min : 0}),
   async (req, res) => {
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty()) {
@@ -76,10 +76,10 @@ router.put(
   body("newAisleID").isString().isNumeric().isLength({ min: 4, max: 4 }),
   body("newRow").isString().isNumeric().isLength({ min: 4, max: 4 }),
   body("newCol").isString().isNumeric().isLength({ min: 4, max: 4 }),
-  body("newMaxWeight").isInt(),
-  body("newMaxVolume").isInt(),
-  body("newOccupiedWeight").isInt(),
-  body("newOccupiedVolume").isInt(),
+  body("newMaxWeight").isInt({min : 0}),
+  body("newMaxVolume").isInt({min : 0}),
+  body("newOccupiedWeight").isInt({min : 0}),
+  body("newOccupiedVolume").isInt({min : 0}),
   async (req, res) => {
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty()) {

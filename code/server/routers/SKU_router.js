@@ -57,10 +57,10 @@ router.get("/skus/:id", param("id").isInt({min : 1}),
 //POST /sku
 router.post(
   "/sku",
-  body("description").exists(),
-  body("weight").isFloat({ min: 0 }),
-  body("volume").isFloat({ min: 0 }),
-  body("notes").exists(),
+  body("description").isString().isLength({min: 1}),
+  body("weight").isInt({ min: 0 }),
+  body("volume").isInt({ min: 0 }),
+  body("notes").isString().isLength({min: 1}),
   body("price").isFloat({ min: 0 }),
   body("availableQuantity").isInt({ min: 0 }),
   async (req, res) => {
@@ -90,10 +90,10 @@ router.post(
 router.put(
     "/sku/:id",
     param("id").isInt({min : 1}),
-	body("newDescription").isString(),
-	body("newWeight").isFloat({min : 0}),
-	body("newVolume").isFloat({min : 0}),
-	body("newNotes").isString(),
+	body("newDescription").isString().isLength({min: 1}),
+	body("newWeight").isInt({min : 0}),
+	body("newVolume").isInt({min : 0}),
+	body("newNotes").isString().isLength({min: 1}),
 	body("newPrice").isFloat({min : 0}),
 	body("newAvailableQuantity").isInt({min : 0}),
 	async (req, res) => {
