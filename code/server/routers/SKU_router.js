@@ -142,7 +142,7 @@ router.put(
 });
 
 //DELETE /skus/:id
-router.delete("/skus/:id", param("id").isInt({min : 1}),
+router.delete("/skus/:id", param("id").isInt({min : 0}),
 	async (req, res) => {
 		const validationErrors = validationResult(req);
 		if (!validationErrors.isEmpty()) {
