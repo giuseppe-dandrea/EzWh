@@ -35,7 +35,7 @@ router.get('/testDescriptors/:id', param('id').isInt({ min: 1 }),
     }
   });
 
-router.post('/testDescriptor', check('name').exists(), check('procedureDescription').exists(),
+router.post('/testDescriptor', check('name').isString().isLength({min: 1}), check('procedureDescription').isString().isLength({min: 1}),
 check('idSKU').isInt({ min: 1 }),
   async (req, res) => {
     try {
