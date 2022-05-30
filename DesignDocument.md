@@ -20,22 +20,31 @@ The design must satisfy the Official Requirements document, notably functional a
 # High level design
 
 ```plantuml
-package it.polito.ezwh.controller <<Folder>>{
+package routers <<Folder>>{
 
 }
-package it.polito.ezwh.gui <<Folder>>{
+package gui <<Folder>>{
 
 }
-package it.polito.ezwh.data <<Folder>>{
+package services <<Folder>>{
+
+}
+package database <<Folder>>{
 
 
 }
-package it.polito.ezwh.exceptions <<Folder>>{
+package modules <<Folder>>{
+
 
 }
-it.polito.ezwh.gui --|> it.polito.ezwh.controller
-it.polito.ezwh.controller --|> it.polito.ezwh.data
-it.polito.ezwh.data --|> it.polito.ezwh.exceptions : import
+package EzWhExceptions <<Folder>>{
+
+}
+gui --|> routers
+routers --|> services
+services --|> database
+database --|> modules
+services --|> EzWhExceptions : import
 ```
 
 Architectural pattern: Layered
@@ -46,494 +55,475 @@ Architectural pattern: Layered
 
 <!--
 ```plantuml
-class EzWhFacade {
-	+ db : DbHelper
-	__
-	+ getSKUs() : List<SKU>
-	+ getSKUById(id : Integer) : SKU
-	+ getSKUByDescription(description : String) : List<SKU>
-	+ createSKU(description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : void
-	+ modifySKU(id : String, newDescription : String, newWeight : Double, newVolume : Double, newNotes : String, newPrice : Double, newAvailableQuantity : Integer) : void
-	+ addSKUPosition(id : String, position : Position) : void
-	+ deleteSKU(id : String) : void
-	..
-	+ getSKUItems() : List<SKUItem>
-	+ getSKUItemsBySKU(SKUid : Integer) : List<SKUItem>
-	+ getSKUItemByRfid(rfid : String) : SKUItem
-	+ createSKUItem(rfid : String, SKUid : Integer, dateOfStock : String) : void
-	+ modifySKUItem(rfid : String, newRfid : String, newAvailable : Bool, newDateOfStock : String) : void
-	+ deleteSKUItem(rfid : String) : void
-	..
-	+ getPositions() : List<Position>
-	+ createPosition(positionId : String, aisleId : String, row : String, col : String, maxWeight : Double, maxVolume : Double) : void
-	+ modifyPosition(positionId : String, newAisleId : String, newRow : String, newCol : String, newMaxWeight : Double, newMaxVolume : Double, newOccupiedWeight : Double, newOccupiedVolume : Double) : void
-	+ modifyPositionId(positionId : String, newPositionId: String) : void
-	+ deletePositionId(positionId : String) : void
-	~ getPositionById(positionId : String) : Position
-	..
-	+ getTestDescriptors(): List<TestDescriptor>
-	+ getTestDescriptorByID(id: Integer): TestDescriptor
-	+ createTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): void
-	+ modifyTestDescriptor(id: Integer, newName: String, newProcedureDescription: String, newIdSKU: Integer): void
-	+ deleteTestDescriptor(id: Integer): void
-	..
-	+ getTestResultsByRFID(RFID: String): List<TestResult>
-	+ getTestResultByIDAndRFID(RFID: String, id: Integer): TestResult
-	+ addTestResult(RFID: String, idTestDescriptor: Integer, date: String, result: boolean): void
-	+ modifyTestResult(RFID: String, id: Integer, newIdTestDescriptor: Integer, newDate: String, newResult: boolean): void
-	+ deleteTestResult(RFID: String, id: Integer): void
-	..
-	+ getUserInfo(id: Integer): User
-	+ getSuppliers(): List<User>
-	+ getUsers(): List<User>
-	+ createUser(email: String, name: String, surname: String, password: String, type: String): void
-	+ login(email: String, password: String, type: String): User
-	+ logout(id : Integer): void
-	+ modifyUserRights(email: String, oldType: String, newType: String): void
-	+ deleteUser(email: String, type: String): void
-	~ getUserByEmail(email: String): User
-	..
-	+ getItems (): List<Item>
-	+ getItemById (id: String) : Item
-	+ createItem( description: String, price : double, SKUId : String, supplierId : String): void
-	+ modifyItem(id: String, newDescription: String, newPrice: double ): void
-	+ deleteItem(id:String) : void
-	..
-	+ getRestockOrders() : List<RestockOrder>
-	+ getRestockOrdersIssued() : List<RestockOrder>
-	+ getRestockOrderById(id : Integer) : RestockOrder
-	+ getRestockOrderReturnItems(id : Integer) : List<SKUItem>
-	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : void
-	+ modifyRestockOrder(id : Integer, state : String)
-	+ addSkuItemsToRestockOrder(id : Integer, skuItems : List<SKUItem>) : void
-	+ addTransportNoteToRestockOrder(id : Integer, transportNote : TransportNote) : void
-	+ deleteRestockOrder(id : Integer) : void
-	..
-	+ getReturnOrders() : List<ReturnOrder>
-	+ getReturnOrderById(id : Integer) : ReturnOrder
-	+ createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : void
-	+ deleteReturnOrder(id : Integer) : void
-	..
-	+ getInternalOrders() : List<InternalOrder>
-	+ getInternalOrdersIssued() : List<InternalOrder>
-	+ getInternalOrdersAccepted() : List<InternalOrder>
-	+ getInternalOrderById(id : Integer) : InternalOrder
-	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : void
-	+ modifyInternalOrderState(id : Integer, state : String, RFIDs : List<SKUItem>) : void
-	+ deleteInternalOrder(id : Integer) : void
+package modules {
+    class EzWhException {
+        + TableAlreadyExists
+        + InternalError
+        + NotFound
+        + PositionFull
+        + Unauthorized
+        + EntryNotAllowed
+        + Conflict
+    }
+	class SKU {
+		+ id
+		+ description
+		+ weight
+		+ volume
+		+ price
+		+ notes
+		+ availableQuantity
+		+ positionID
+		+ position
+		+ testDescriptors
+		--
+		+ addTestDescriptor(testDescriptor: TestDescriptor) : void
+	}
+	class SKUItem {
+		+ rfid
+		+ sku
+		+ available
+		+ dateOfStock
+	}
+	class Item {
+		+ id
+		+ description
+		+ price
+		+ skuId
+		+ supplierId
+	}
+	class Position {
+		+ positionID
+		+ aisleID
+		+ row
+		+ col
+		+ maxWeight
+		+ maxVolume
+		+ occupiedWeight
+		+ occupiedVolume
+		+ sku
+	}
+	enum UserTypes {
+        + ADMINISTRATOR
+        + MANAGER
+        + CLERK
+        + DELIVERY_EMPLOYEE
+        + QUALITY_CHECK_EMPLOYEE
+        + INTERNAL_CUSTOMER
+        + SUPPLIER
+        --
+        + isUserTypes(userType : String) : boolean
+	}
+	class User {
+		+ id
+		+ name
+		+ surname
+		+ email
+		+ type
+		+ password
+		__
+		+ storePassword(password : String) : void
+		+ verifyPassword(password : String) : boolean
+	}
+	class RestockOrder {
+		+ id
+		+ issueDate
+		+ state
+		+ supplierId
+		+ transportNote
+		+ products
+		+ skuItems
+		__
+		+ concatProducts(products : List<Object{Item, qty}>) : void
+		+ concatSKUItems(SKUItems: List<SKUItem>) : void
+	}
+	class ReturnOrder {
+		+ id
+		+ returnDate
+		+ restockOrderId
+		+ products
+		--
+		+ addProduct(product : Object{Item, qty}) : void
+	}
+
+	class InternalOrder {
+		+ id
+		+ issueDate
+		+ state
+		+ customerId
+		+ products
+		__
+		+ concatProducts(products : List<Object{SKU, qty}>) : void
+	}
+	class TestDescriptor {
+		+ id
+		+ name
+		+ procedureDescription
+		+ idSKU
+	}
+	class TestResult {
+		+ rfid
+		+ id
+		+ idTestDescriptor
+		+ date
+		+ result
+	}
 }
 
-class DbHelper {
-	+ dbName : String
-	+ dbConnection : Connection
-	__
-	+ DbHelper(dbName : String) : DbHelper
-	..
-	+ createConnection() : void
- 	+ closeConnection() : void
- 	+ createTables(): void
- 	+ dropTables(): void
- 	..
-	+ getSKUs() : List<SKU>
-	+ getSKUById(id : Integer) : SKU
-	+ getSKUByDescription(description : String) : List<SKU>
-	+ createSKU(description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : SKU
-	+ modifySKU(sku : SKU) : void
-	+ addSKUPosition(id : String, position : Position) : void
-	+ deleteSKU(id : String) : void
-	..
-	+ getSKUItems() : List<SKUItem>
-	+ getSKUItemsBySKU(SKUid : Integer) : List<SKUItem>
-	+ getSKUItemByRfid(rfid : String) : SKUItem
-	+ createSKUItem(skuItem : SKUItem) : void
-	+ modifySKUItem(skuItem : SKUItem) : void
-	+ deleteSKUItem(rfid : String) : void
-	..
-	+ getPositions() : List<Position>
-	+ createPosition(position : Position) : void
-	+ modifyPosition(position : Position) : void
-	+ modifyPositionId(positionId : String, newPositionId: String) : void
-	+ deletePositionId(positionId : String) : void
-	+ getPositionById(positionId : String) : Position
-	..
-	+ getTestDescriptors(): List<TestDescriptor>
-	+ createTestDescriptor(name: String, procedureDescription: String, idSKU: Integer): TestDescriptor
-	+ modifyTestDescriptor(testDescriptor : TestDescriptor): void
-	+ deleteTestDescriptor(id: Integer): void
-	..
-	+ getTestResultsByRFID(RFID: String): List<TestResult>
-	+ getTestResultByIDAndRFID(RFID: String, id: Integer): TestResult
-	+ addTestResult(RFID: String, idTestDescriptor: Integer, date: String, result: boolean): TestResults
-	+ modifyTestResult(RFID: String, id: Integer, testResult : TestResult): void
-	+ deleteTestResult(RFID: String, id: Integer): void
-	..
-	+ getUserInfo(id: Integer): User
-	+ getSuppliers(): List<User>
-	+ getUsers(): List<User>
-	+ createUser(email: String, name: String, surname: String, password: String, type: String): User
-	+ modifyUserRights(email: String, oldType: String, newType: String): void
-	+ deleteUser(email: String, type: String): void
-	+ getUserByEmail(email: String): User
-	..
-	+ getItems (): List<Item>
-	+ getItemById (id: String) : Item
-	+ createItem( description: String, price : double, SKUId : String, supplierId : String): Item
-	+ modifyItem(item : Item): void
-	+ deleteItem(id:String) : void
-	..
-	+ getRestockOrders() : List<RestockOrder>
-	+ getRestockOrdersIssued() : List<RestockOrder>
-	+ getRestockOrderById(id : Integer) : RestockOrder
-	+ getRestockOrderReturnItems(id : Integer) : List<SKUItem>
-	+ createRestockOrder(issueDate : String, products : Map<Item, Integer>, supplierId : Integer) : RestockOrder
-	+ modifyRestockOrder(restockOrder : RestockOrder)
-	+ addSkuItemsToRestockOrder(id : Integer, skuItems : List<SKUItem>) : void
-	+ addTransportNoteToRestockOrder(id : Integer, transportNote : TransportNote) : void
-	+ deleteRestockOrder(id : Integer) : void
-	..
-	+ getReturnOrders() : List<ReturnOrder>
-	+ getReturnOrderById(id : Integer) : ReturnOrder
-	+ createReturnOrder(returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : ReturnOrder
-	+ deleteReturnOrder(id : Integer) : void
-	..
-	+ getInternalOrders() : List<InternalOrder>
-	+ getInternalOrdersIssued() : List<InternalOrder>
-	+ getInternalOrdersAccepted() : List<InternalOrder>
-	+ getInternalOrderById(id : Integer) : InternalOrder
-	+ createInternalOrder(issueDate : String, products : Map<SKU, Integer>, customerId : Integer) : InternalOrder
-	+ modifyInternalOrderState(id : Integer, state : String, RFIDs : List<SKUItem>) : void
-	+ deleteInternalOrder(id : Integer) : void
+package database {
+    class DatabaseConnection {
+        + db
+        --
+        + createConnection() : void
+        + createTables() : void
+        + createHardcodedUsers() : void
+        + runSQL() : void
+    }
+    
+    class InternalOrder_dao {
+        + createInternalOrderProduct(internalOrderID, SKUID,description,price, QTY) : void
+        + createInternalOrder(issueDate, customerID) : ID
+        + getInternalOrders(state) : List<InternalOrder>
+        + getInternalOrderByID(id) : InternalOrder
+        + getInternalOrderProductByInternalOrderID(ID) : List<Object{SKU, qty}>
+        + getInternalOrderSKUItemByInternalOrderID(ID) : List<SKUItem>
+        + createInternalOrderSKUItem(orderId,SKUID, RFID) : void
+        + modifyInternalOrderState(id, newState) : void
+        + deleteInternalOrder(ID) : void
+    }
+    class Item_dao {
+        + getItems() : List<Item>
+        + getItemByID(id) : Item
+        + getItemBySKUIDAndSupplierID(SKUID, supplierID) : Item
+        + createItem(item) : ID
+        + modifyItem(id, newDescription, newPrice) : void
+        + deleteItem(id) : void
+        + deleteAllItems() : void
+    }
+    class Position_dao {
+        + getPositions() : List<Position>
+        + getPositionByID(id) : Position
+        + createPosition(position) : ID
+        + modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId) : void
+        + modifyPositionID(oldID, newPositionID, newAisleID, newRow, newCol) : void
+        + deletePosition(id) : void
+        + deleteAllPositions() : void
+    }
+    class RestockOrder_dao {
+        + getRestockOrders(state) : List<RestockOrder>
+        + getRestockOrderByID(id) : RestockOrder
+        + getRestockOrderProductsByRestockOrderID(ID) : List<Object{Item, qty}>
+        + getRestockOrderSKUItemsByRestockOrderID(ID) : List<SKUItem>
+        + getRestockOrderReturnItems(ID) : List<SKUItem>
+        + createRestockOrder(issueDate, supplierID) : ID
+        + createRestockOrderProduct(itemID, restockOrderID, QTY) : void
+        + modifyRestockOrderState(id, newState) : void
+        + addSkuItemToRestockOrder(ID, RFID) : void
+        + addTransportNoteToRestockOrder(ID, transportNote) : void
+        + deleteRestockOrder(ID) : void
+    }
+    class ReturnOrder_dao {
+        + createReturnOrder(returnDate, restockOrderID) : ID
+        + createReturnOrderProducts(ID, RFID) : void
+        + getReturnOrderProducts(ID) : List<Object{Item, qty}>
+        + getReturnOrders() : List<ReturnOrder>
+        + getReturnOrderByID(ID) : ReturnOrder
+        + deleteReturnOrder(ID) : void
+    }
+    class SKU_dao {
+        + getSKUs() : List<SKU>
+        + getTestDescriptorsBySKUID(skuid) : List<TestDescriptor>
+        + createSKU(description, weight, volume, notes, price, availableQuantity) : ID
+        + getSKUById(id) : SKU
+        + modifySKU(id, newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity) : void
+        + addSKUPosition(id, positionId) : void
+        + deleteSKU(id) : void
+        + deleteAllSKUs() : void
+    }
+    class SKUItem_dao {
+        + getSKUItems() : List<SKUItem>
+        + getSKUItemsBySKU(SKUID) : List<SKUItem>
+        + getSKUItemByRfid(rfid) : SKUItem
+        + createSKUItem(rfid, SKUId, dateOfStock) : ID
+        + modifySKUItem(rfid, newRfid, newAvailable, newDateOfStock) : void
+        + deleteSKUItem(rfid) : void
+        + deleteAllSKUItems() : void
+    }
+    class TestDescriptor_dao {
+        + getTestDescriptors() : List<TestDescriptor>
+        + getTestDescriptorByID(id) : TestDescriptor
+        + createTestDescriptor(name, procedureDescription, idSKU) : ID
+        + modifyTestDescriptor(testDescriptor) : void
+        + deleteTestDescriptor(id) : void
+    }
+    class TestResult_dao {
+        + getTestResultsByRFID(RFID) : List<TestResult>
+        + getTestResultByIDAndRFID(RFID, id) : TestResult
+        + addTestResult(RFID, idTestDescriptor, date, result) : ID
+        + modifyTestResult(testResult) : void
+        + deleteTestResult(RFID, id) : void
+    }
+    class User_dao {
+        + getUserInfo(id) : void
+        + getSuppliers() : List<User>
+        + getUsers() : List<User>
+        + createUser(email, name, surname, password, type) : ID
+        + modifyUserRights(email, oldType, newType) : void
+        + deleteUser(email, type) : void
+        + getUserByEmail(email, type) : User
+        + getUserByID(ID) : User
+    }
 }
 
-class SKU {
-	- id : Integer
-	- description : String
-	- weight : Double
-	- volume : Double
-	- price : Double
-	- notes : String
-	- position : Position
-	- availableQuantity : Integer
-	- testDescriptors : List<TestDescriptor>
-	__
-	+ SKU(id : String, description : String, weight : Double, volume : Double, notes : String, price : Double, availableQuantity : Integer) : SKU
-	..
-	+ getId() : Integer
-	+ getDescription() : String
-	+ getWeight() : Double
-	+ getVolume() : Double
-	+ getPrice() : Double
-	+ getNotes() : String
-	+ getPosition() : Position
-	+ getAvailableQuantity() : Integer
-	+ getTestDescriptors() : List<TestDescriptor>
-	..
-	+ setId(id : Integer) : void
-	+ setDescription(description : String) : void
-	+ setWeight(weight : Double) : void
-	+ setVolume(volume : Double) : void
-	+ setPrice(price : Double) : void
-	+ setNotes(notes : String) : void
-	+ setPosition(position : Position) : void
-	+ setAvailableQuantity(availableQuantity : Integer) : void
-	+ setTestDescriptors(testDescriptors : List<TestDescriptor>) : void
-	..
-	+ initTestDescriptor() : void
-	+ addTestDescriptor(testDescriptor : TestDescriptor) : void
+package routers {
+    class InternalOrder_router {
+        - post("/internalOrders"),
+        - get("/internalOrders"),
+        - get("/internalOrdersIssued"),
+        - get("/internalOrdersAccepted"),
+        - get("/internalOrders/:id")
+        - put("/internalOrders/:id"),
+        - delete("/internalOrders/:ID")
+    }
+    class Item_router {
+        - get("/items")
+        - get("/items/:id")
+        - delete("/items/:id")
+        - post("/item")
+        - put("/item/:id")
+    }
+    class Position_router {
+        - get("/positions"), async (req, res) => {
+        - get("/positions/:id")
+        - post("/position")
+        - put("/position/:positionID")
+        - put("/position/:positionID/changeID")
+        - delete("/position/:positionID")
+    }
+    class RestockOrder_router {
+        - get("/restockOrders")
+        - get("/restockOrdersIssued")
+        - get("/restockOrders/:ID")
+        - get("/restockOrders/:ID/returnItems")
+        - post("/restockOrder")
+        - put("/restockOrder/:ID")
+        - put("/restockOrder/:ID/skuItems")
+        - put("/restockOrder/:ID/transportNote")
+        - delete("/restockOrder/:ID")
+    }
+    class ReturnOrder_router {
+        - post("/returnOrder")
+        - get("/returnOrders")
+        - get("/returnOrders/:ID")
+        - delete("/returnOrder/:ID")
+    }
+    class SKUItem_router {
+        - get("/skuitems")
+        - get("/skuitems/sku/:id")
+        - get("/skuitems/:rfid")
+        - post("/skuitem")
+        - put("/skuitems/:rfid")
+        - delete("/skuitems/:rfid")
+    }
+    class SKU_router {
+        - get("/skus")
+        - get("/skus/:id")
+        - post("/sku")
+        - put("/sku/:id")
+        - put("/sku/:id/position")
+        - delete("/skus/:id")
+    }
+    class TestDescriptor_router {
+        - get("/testDescriptors")
+        - get("/testDescriptors/:id")
+        - post("/testDescriptor")
+        - put("/testDescriptor/:id")
+        - delete("/testDescriptor/:id")
+    }
+    class TestResult_router {
+        - get("/skuitems/:rfid/testResults")
+        - get("/skuitems/:rfid/testResults/:id")
+        - post("/skuitems/testResult")
+        - put("/skuitems/:rfid/testResult/:id")
+        - delete("/skuitems/:rfid/testResult/:id")
+    }
+    class User_router {
+        - get("/userinfo")
+        - get("/suppliers")
+        - get("/users")
+        - post("/newUser")
+        - post("/managerSessions")
+        - post("/customerSessions")
+        - post("/supplierSessions")
+        - post("/clerkSessions")
+        - post("/qualityEmployeeSessions")
+        - post("/deliveryEmployeeSessions")
+        - post("/logout")
+        - put("/users/:username")
+        - delete("/users/:username/:type")
+    }
 }
 
-class Position {
-	- positionId : String
-	- aisleId : String
-	- row : String
-	- col : String
-	- maxWeight : Double
-	- maxVolume : Double
-	- occupiedWeight : Double
-	- occupiedVolume : Double
-	- sku : SKU
-	__
-	+ Position(positionId : String, aisleId : String, row : String, col : String, maxWeight : Double, maxVolume : Double) : Position
-	..
-	+ getPositionId() : String
-	+ getAisleId() : String
-	+ getRow() : String
-	+ getCol() : String
-	+ getMaxWeight() : Double
-	+ getMaxVolume() : Double
-	+ getOccupiedWeight() : Double
-	+ getOccupiedVolume() : Double
-	+ getSku() : SKU
-	..
-	+ setPositionId(positionId : String) : void
-	+ setAisleId(aisleId : String) : void
-	+ setRow(row : String) : void
-	+ setCol(col : String) : void
-	+ setMaxWeight(maxWeight : Double) : void
-	+ setMaxVolume(maxVolume : Double) : void
-	+ setOccupiedWeight(occupiedWeight : Double) : void
-	+ setOccupiedVolume(occupiedVolume : Double) : void
-	+ setSku(sku : SKU) : void
+package services {
+    class InternalOrder_service {
+        + createInternalOrder(issueDate, products, customerID) : void
+        + getAllInternalOrders() : List<InternalOrder>
+        + getInternalOrders(state) : List<InternalOrder>
+        + getInternalOrdersIssued() : List<InternalOrder>
+        + getInternalOrdersAccepted() : List<InternalOrder>
+        + getInternalOrderSKUItems(ID) : List<SKUItem>
+        + getInternalOrderProducts(ID) : List<Object{SKU, qty}>
+        + getInternalOrderByID(ID) : InternalOrder
+        + modifyInternalOrder(id, newState) : void
+        + completeInternalOrder(id , products) : void
+        + deleteInternalOrder(ID) : void
+    }
+    class Item_service {
+        + getItems() : List<Item>
+        + getItemByID(id) : Item
+        + createItem(ItemID, Description, Price, SKUID, SupplierID) : void
+        + modifyItem(id, newDescription, newPrice) : void
+        + deleteItem(id) : void
+    }
+    class Position_service {
+        + getPositions() : List<Position>
+        + getPositionByID(id) : Position
+        + createPosition(positionID, aisleID, row, col, maxWeight, maxVolume) : void
+        + modifyPositionID(oldID, newPositionID, newAisleID, newRow, newCol) : void
+        + deletePosition(id) : void
+        + deleteAllPositions() : void
+    }
+    class RestockOrder_service {
+        + getRestockOrderProducts(ID) : List<Object{Item, qty}>
+        + getRestockOrderSKUItems(ID) : List<SKUItem>
+        + getRestockOrders(state) : List<RestockOrder>
+        + getRestockOrderByID(id) : RestockOrder
+        + getRestockOrderReturnItems(id) : List<SKUItem>
+        + createRestockOrder(issueDate, products, supplierID) : void
+        + modifyRestockOrderState(id, newState) : void
+        + addSkuItemsToRestockOrder(ID, skuItems) : void
+        + addTransportNoteToRestockOrder(ID, transportNote) : void
+        + deleteRestockOrder(ID) : void
+    }
+    class ReturnOrder_service {
+        + createReturnOrder(returnDate, products, restockOrderID) : void
+        + getReturnOrderProducts(returnOrderID) : List<Object{Item, qty}>
+        + getReturnOrders() : List<ReturnOrder>
+        + getReturnOrderByID(ID) : ReturnOrder
+        + deleteReturnOrder(ID) : void
+    }
+    class SKUItem_service {
+        + getSKUItems() : List<SKUItem>
+        + getSKUItemsBySKU(SKUID) : List<SKUItem>
+        + getSKUItemByRfid(rfid) : SKUItem
+        + deleteSKUItem(rfid) : void
+        + deleteAllSKUItems() : void
+        + modifySKUItem(rfid, newRfid, newAvailable, newDateOfStock) : void
+        + createSKUItem(rfid, SKUId, dateOfStock) : void
+    }
+    class SKU_service {
+        + getSKUs() : List<SKU>
+        + createSKU(description, weight, volume, notes, price, availableQuantity) : void
+        + getSKUById(id) : SKU
+        + modifySKU(id, newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity) : void
+        + modifySKUPosition(positionId, newOccupiedWeight, newOccupiedVolume, SKUId) : void
+        + addSKUPosition(id, positionId) : void
+        + deleteSKU(id) : void
+    }
+    class TestDescriptor_service {
+        + getTestDescriptors() : List<TestDescriptor>
+        + getTestDescriptorByID(id) : TestDescriptor
+        + createTestDescriptor(name, procedureDescription, idSKU) : void
+        + modifyTestDescriptor(id, newName, newProcedureDescription, newIdSKU) : void
+        + deleteTestDescriptor(id) : void
+    }
+    class TestResult_service {
+        + getTestResultsByRFID(RFID) : List<TestResult>
+        + getTestResultByIDAndRFID(RFID, id) : TestResult
+        + addTestResult(RFID, idTestDescriptor, date, result) : void
+        + modifyTestResult(RFID, id, newIdTestDescriptor, newDate, newResult) : void
+        + deleteTestResult(RFID, id) : void
+    }
+    class User_service {
+        + getSuppliers() : List<User>
+        + getUsers() : List<User>
+        + createUser(email, name, surname, password, type) : void
+        + login(email, password, type) : User
+        + modifyUserRights(email, oldType, newType) : void
+        + deleteUser(email, type) : void
+        + getUserByEmail(email, type) : void
+    }
 }
 
-together {
+services --- EzWhException
+User --- UserTypes
 
-class SKUItem {
-	- rfid : String
-	- sku : SKU
-	- available : Bool
-	- dateOfStock : String
-	- testResults : List<TestResult>
-	__
-	+ SKUItem(rfid : String, SKUid : String, dateOfStock : String) : SKUItem
-	+ getRfid() : String
-	+ getSKU() : SKU
-	+ getAvailable() : Bool
-	+ getDateOfStock() : String
-	+ getTestResults() : List<TestResult>
-	..
-	+ setRfid(rfid : String) : void
-	+ setSKU(sku : SKU) : void
-	+ setAvailable(available : Bool) : void
-	+ setDateOfStock(dateOfStock : String) : void
-	+ setTestResults(testResults : List<TestResult>) : void
-	..
-	+ initTestResults() : void
-	+ addTestResult(testResult : TestResult) : void
-	+ modifyTestResult(id: Integer, newIdTestDescriptor: Integer, newDate: String, newResult: boolean): void
-	+ deleteTestResult(id: Integer): void
-}
+InternalOrder_dao --- InternalOrder
+Item_dao --- Item
+Position_dao --- Position
+RestockOrder_dao --- RestockOrder
+ReturnOrder_dao --- ReturnOrder
+SKU_dao --- SKU
+SKUItem_dao --- SKUItem
+TestDescriptor_dao --- TestDescriptor
+TestResult_dao --- TestResult
+User_dao --- User
 
-class TestDescriptor {
-	- id: Integer
-	- name: String
-	- procedureDescription: String
-	- idSKU: Integer
-	__
-	+ TestDescriptor(id: Integer, name: String, procedureDescription: String, idSKU: Integer): TestDescriptor
-	..
-	+ getID(): Integer
-	+ getName(): String
-	+ getProcedureDescription(): String
-	+ getIdSKU(): Integer
-	..
-	+ setID(id: Integer): void
-	+ setName(name: String): void
-	+ setProcedureDescription(procedureDescription: String): void
-	+ setIdSKU(idSKU: Integer): void
-}
+InternalOrder_router --- InternalOrder_service
+Item_router --- Item_service
+Position_router --- Position_service
+RestockOrder_router --- RestockOrder_service
+ReturnOrder_router --- ReturnOrder_service
+SKU_router --- SKU_service
+SKUItem_router --- SKUItem_service
+TestDescriptor_router --- TestDescriptor_service
+TestResult_router --- TestResult_service
+User_router --- User_service
 
-class TestResult {
-	- id: Integer
-	- idTestDescriptor: Integer
-	- date: String
-	- result: boolean
-	__
-	+ TestResult(id: Integer, idTestDescriptor: Integer, date: String, result: boolean): TestResult
-	..
-	+ getID(): Integer
-	+ getIdTestDescriptor(): Integer
-	+ getDate(): String
-	+ getResult(): boolean
-	..
-	+ setID(id: Integer): void
-	+ setIdTestDescriptor(idTestDescriptor: Integer): void
-	+ setDate(date: String): void
-	+ setResult(result: boolean): void
-}
-
-}
-
-enum UserType {
-	ADMINISTRATOR
-	MANAGER
-	CLERK
-	DELIVERYEMLPOYEE
-	QUALITYCHECKEMPLOYEE
-	INTERNALCUSTOMER
-	SUPPLIER
-}
-
-class User {
-	- id: Integer
-	- name: String
-	- surname: String
-	- email: String
-	- type: UserType
-	- password: String
-	__
-	+ User(id: Integer, name: String, surname: String, email: String, type: String, password: String): User
-	..
-	+ getID(): Integer
-	+ getName(): String
-	+ getSurname(): String
-	+ getEmail(): String
-	+ getType(): UserType
-	+ getPassword(): String
-	..
-	+ setID(id: Integer): void
-	+ setName(name: String): void
-	+ setSurname(surname: String): void
-	+ setEmail(email: String): void
-	+ setType(type : UserType): String
-	+ setPassword(password: String): void
-}
-
-class Item {
-	- id:String
-	- description : String
-	- price : double
-	- SKUId : String
-	- supplierId : String
-	__
-	+ Item(id : String, description: String, price : double, SKUId : String, supplierId : String)
-	..
-	+ getId() : String
-	+ getDescription() : String
-	+ getPrice() : double
-	+ getSKUId() : String
-	+ getSupplierId() : String
-	..
-	+ setId(id:String) : void
-	+ setDescription(description : String) : void
-	+ setPrice(price : double) : void
-	+ setSKUId(SKUId :String) : void
-	+ setSupplierId(supplierId : String) : void
-}
-
-enum InternalOrderState {
-	ISSUED
-	ACCEPTED
-	REFUSED
-	CANCELED
-	COMPLETED
-}
-
-class InternalOrder {
-	- id : Integer
-	- issueDate : String
-	- state : InternalOrderState
-	- products : Map<SKU, Integer>
-	- customerId : Integer
-	- skuItems : List<SKUItem>
-	--
-	+ InternalOrder(id: Integer, issueDate : String, state : InternalOrderState, products : Map<SKU, Integer>, customerId : Integer) : void
-	..
-	+ getId() : Integer
-	+ getIssueDate() : String
-	+ getState() : InternalOrderState
-	+ getProducts() : Map<SKU, Integer>
-	+ getCustomerId() : Integer
-	+ getSkuItems() : List<SKUItem>
-	..
-	+ setId(id : Integer) : void
-	+ setIssueDate(issueDate : String) : void
-	+ setState(state : InternalOrderState) : void
-	+ setProducts(products : Map<SKU, Integer>) : void
-	+ setCustomerId(customerId : Integer) : void
-	+ setSkuItems(skuItems : List<SKUItem>) : void
-}
-
-class ReturnOrder {
-	- id : Integer
-	- returnDate : String
-	- products : List<SkuItem>
-	- restockOrderId : Integer
-	--
-	+ ReturnOrder(id: Integer, returnDate : String, products : List<SkuItem>, restockOrderId : Integer) : void
-	..
-	+ getId() : Integer
-	+ getReturnDate() : String
-	+ getProducts() : List<SkuItem>
-	+ getRestockOrderId() : Integer
-	..
-	+ setId(id : Integer) : void
-	+ setReturnDate(returnDate : String) : void
-	+ setProducts(products : List<SkuItem>) : void
-	+ setRestockOrderId(restockOrderId : Integer) : void
-}
-
-enum RestockOrderState {
-	ISSUED
-	DELIVERY
-	DELIVERED
-	TESTED
-	COMPLETEDRETURN
-	COMPLETED
-}
-
-class RestockOrder {
-	- id : Integer
-	- issueDate : String
-	- state : RestockOrderState
-	- products : Map<Item, Integer>
-	- supplierId : Integer
-	- transportNote : TransportNote
-	- skuItems : List<SKUItem>
-	--
-	+ RestockOrder(id: Integer, issueDate : String, state : RestockOrderState, products : Map<Item, Integer>, supplierId : Integer, transportNote : TransportNote) : void
-	+ RestockOrder(id: Integer, issueDate : String, state : RestockOrderState, products : Map<Item, Integer>, supplierId : Integer, transportNote : TransportNote, skuItems : List<SKUItem>) : void
-	..
-	+ getId() : Integer
-	+ getIssueDate() : String
-	+ getState() : RestockOrderState
-	+ getProducts() : Map<Item, Integer>
-	+ getSupplierId() : Integer
-	+ getTransportNote() : TransportNote
-	+ getSkuItems() : List<SKUItem>
-	..
-	+ setId(id : Integer) : void
-	+ setIssueDate(issueDate : String) : void
-	+ setState(state : RestockOrderState) : void
-	+ setProducts(products : Map<Item, Integer>) : void
-	+ setSupplierId(supplierId : Integer) : void
-	+ setTransportNote(transportNote : TransportNote) : void
-	+ setSkuItems(skuItems : List<SKUItem>) : void
-}
-
-class TransportNote {
-	- shipmentDate : String
-	__
-	+ TransportNote(shipmentDate : String)
-	..
-	+ getShipmentDate() : String
-	..
-	+ setShipmentDate(shipmentDate : String) : void
-}
-
-EzWhFacade -- DbHelper : Database interface
-EzWhFacade -- SKU : Inventory
-SKU --  SKUItem : Describe
-SKUItem -- TestResult
-TestResult -u- TestDescriptor: Describe
-EzWhFacade -- RestockOrder
-EzWhFacade -- ReturnOrder
-EzWhFacade -- InternalOrder
-RestockOrder -- Item
-EzWhFacade -- User
-EzWhFacade -- Position : Warehouse
-UserType -- User
-InternalOrderState -- InternalOrder
-RestockOrderState -- RestockOrder
-RestockOrder -- TransportNote
+InternalOrder_service --- InternalOrder_dao
+InternalOrder_service --- SKU_dao
+InternalOrder_service --- SKUItem_dao
+InternalOrder_service --- User_dao
+Item_service --- Item_dao
+Item_service --- SKU_dao
+Item_service --- User_dao
+Position_service --- Position_dao
+RestockOrder_service --- RestockOrder_dao
+RestockOrder_service --- Item_dao
+RestockOrder_service --- SKUItem_dao
+ReturnOrder_service --- ReturnOrder_dao
+ReturnOrder_service --- RestockOrder_dao
+ReturnOrder_service --- SKU_dao
+ReturnOrder_service --- SKUItem_dao
+SKU_service --- SKU_dao
+SKU_service --- Position_dao
+SKUItem_service --- SKUItem_dao
+SKUItem_service --- SKU_dao
+TestDescriptor_service --- TestDescriptor_dao
+TestDescriptor_service --- SKU_dao
+TestResult_service --- TestResult_dao
+TestResult_service --- TestDescriptor_dao
+TestResult_service --- SKUItem_dao
+User_service --- User_dao
 ```
 -->
 
-This design is based on the Facade pattern, in this way the API can communicate only with the Facade class that works as an interface between all the other classes.
-DbHelper is the interface for the database and is used to obtain persistance.
+This design is based on the Facade pattern, in this way the API can communicate only with the service classes that works as an interface between all the other classes and the database.
+Modules are used to describe the objects and are returned by DAOs.
+DAOs are the interfaces for the database that is used to obtain persistence.
 
 # Verification traceability matrix
 
-| FR    | EzWh | DbHelper | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder | TransportNote |
-| ---   | :--: | :------: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: | :-----------: |
-| FR1   |  x   |    x     |  x   |     |         |                |            |          |      |              |               |             |			      |
-| FR2   |  x   |    x     |      |  x  |         |       x        |            |     x    |      |              |               |             |			      |
-| FR3.1 |  x   |    x     |      |  x  |         |                |            |     x    |      |              |               |             |			      |
-| FR3.2 |  x   |    x     |      |     |         |       x        |     x      |          |      |              |               |             |			      |
-| FR4   |  x   |    x     |  x   |     |         |                |            |          |      |              |               |             |		 	      |
-| FR5   |  x   |    x     |      |  x  |    x    |                |            |          |  x   |      x       |               |      x      |       x       |
-| FR6   |  x   |    x     |      |  x  |    x    |                |            |          |      |              |       x       |             |			      |
-| FR7   |  x   |    x     |  x   |  x  |         |                |            |          |  x   |              |               |             |			      |
+| FR    | Services | Database | User | SKU | SKUItem | TestDescriptor | TestResult | Position | Item | RestockOrder | InternalOrder | ReturnOrder |
+| ---   | :------: | :------: | :--: | :-: | :-----: | :------------: | :--------: | :------: | :--: | :----------: | :-----------: | :---------: |
+| FR1   |    x     |    x     |  x   |     |         |                |            |          |      |              |               |             |
+| FR2   |    x     |    x     |      |  x  |         |       x        |            |     x    |      |              |               |             |
+| FR3.1 |    x     |    x     |      |  x  |         |                |            |     x    |      |              |               |             |
+| FR3.2 |    x     |    x     |      |     |         |       x        |     x      |          |      |              |               |             |
+| FR4   |    x     |    x     |  x   |     |         |                |            |          |      |              |               |             |
+| FR5   |    x     |    x     |      |  x  |    x    |                |            |          |  x   |      x       |               |      x      |
+| FR6   |    x     |    x     |      |  x  |    x    |                |            |          |      |              |       x       |             |
+| FR7   |    x     |    x     |  x   |  x  |         |                |            |          |  x   |              |               |             |
 
 # Verification sequence diagrams
 
@@ -543,70 +533,49 @@ DbHelper is the interface for the database and is used to obtain persistance.
 actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and API
-participant EzWhFacade
-participant DbHelper
-note over DbHelper: id is generated\nby database
+participant Service
+participant Database
+note over Database: id is generated\nby database
 participant SKU
 
 Manager -> EzWh: Selects description D, weight W, volume V,\nnotes N, price P, availableQuantity Q
-EzWh -> EzWhFacade: createSKU(D, W, V, N, P, Q)
-activate EzWhFacade
-EzWhFacade -> DbHelper: createSKU(D, W, V, N, P, Q)
-activate DbHelper
-DbHelper -> DbHelper : id is generated
-DbHelper -> SKU: new SKU(id, D, W, V, N, P, Q)
+EzWh -> Service: SKU_service.createSKU(D, W, V, N, P, Q)
+activate Service
+Service -> Database: SKU_dao.createSKU(D, W, V, N, P, Q)
+activate Database
+Database -> Database : id is generated
+Database -> SKU: new SKU(id, D, W, V, N, P, Q)
 activate SKU
-SKU -> DbHelper: SKU
+SKU -> Database: SKU
 deactivate SKU
-DbHelper -> EzWhFacade : SKU
-deactivate DbHelper
-EzWhFacade --> EzWh : Done
-deactivate EzWhFacade
+Database -> Service : SKU
+deactivate Database
+Service --> EzWh : Done
+deactivate Service
 EzWh --> Manager : Done
 ```
 
-## Scenario 1-3 - Modify SKU weight and volume
+## Scenario 1-3 - Modify SKU description, weight, volume, notes, price and availableQuantity
 
 ```plantuml
 actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and API
-participant EzWhFacade
-participant DbHelper
+participant Service
+participant Database
 participant SKU
 
-Manager -> EzWh: Selects SKU S, description D, newWeight W, newVolume V,\nnotes N, price, P, availableQuantity Q
-EzWh -> EzWhFacade: modifySKU(S, D, W, V, N, P, Q)
-EzWhFacade -> DbHelper : sku = getSKUById(S)
-activate DbHelper
-DbHelper -> EzWhFacade : SKU
-deactivate DbHelper
-EzWhFacade -> SKU: sku.setDescription(D)
+Manager -> EzWh: Selects SKU S, NewDescription D, newWeight W, newVolume V,\nnewNotes N, NewPrice, P, NewAvailableQuantity Q
+EzWh -> Service: SKU_service.modifySKU(S, D, W, V, N, P, Q)
+Service -> Database : SKU_dao.getSKUById(S)
+activate Database
+Database -> Service : SKU
+deactivate Database
+Service -> SKU: SKU_dao.modifySKU(S, D, W, V, N, P, Q)
 activate SKU
-SKU --> EzWhFacade: Done
+SKU --> Service: Done
 deactivate SKU
-EzWhFacade -> SKU: sku.setWeight(W)
-activate SKU
-SKU --> EzWhFacade: Done
-deactivate SKU
-EzWhFacade -> SKU: sku.setVolume(V)
-activate SKU
-SKU --> EzWhFacade: Done
-deactivate SKU
-EzWhFacade -> SKU: sku.setNotes(N)
-activate SKU
-SKU --> EzWhFacade: Done
-deactivate SKU
-EzWhFacade -> SKU: sku.setPrice(P)
-activate SKU
-SKU --> EzWhFacade: Done
-deactivate SKU
-EzWhFacade -> SKU: sku.setAvailableQuantity(Q)
-EzWhFacade -> DbHelper : modifySKU(sku)
-activate DbHelper
-DbHelper --> EzWhFacade : Done
-deactivate DbHelper
-EzWhFacade --> EzWh : Done
+Service --> EzWh : Done
 EzWh --> Manager : Done
 ```
 
@@ -616,23 +585,23 @@ EzWh --> Manager : Done
 actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and API
-participant EzWhFacade
-participant DbHelper
+participant Service
+participant Database
 participant Position
 
 Manager -> EzWh: Selects positionId P, aisleId A, row R,\ncol C, maxWeight W, maxVolume V
-EzWh -> EzWhFacade: createPosition(P, A, R, C, W, V)
-activate EzWhFacade
-EzWhFacade -> DbHelper: createPosition(P, A, R, C, W, V)
-activate DbHelper
-DbHelper-> Position: new Position(P, A, R, C, W, V)
+EzWh -> Service: Position_service.createPosition(P, A, R, C, W, V)
+activate Service
+Service -> Database: Position_dao.createPosition(P, A, R, C, W, V)
+activate Database
+Database-> Position: new Position(P, A, R, C, W, V)
 activate Position
-Position -> DbHelper: Position
+Position -> Database: Position
 deactivate Position
-DbHelper->EzWhFacade: Position
-deactivate DbHelper
-EzWhFacade --> EzWh: Done
-deactivate EzWhFacade
+Database->Service: Position
+deactivate Database
+Service --> EzWh: Done
+deactivate Service
 EzWh --> Manager : Done
 ```
 
@@ -642,18 +611,18 @@ EzWh --> Manager : Done
 actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and API
-participant EzWhFacade
-participant DbHelper
+participant Service
+participant Database
 
 Manager -> EzWh: Selects positionId P and newPositionId N
-EzWh -> EzWhFacade: modifyPositionId(P, N)
-activate EzWhFacade
-EzWhFacade -> DbHelper : modifyPositionId(P, N)
-activate DbHelper
-DbHelper --> EzWhFacade : Done
-deactivate DbHelper
-EzWhFacade --> EzWh : Done
-deactivate EzWhFacade
+EzWh -> Service: Position_service.modifyPositionId(P, N)
+activate Service
+Service -> Database : Position_dao.modifyPositionId(P, N)
+activate Database
+Database --> Service : Done
+deactivate Database
+Service --> EzWh : Done
+deactivate Service
 EzWh --> Manager : Done
 ```
 
@@ -663,24 +632,38 @@ EzWh --> Manager : Done
 actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and API
-participant EzWhFacade
-participant DBHelper
-note over DBHelper: id is generated\nby database
+participant Service
+participant Database
+note over Database: id is generated\nby database
 participant RestockOrder
+participant Item
 
-Manager -> EzWh: Creates Restock Order, inserts issueDate D,\nItem I, quantity Q and Supplier SP
-EzWh -> EzWhFacade: CreateRestockOrder(D, Map<I, Q>, SP)
-activate EzWhFacade
-EzWhFacade -> DBHelper: restockOrder = CreateRestockOrder (D, Map<I, Q>, SP)
-activate DBHelper
-DBHelper -> RestockOrder: new RestockOrder(id, D, Map<I, Q>, SP)
+Manager -> EzWh: Creates Restock Order, inserts issueDate D,\nList<Object{SKUId S, quantity Q}>,\nquantity Q and Supplier SP
+EzWh -> Service: RestockOrder_service.CreateRestockOrder(\nD, List<Object{SI, Q}>, SP)
+activate Service
+Service -> Database: restockOrder =\nRestockOrder_dao.CreateRestockOrder (D, SP)
+activate Database
+Database -> RestockOrder: new RestockOrder(id, D, state, SP, transportNote)
 activate RestockOrder
-RestockOrder --> DBHelper: RestockOrder
+RestockOrder --> Database: RestockOrder
 Deactivate RestockOrder
-DBHelper --> EzWhFacade: RestockOrder
-deactivate DBHelper
-EzWhFacade --> EzWh: Done
-deactivate EzWhFacade
+Database --> Service: RestockOrder
+deactivate Database
+Service -> Service: ForEach List<Object{SI, Q}>
+Service -> Database: item = Item_dao.getItemBySKUIDAndSupplierID(SI, SP)
+activate Database
+Database -> Item: new Item(id, description, price, SKUId, SP)
+activate Item
+Item --> Database: Item
+deactivate Item
+Database --> Service: Item
+deactivate Database
+Service -> Database: RestockOrder_dao.createRestockOrderProduct(\nitem.id, restockOrder.id, Q)
+activate Database
+Database --> Service: Done
+deactivate Database
+Service --> EzWh: Done
+deactivate Service
 EzWh --> Manager: Done
 ```
 
@@ -690,25 +673,25 @@ EzWh --> Manager: Done
 actor Administrator
 participant EzWh
 note over EzWh: Includes Frontend and API
-participant EzWhFacade
-participant DbHelper
-note over DbHelper: id is generated\nby database
+participant Service
+participant Database
+note over Database: id is generated\nby database
 participant User
 
 Administrator -> EzWh: Selects email EM, name N, surname S, password P, type T
-EzWh -> EzWhFacade: createUser(EM, N, S, P, T)
-activate EzWhFacade
-EzWhFacade -> DbHelper: createUser(EM, N, S, P, T)
-activate DbHelper
-DbHelper -> DbHelper: id is generated
-DbHelper -> User: new User(id, N, S, EM, T, P)
+EzWh -> Service: User_service.createUser(EM, N, S, P, T)
+activate Service
+Service -> Database: User_dao.createUser(EM, N, S, P, T)
+activate Database
+Database -> Database: id is generated
+Database -> User: new User(id, N, S, EM, T, P)
 activate User
-User -> DbHelper: User
+User -> Database: User
 deactivate User
-DbHelper -> EzWhFacade: User
-deactivate DbHelper
-EzWhFacade --> EzWh: Done
-deactivate EzWhFacade
+Database -> Service: User
+deactivate Database
+Service --> EzWh: Done
+deactivate Service
 EzWh --> Administrator: Done
 ```
 
@@ -717,54 +700,58 @@ EzWh --> Administrator: Done
 ```plantuml
 actor Manager
 participant EzWh
-participant EzWhFacade
-participant DBHelper
-note over DBHelper: id is generated\nby database
+participant Service
+participant Database
+note over Database: id is generated\nby database
 participant RestockOrder
 participant SkuItem
 participant ReturnOrder
 
 
-Manager -> EzWh: System provide RFID of SKU items\nthat not passed quality tests
-EzWh -> EzWhFacade: getRestockOrderById()
-activate EzWhFacade
-EzWhFacade -> DBHelper: restockOrder = getRestockOrderById(id)
-activate DBHelper
-DBHelper -> RestockOrder: new RestockOrder(id, issueDate, state,\nproducts, supplierId, transportNote, skuItems)
+Manager -> EzWh: M inserts RO.ID
+EzWh -> Service: RestockOrder_service.getRestockOrderReturnItems()
+activate Service
+Service -> Database: RestockOrder_dao.getRestockOrderById(id)
+activate Database
+Database -> RestockOrder : new RestockOrder
 activate RestockOrder
-RestockOrder --> DBHelper: RestockOrder
+RestockOrder --> Database: RestockOrder
 Deactivate RestockOrder
-DBHelper --> EzWhFacade: RestockOrder
-deactivate DBHelper
-EzWhFacade -> SkuItem: skuItems = restockOrder.getSkuItems()
+
+Database --> Service: RestockOrder
+deactivate Database
+Service -> Database: RestockOrder_dao.getRestockOrderReturnItems()
+activate Database
+Database -> SkuItem : new SKUItem
 activate SkuItem
-SkuItem --> EzWhFacade: List<SkuItem>
+
+
+SkuItem --> Database: SkuItem
+
 deactivate SkuItem
-EzWhFacade --> EzWh: List<SkuItem>
-deactivate EzWhFacade
+Database --> Service :List<SkuItem>
+deactivate Database
+Service --> EzWh: List<SkuItem>
+deactivate Service
 EzWh --> Manager: List<SkuItem>
 
 Manager -> EzWh: Create Return Order and\ninsert SKU Items to be returned
-EzWh -> EzWhFacade: createReturnOrder(date, products, restockorderid)
-activate EzWhFacade
-EzWhFacade -> DBHelper: returnOrder = createReturnOrder(date, products, restockorderid)
-activate DBHelper
-DBHelper -> ReturnOrder: new ReturnOrder(id, date, products, restockOrderId)
+EzWh -> Service: ReturnOrder_service.createReturnOrder(returnDate, products, restockOrderID)
+activate Service
+Service -> Database: ReturnOrder_dao.createReturnOrder(returnDate, restockOrderID)
+activate Database
+Database -> ReturnOrder: new ReturnOrder
 activate ReturnOrder
-ReturnOrder --> DBHelper: ReturnOrder
+ReturnOrder --> Database: ReturnOrder
 Deactivate ReturnOrder
-DBHelper --> EzWhFacade: ReturnOrder
-deactivate DBHelper
-EzWhFacade -> SkuItem: Foreach skuItem in products\n  skuItem.setAvailable(False)
-activate SkuItem
-SkuItem --> EzWhFacade: Done
-Deactivate SkuItem
-EzWhFacade -> DBHelper: Foreach skuItem in products\n  modifySkuItem(skuItem)
-activate DBHelper
-DBHelper --> EzWhFacade: Done
-Deactivate DBHelper
-deactivate EzWhFacade
-EzWhFacade --> EzWh: Done
+Database --> Service: ReturnOrder
+deactivate Database
+Service -> Database: Foreach skuItem in products\n  SKUItem_dao.modifySKUItem(rfid ,rfid , 0 , dateOfStock );
+activate Database
+Database --> Service: Done
+Deactivate Database
+Service --> EzWh: Done
+deactivate Service
 EzWh --> Manager: Done
 ```
 
@@ -775,45 +762,45 @@ actor Customer
 actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and API
-note over DbHelper: id is generated\nby database
-participant EzWhFacade
-participant DbHelper
+note over Database: id is generated\nby database
+participant Service
+participant Database
 participant InternalOrder
 
 
 Customer -> EzWh: adds every SKU she wants in every qty to IO
 activate EzWh
 EzWh ->EzWh : C.ID = getUserInfo()
-EzWh -> EzWhFacade: createInternalOrder(date, <SKU,qty>, C.id)
-activate EzWhFacade
-EzWhFacade ->DbHelper :createInternalOrder(date, <SKU,qty>, C.id)
-activate DbHelper
-DbHelper -> DbHelper : id is generated
-DbHelper ->InternalOrder: new internalOrder(id,issueDate, ISSUED,  <SKU,qty>, C.id)
+EzWh -> Service: InternalOrder_service.createInternalOrder(date, <SKU,qty>, C.id)
+activate Service
+Service ->Database : InternalOrder_dao.createInternalOrder(date, <SKU,qty>, C.id)
+activate Database
+Database -> Database : id is generated
+Database ->InternalOrder: new internalOrder(id,issueDate, ISSUED,  <SKU,qty>, C.id)
 activate InternalOrder
-InternalOrder-->DbHelper : InternalOrder
+InternalOrder-->Database : InternalOrder
 deactivate InternalOrder
-DbHelper --> EzWhFacade : InternalOrder
-EzWhFacade->DbHelper : modifySKU(newAvailableQuantity)
-EzWhFacade->DbHelper :modifyPosition(newOccupiedWeight , newOccupiedVolume)
-DbHelper --> EzWhFacade : InternalOrder
-deactivate DbHelper
-EzWhFacade -->EzWh :InternalOrder
-deactivate EzWhFacade
-EzWhFacade -->Manager :InternalOrder
+Database --> Service : InternalOrder
+Service->Database : SKU_dao.modifySKU(SKU, newAvailableQuantity)
+Service->Database : Position_dao.modifyPosition(newOccupiedWeight , newOccupiedVolume)
+Database --> Service : Done
+deactivate Database
+Service -->EzWh :Done
+deactivate Service
+Service -->Manager :Done
 EzWh --> Customer : Done
 deactivate EzWh
 
-Manager -> EzWh: Selects new InternalOrder
+Manager -> EzWh: Selects InternalOrder id
 activate EzWh
-EzWh -> EzWhFacade : modifyInternalOrderState(Accepted)
-activate EzWhFacade
-EzWhFacade->DbHelper : modifyInternalOrderState(Accepted)
-activate DbHelper
-DbHelper --> EzWhFacade : done
-deactivate DbHelper
-EzWhFacade --> EzWh : done
-deactivate EzWhFacade
+EzWh -> Service : InternalOrder_service.modifyInternalOrderState(id, Accepted)
+activate Service
+Service->Database : InternalOrder_dao.modifyInternalOrderState(id, Accepted)
+activate Database
+Database --> Service : done
+deactivate Database
+Service --> EzWh : done
+deactivate Service
 EzWh --> Manager : done
 deactivate EzWh
 
@@ -826,30 +813,30 @@ deactivate EzWh
 actor Supplier
 participant EzWh
 note over EzWh: Includes Frontend and API
-note over DbHelper: id is generated\nby database
-participant EzWhFacade
-participant DbHelper
+note over Database: id is generated\nby database
+participant Service
+participant Database
 participant Item
 
 Supplier -> EzWh: Selects description D, Price P , SKU
 
 EzWh ->EzWh : S.ID = getUserInfo()
 
-EzWh -> EzWhFacade:createItem(D , SKU, P, S.ID)
+EzWh -> Service: Item_service.createItem(D , SKU, P, S.ID)
 
-activate EzWhFacade
-EzWhFacade -> DbHelper: item = createItem(D , P, SKU, S.ID)
-activate DbHelper
-DbHelper -> DbHelper : id is generated
-DbHelper -> Item : new Item(ID, D , P , SKU , S.ID)
+activate Service
+Service -> Database: item = Item_dao.createItem(D , P, SKU, S.ID)
+activate Database
+Database -> Database : id is generated
+Database -> Item : new Item(ID, D , P , SKU , S.ID)
 
 activate Item
-Item --> DbHelper: Item
+Item --> Database: Item
 deactivate Item
-DbHelper --> EzWhFacade : Item
-deactivate DbHelper
-EzWhFacade --> EzWh : Done
-deactivate EzWhFacade
+Database --> Service : Item
+deactivate Database
+Service --> EzWh : Done
+deactivate Service
 EzWh-->Supplier : Done
 ```
 
@@ -859,68 +846,63 @@ EzWh-->Supplier : Done
 actor Supplier
 participant EzWh
 note over EzWh: Includes Frontend and API
-participant EzWhFacade
-participant DbHelper
+participant Service
+participant Database
 
 
 Supplier -> EzWh: Search Item I
 activate EzWh
-EzWh -> EzWhFacade: getItembyId(id)
-activate EzWhFacade
-EzWhFacade -> DbHelper : getItembyId(id)
-activate DbHelper
-DbHelper --> EzWhFacade : Item
-deactivate DbHelper
-EzWhFacade --> EzWh : Item
-deactivate EzWhFacade
+EzWh -> Service: Item_service.getItembyId(id)
+activate Service
+Service -> Database : Item_dao.getItembyId(id)
+activate Database
+Database --> Service : Item
+deactivate Database
+Service --> EzWh : Item
+deactivate Service
 EzWh --> Supplier : Item
 deactivate EzWh
 
 Supplier -> EzWh :Selects fot ID newDescription nD, newPrice P
 activate EzWh
-EzWh ->EzWhFacade : modifyItem(ID,nD,nP)
-activate EzWhFacade
-EzWhFacade ->DbHelper : modifyItem(ID,nD,nP)
-activate DbHelper
-DbHelper --> EzWhFacade : Done
-deactivate DbHelper
-EzWhFacade --> EzWh : Done
-deactivate EzWhFacade
+EzWh ->Service : Item_service.modifyItem(ID,nD,nP)
+activate Service
+Service ->Database : Item_dao.modifyItem(ID,nD,nP)
+activate Database
+Database --> Service : Done
+deactivate Database
+Service --> EzWh : Done
+deactivate Service
 EzWh --> Supplier : Done
 deactivate EzWh
 ```
 
-## Scenario 12-1 - Create test description
+## Scenario 12-1 - Create test descriptor
 
 ```plantuml
 actor Manager
 participant EzWh
 note over EzWh: Includes Frontend and API
-participant EzWhFacade
-participant DbHelper
-note over DbHelper: id is generated\nby database
+participant Service
+participant Database
+note over Database: id is generated\nby database
 participant TestDescriptor
 participant SKU
 
 Manager -> EzWh: Selects name N, procedureDescription PD, idSKU IS
-EzWh -> EzWhFacade: createTestDescriptor(N, PD, IS)
-activate EzWhFacade
-EzWhFacade -> DbHelper: createTestDescriptor(N, PD, IS)
-activate DbHelper
-DbHelper -> DbHelper : id is generated
-DbHelper -> TestDescriptor: new TestDescriptor(id, N, PD, IS)
+EzWh -> Service: TestDescriptor_service.createTestDescriptor(N, PD, IS)
+activate Service
+Service -> Database: TestDescriptor_dao.createTestDescriptor(N, PD, IS)
+activate Database
+Database -> Database : id is generated
+Database -> TestDescriptor: new TestDescriptor(id, N, PD, IS)
 activate TestDescriptor
-TestDescriptor -> DbHelper: TestDescriptor td
+TestDescriptor -> Database: TestDescriptor td
 deactivate TestDescriptor
-DbHelper -> DbHelper: s = getSKUByID(IS)
-DbHelper -> SKU: s.addTestDescriptor(td)
-activate SKU
-SKU --> DbHelper: Done
-deactivate SKU
-DbHelper -> DbHelper: modifySKU(s)
-DbHelper -> EzWhFacade: TestDescriptor td
-deactivate DbHelper
-EzWhFacade --> EzWh: Done
-deactivate EzWhFacade
+Database -> Service: td
+deactivate Database
+deactivate Database
+Service --> EzWh: Done
+deactivate Service
 EzWh --> Manager: Done
 ```
