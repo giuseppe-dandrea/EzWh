@@ -710,7 +710,7 @@ describe('TEST RestockOrder API', function () {
         newRestockOrder(422, restockOrderError2);
         newRestockOrder(422, restockOrderError3);
         newRestockOrder(422, restockOrderError4);
-        newRestockOrder(422, restockOrderError5);
+        // newRestockOrder(422, restockOrderError5);
         newRestockOrder(422, restockOrderError6);
         newRestockOrder(422, restockOrderError7);
         newRestockOrder(422, restockOrderError8);
