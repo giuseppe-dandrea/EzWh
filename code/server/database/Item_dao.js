@@ -60,7 +60,7 @@ exports.createItem = (item) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(this.lastID);
+                resolve(item.id);
             }
         });
     });
