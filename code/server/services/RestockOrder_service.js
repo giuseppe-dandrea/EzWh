@@ -125,8 +125,10 @@ class RestockOrderService {
             if(skuItem.SKUId===undefined||skuItem.rfid===undefined)
                 throw EzWhException.EntryNotAllowed;
             let getSkuItem = await SKUItem_dao.getSKUItemByRfid(skuItem.rfid);
-            if (getSkuItem === undefined || getSkuItem.sku !== skuItem.SKUId)
-                throw EzWhException.EntryNotAllowed;
+            if (getSkuItem === undefined || getSkuItem.sku !== skuItem.SKUId) {
+                SKUItem_dao.createSKUItem(skuItem.rfid, skuItem.SKUId, restockOrder.issueDate) //modify date
+                //throw EzWhException.EntryNotAllowed;
+            }
         }
         for (let skuItem of skuItems) {
             await dao.addSkuItemToRestockOrder(ID, skuItem.rfid);
