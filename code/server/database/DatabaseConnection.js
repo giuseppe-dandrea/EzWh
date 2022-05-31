@@ -153,7 +153,7 @@ class DatabaseConnection {
             RFID VARCHAR(33) NOT NULL,
             SKUID INTEGER NOT NULL,
             InternalOrderID INTEGER NOT NULL,
-            PRIMARY KEY(RFID),
+            PRIMARY KEY(InternalOrderID, RFID),
             FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
             on delete cascade,
             FOREIGN KEY (SKUID) REFERENCES SKU(SKUID)

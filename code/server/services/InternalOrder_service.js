@@ -1,5 +1,6 @@
 const dao = require("../database/InternalOrder_dao");
 const SKU_dao = require("../database/SKU_dao");
+const SKUItem_dao = require("../database/SKUItem_dao")
 const EzWhException = require("../modules/EzWhException.js");
 const { getSKUItemByRfid} = require("../database/SKUItem_dao");
 const {getSKUById} = require("../database/SKU_dao");
@@ -154,16 +155,18 @@ class InternalOrderService {
 
     }
 
-    async completeInternalOrder(id , products){
+    async completeInternalOrder(id , products, date){
         try{
             if (products === undefined || products.length === 0) throw EzWhException.EntryNotAllowed;
             for (let product of products){
               //  await getSKUItemByRfid(product.RFID);
-                if (product.SkuId === undefined || product.RFID === undefined ||
-                    !Number.isInteger(product.SkuId) || product.RFID.length !== 32) throw EzWhException.EntryNotAllowed;
+                if (product.SkuID === undefined || product.RFID === undefined ||
+                    !Number.isInteger(product.SkuID) || product.RFID.length !== 32) throw EzWhException.EntryNotAllowed;
             }
-            for (let product of products)
-                await dao.createInternalOrderSKUItem(id,product.SkuId, product.RFID)
+            for (let product of products){
+                await SKUItem_dao.createSKUItem(product.RFID, product.SkuID, date);
+                await dao.createInternalOrderSKUItem(id,product.SkuID, product.RFID);
+            }        
         }
         catch(err){
             if (err === EzWhException.EntryNotAllowed) throw  err;
