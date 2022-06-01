@@ -159,12 +159,13 @@ class InternalOrderService {
         try{
             if (products === undefined || products.length === 0) throw EzWhException.EntryNotAllowed;
             for (let product of products){
-              //  await getSKUItemByRfid(product.RFID);
                 if (product.SkuID === undefined || product.RFID === undefined ||
                     !Number.isInteger(product.SkuID) || product.RFID.length !== 32) throw EzWhException.EntryNotAllowed;
             }
             for (let product of products){
-                await SKUItem_dao.createSKUItem(product.RFID, product.SkuID, date);
+                const skuItem = await getSKUItemByRfid(product.RFID);
+                if (skuItem === undefined)
+                    await SKUItem_dao.createSKUItem(product.RFID, product.SkuID, date);
                 await dao.createInternalOrderSKUItem(id,product.SkuID, product.RFID);
             }        
         }

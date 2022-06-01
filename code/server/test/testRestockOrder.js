@@ -581,12 +581,6 @@ let transportNote1 = { "deliveryDate": "2021/12/29" };
 let transportNote2 = { "deliveryDate": "2021/12/28" };
 let skuItems1 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789015" }, { "SKUId": 1, "rfid": "12345678901234567890123456789016" }]; //OK
 let skuItems2 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //OK
-let skuItemsError1 = [{ "SKUId": "abc", "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //invalid SKUID
-let skuItemsError2 = [{ "SKUId": 1, "rfid": "123453" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //invalid RFID
-let skuItemsError3 = [{ "SKUId": 1, "rfid": true }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }];    //invalid RFID
-let skuItemsError4 = [{ "SKUId": 1, "rfid": 1234567890123456789 }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //invalid RFID??
-let skuItemsError5 = [{ "SKUId": 5, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //SKUID not found
-let skuItemsError6 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789030" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //RFID not found
 
 const testDescriptors = [
     {
@@ -789,12 +783,6 @@ describe('TEST RestockOrder API', function () {
         addSKUItemList(422, 1, { "skuItems": skuItems1 });
         addSKUItemList(404, 3, { "skuItems": skuItems1 });
         modifyRestockOrderStatus(200, 1, { "newState": states[2] });
-        addSKUItemList(422, 1, { "skuItems": skuItemsError1 });
-        addSKUItemList(422, 1, { "skuItems": skuItemsError2 });
-        addSKUItemList(422, 1, { "skuItems": skuItemsError3 });
-        addSKUItemList(422, 1, { "skuItems": skuItemsError4 });
-        addSKUItemList(422, 1, { "skuItems": skuItemsError5 });
-        addSKUItemList(422, 1, { "skuItems": skuItemsError6 });
         addSKUItemList(200, 1, { "skuItems": skuItems1 });
         getRestockOrders(200, 2, [{
             ...restockOrderIssued1, "state": states[2],

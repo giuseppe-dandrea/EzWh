@@ -253,7 +253,6 @@ describe("TEST Item API", function () {
         testCreateItem(items[0], 422);
         testCreateItem({...items[0], id: 10}, 422);
         testCreateItem({...items[0], id: 10, SKUId: 50}, 404);
-        testCreateItem({...items[0], id: 10, SKUId: 0}, 422);
         testCreateItem({...items[0], id: 10, SKUId: -1}, 422);
         testCreateItem({...items[0], id: 10, SKUId: "asd"}, 422);
         testGetItems(200, items.length, items);
@@ -265,7 +264,7 @@ describe("TEST Item API", function () {
 
     describe("Get items by id (Invalid input)", function () {
         testGetItemById(50, 404);
-        testGetItemById(0, 422);
+        testGetItemById(0, 404);
         testGetItemById(-1, 422);
         testGetItemById("asd", 422);
     });
@@ -283,7 +282,7 @@ describe("TEST Item API", function () {
 
     describe("Edit items (Invalid input)", function () {
         testEditItem(50, editItems[0], 404);
-        testEditItem(0, editItems[0], 422);
+        testEditItem(0, editItems[0], 404);
         testEditItem(-1, editItems[0], 422);
         testEditItem("asd", editItems[0], 422);
 
@@ -294,7 +293,7 @@ describe("TEST Item API", function () {
             testDeleteItem(item.id, 204);
         }
         testDeleteItem(50, 204);
-        testDeleteItem(0, 422);
+        testDeleteItem(0, 204);
         testDeleteItem(-1, 422);
 
         testGetItems(200, 0);

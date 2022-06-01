@@ -116,7 +116,7 @@ router.put("/internalOrders/:id",
       }
       else if(req.body.newState === "COMPLETED"){
           await internalOrderService.modifyInternalOrder(req.params.id, req.body.newState);
-          await internalOrderService.completeInternalOrder(req.params.id, req.body.products); // add date
+          await internalOrderService.completeInternalOrder(req.params.id, req.body.products, null);
           return res.status(200).end();
       }
     // const internalOrder = await internalOrderService.modifyInternalOrder(req.params.ID, req.body.newState, req.body.products);
