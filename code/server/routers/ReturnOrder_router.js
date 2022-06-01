@@ -41,8 +41,12 @@ router.get(
     }
 });
 
-router.get("/returnOrders/:ID", param("ID"), async (req, res) => {
+router.get("/returnOrders/:ID", param("ID").isInt({ min: 1 }), async (req, res) => {
   try {
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      return res.status(422).end();
+    }
     const returnOrder = await returnOrderService.getReturnOrderByID(req.params.ID);
     if (returnOrder === undefined) return res.status(404).end();
     return res.status(200).json(returnOrder);

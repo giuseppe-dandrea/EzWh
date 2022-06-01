@@ -17,8 +17,7 @@ class ReturnOrderService {
         const returnOrderID = await dao.createReturnOrder(returnDate, restockOrderID);
         for (let product of products) {
             if(product.SKUId===undefined || product.description===undefined|| product.RFID === undefined ||
-                product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId) ||
-                !Number.isInteger(product.qty) || typeof product.price !== "number" ) {
+                product.price===undefined || !Number.isInteger(product.SKUId) || typeof product.price !== "number" ) {
                 await dao.deleteReturnOrder(restockOrderID);
                 throw EzWhException.EntryNotAllowed;
             }
