@@ -14,7 +14,7 @@ Version: 1.0
 
 ### Test cases definition
 
-
+N.B : Tests should be run using `--runInBand` in the `npm test` to avoid parallel tests and causing faulty access order of tests to database .
 
 | Class name         | Unit name                                | Jest File          | Jest test case                                                           |
 |--------------------|------------------------------------------|--------------------|--------------------------------------------------------------------------|
@@ -108,6 +108,7 @@ Version: 1.0
 |					 | addTestResult							| TestResult_dao 	 | Create testResult :id                                                    |
 |					 | modifyTestResult						    | TestResult_dao 	 | Modify testResult :id :error                                             |
 |					 | deleteTestResult						    | TestResult_dao     | Delete testResult :id                                                    |
+ ** Implicitly invoked and tested wihtin another test function
 
 ### Code coverage report
 
