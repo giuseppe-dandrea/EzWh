@@ -57,8 +57,8 @@ exports.modifyUserRights = (email, oldType, newType) => {
             if (err) {
                 reject(err);
             }
+            resolve();
         });
-        resolve();
     });
 }
 

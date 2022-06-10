@@ -26,7 +26,7 @@ router.get("/items", async (req, res) => {
 });
 
 //GET /items/:id
-router.get("/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
+router.get("/items/:id", param("id").isInt({ min: 0 }), async (req, res) => {
   const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
     return res.status(422).end();
@@ -49,11 +49,11 @@ router.get("/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
 //POST /item
 router.post(
   "/item",
-  body("id").isInt({ min: 1 }),
+  body("id").isInt({ min: 0 }),
   body("description").exists(),
   body("price").isFloat({ min: 0 }),
-  body("SKUId").isInt({ min: 1 }),
-  body("supplierId").isInt({ min: 1 }),
+  body("SKUId").isInt({ min: 0 }),
+  body("supplierId").isInt({ min: 0 }),
   async (req, res) => {
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty()) {
@@ -73,7 +73,7 @@ router.post(
 //PUT /item/:id
 router.put(
   "/item/:id",
-  param("id").isInt({ min: 1 }),
+  param("id").isInt({ min: 0 }),
   body("newDescription").exists(),
   body("newPrice").isFloat({ min: 0 }),
   async (req, res) => {
@@ -93,7 +93,7 @@ router.put(
 );
 
 //DELETE /items/:id
-router.delete("/items/:id", param("id").isInt({ min: 1 }), async (req, res) => {
+router.delete("/items/:id", param("id").isInt({ min: 0 }), async (req, res) => {
   const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
     return res.status(422).end();

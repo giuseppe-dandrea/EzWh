@@ -19,8 +19,8 @@ const skus = [
     },
     {
         description: "A table",
-        weight: 7.2,
-        volume: 10.3,
+        weight: 7,
+        volume: 10,
         notes: "Same color of the chair",
         price: 25,
         availableQuantity: 12

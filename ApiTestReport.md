@@ -129,7 +129,9 @@ User_dao <-- DatabaseConnection
 
 We adopted a bottom-up integration approach, firstly we tested the functions in database folder (*Unit*_dao.js files) that have no dependencies, then we tested at api level without mockups. To test database functions we imported other DAO Classes to create and delete entries in tables due to foreign key constraint.
 step1: *Unit*_dao.js (unit tests)
-step2: API tests without mockups 
+step2: API tests without mockups
+
+For apiTests we assumed that the db exists and contains only the hardcoded users. The tests leave the db in the same state as the initial state (with only hardcoded users).
     
 
 

@@ -79,7 +79,7 @@ router.post(
   body("RFID").isNumeric().isLength({min: 32, max: 32}),
   body("SKUId").isInt({ min: 1 }),
   body("DateOfStock").custom((value) => {
-    if (value !== null && !dayjs(value, ["YYYY/MM/DD", "YYYY/MM/DD H:m"], true).isValid()) {
+    if (value !== null && !dayjs(value, ["YYYY/MM/DD", "YYYY/MM/DD HH:mm"], true).isValid()) {
       throw new Error("Invalid date");
     }
     return true;
@@ -106,7 +106,7 @@ router.put(
 	body("newRFID").exists().isNumeric().isLength({min: 32, max: 32}),
 	body("newAvailable").isInt({min : 0, max: 1}),
 	body("newDateOfStock").custom((value) => {
-		if (value !== null && !dayjs(value, ["YYYY/MM/DD", "YYYY/MM/DD H:m"], true).isValid()) {
+		if (value !== null && !dayjs(value, ["YYYY/MM/DD", "YYYY/MM/DD HH:mm"], true).isValid()) {
       throw new Error("Invalid date");
     }
     return true;
