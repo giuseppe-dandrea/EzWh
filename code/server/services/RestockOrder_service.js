@@ -83,24 +83,23 @@ class RestockOrderService {
     async createRestockOrder(issueDate, products, supplierID) {
         const supplier = await User_dao.getUserByID(supplierID);
         if (supplier===undefined || supplier.type !== "supplier"){
-            console.log(`>>Supplier ${supplierID} not found!`);
             throw EzWhException.EntryNotAllowed;
         }
         const restockOrderID = await dao.createRestockOrder(issueDate, supplierID);
-        // console.log(`>>ResstockOrderID is ${restockOrderID}!`);
         for (let product of products) {
-            if(product.SKUId===undefined || product.description===undefined||
+            if(product.SKUId===undefined ||product.itemId===undefined || product.description===undefined||
                 product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId) ||
                 !Number.isInteger(product.qty) || product.qty < 0 || typeof product.price !== "number" ||
                     product.price < 0 || product.SKUId < 0 || typeof product.description !== "string") {
                 await dao.deleteRestockOrder(restockOrderID);
                 throw EzWhException.EntryNotAllowed;
             }
-            const item = await Item_dao.getItemBySKUIDAndSupplierID(product.SKUId, supplierID);
-            // console.log(`>>Item is ${item}!`);
+            const item = await Item_dao.getItemByID(product.itemId, supplierID);
             if (item === undefined) {
-                const id = await Item_dao.createItem(new Item(`${product.SKUId}${supplierID}`, product.description, product.price, product.SKUId, supplierID));
-                await dao.createRestockOrderProduct(id, restockOrderID, product.qty);
+                throw EzWhException.EntryNotAllowed;
+            }
+            else if(item.SKUId !== product.SKUId){
+                throw EzWhException.EntryNotAllowed;
             }
             else{
                 await dao.createRestockOrderProduct(item.id, restockOrderID, product.qty);
