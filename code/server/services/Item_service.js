@@ -16,9 +16,9 @@ class ItemService {
         }
     }
 
-    async getItemByID(id) {
+    async getItemByID(id, supplierId) {
         try {
-            let item = await dao.getItemByID(id);
+            let item = await dao.getItemByID(id, supplierId);
             if (typeof item !== "undefined" && item.length === 0) throw EzWhException.NotFound;
             else return item[0];
         } catch (err) {
@@ -37,25 +37,25 @@ class ItemService {
             const item = new Item(ItemID, Description, Price, SKUID, SupplierID);
             return await dao.createItem(item);
         } catch (err) {
-            if (err.code === "SQLITE_CONSTRAINT" && err.errno === 19) throw EzWhException.EntryNotAllowed; //ItemID already exists
+            if (err.code === "SQLITE_CONSTRAINT" && err.errno === 19) throw EzWhException.EntryNotAllowed; //ItemID already exists for this supplier OR supplier have same SKUID
             else if (err === EzWhException.NotFound) throw EzWhException.NotFound;
             else throw EzWhException.InternalError;
         }
     }
 
-    async modifyItem(id, newDescription, newPrice) {
+    async modifyItem(id,supplierId, newDescription, newPrice) {
         try {
-            await this.getItemByID(id);
-            return await dao.modifyItem(id, newDescription, newPrice);
+            await this.getItemByID(id,supplierId);
+            return await dao.modifyItem(id,supplierId, newDescription, newPrice);
         } catch (err) {
             if (err === EzWhException.NotFound) throw EzWhException.NotFound;
             else throw EzWhException.InternalError;
         }
     }
 
-    async deleteItem(id) {
+    async deleteItem(id,supplierId) {
         try {
-            return await dao.deleteItem(id);
+            return await dao.deleteItem(id,supplierId);
         } catch (err) {
             throw EzWhException.InternalError;
         }

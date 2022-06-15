@@ -119,8 +119,8 @@ class DatabaseConnection {
     		Price DOUBLE NOT NULL,
     		SKUID INTEGER NOT NULL,
     		SupplierID INTEGER NOT NULL,
-    		PRIMARY KEY (ItemID),
-            UNIQUE(SupplierID,SKUID),
+            PRIMARY KEY(SupplierID,SKUID),
+            UNIQUE (SupplierID, ItemID),
             FOREIGN KEY (SKUID) REFERENCES SKU(SKUID) ON DELETE CASCADE ,
     		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
             );`,
