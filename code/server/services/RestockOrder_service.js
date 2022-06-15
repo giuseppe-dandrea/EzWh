@@ -10,18 +10,16 @@ class RestockOrderService {
     constructor() {
     }
 
-    async getRestockOrderProducts(ID) {
-        // console.log("inside getRestockOrderProducts!");
-        // console.log(`ID is ${ID}`);
+    async getRestockOrderProducts(ID , supplierId) {
         const productsJson = await dao.getRestockOrderProductsByRestockOrderID(ID);
         let products = []
         for (let p of productsJson) {
             const itemID = p.ItemID;
-            // console.log(`ItemID is ${p.ItemID}`);
-            let item = await Item_dao.getItemByID(itemID);
+            let item = await Item_dao.getItemByID(itemID,supplierId);
             item = item[0];
             const product = {
                 "SKUId": item.skuId,
+                "itemId": item.id,
                 "description": item.description,
                 "price": item.price,
                 "qty": p.QTY,
@@ -49,7 +47,7 @@ class RestockOrderService {
         let restockOrders = await dao.getRestockOrders(state);
         // console.log(restockOrders);
         for (let restockOrder of restockOrders){
-            const products = await this.getRestockOrderProducts(restockOrder.id);
+            const products = await this.getRestockOrderProducts(restockOrder.id, restockOrder.supplierId);
             const skuItems = await this.getRestockOrderSKUItems(restockOrder.id);
             restockOrder.concatProducts(products);
             restockOrder.concatSKUItems(skuItems);
@@ -63,7 +61,7 @@ class RestockOrderService {
         if (restockOrder === undefined) {
             return undefined;
         }
-        const products = await this.getRestockOrderProducts(id);
+        const products = await this.getRestockOrderProducts(id, restockOrder.supplierId);
         const skuItems = await this.getRestockOrderSKUItems(id);
         restockOrder.concatProducts(products);
         restockOrder.concatSKUItems(skuItems);
