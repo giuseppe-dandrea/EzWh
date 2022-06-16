@@ -86,14 +86,12 @@ exports.getRestockOrderReturnItems = (ID) => {
         //         if (rows.length === 0) {
         //             resolve(undefined);
         //         }
-        const sql = `select s.SKUID, s.RFID from RestockOrderSKUItem as rosi
-          inner join SKUItem as s
+        const sql = `select rosi.SKUID, rosi.RFID from RestockOrderSKUItem as rosi
           inner join TestResult as t
-          where s.RFID = rosi.RFID and
-          t.RFID = rosi.RFID and
+          where t.RFID = rosi.RFID and
           rosi.RestockOrderID=${ID} and
           t.Result = false
-          group by s.SKUID, s.RFID
+          group by rosi.SKUID, rosi.RFID, rosi.ItemID
           having count(*)>0;`;
         dbConnection.all(sql, function (err, rows) {
             if (err) {
@@ -159,13 +157,13 @@ exports.modifyRestockOrderState = (id, newState) => {
     });
 }
 
-exports.addSkuItemToRestockOrder = (ID, RFID) => {
+exports.addSkuItemToRestockOrder = (ID, RFID, SKUID, ItemID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `INSERT INTO RestockOrderSkuItem
-      (RFID, RestockOrderID)
-      values (?, ?);`;
-        dbConnection.run(sql, [RFID, ID], function (err) {
+      (RFID, RestockOrderID, SKUID, ItemID)
+      values (?, ?, ?, ?);`;
+        dbConnection.run(sql, [RFID, ID, SKUID, ItemID], function (err) {
             if (err) {
                 reject(err);
             } else {

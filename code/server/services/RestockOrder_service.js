@@ -34,10 +34,11 @@ class RestockOrderService {
         const skuItemsJson = await dao.getRestockOrderSKUItemsByRestockOrderID(ID);
         let skuItems = [];
         for (let s of skuItemsJson) {
-            const RFID = s.RFID;
-            const SKU = await SKUItem_dao.getSKUItemByRfid(RFID);
-            const SKUID = SKU.SKUID;
-            const skuItem = {"rfid": RFID, "SKUId": SKU.sku}
+            // const RFID = s.RFID;
+            // const SKU = await SKUItem_dao.getSKUItemByRfid(RFID);
+            // const SKUID = SKU.SKUID;
+            // const skuItem = {"rfid": RFID, "SKUId": SKU.sku}
+            const skuItem = {"rfid": s.RFID, "SKUId": s.SKUID, "itemId": s.ItemID};
             skuItems.push(skuItem);
         }
         return skuItems;
@@ -88,7 +89,7 @@ class RestockOrderService {
             if(product.SKUId===undefined ||product.itemId===undefined || product.description===undefined||
                 product.price===undefined || product.qty===undefined || !Number.isInteger(product.SKUId) ||
                 !Number.isInteger(product.qty) || product.qty < 0 || typeof product.price !== "number" ||
-                    product.price < 0 || product.SKUId < 0 || typeof product.description !== "string") {
+                product.price < 0 || product.SKUId < 0 || typeof product.description !== "string") {
                 await dao.deleteRestockOrder(restockOrderID);
                 throw EzWhException.EntryNotAllowed;
             }
@@ -118,9 +119,13 @@ class RestockOrderService {
         // console.log(restockOrder);
         if (restockOrder === undefined) throw EzWhException.NotFound;
         if (restockOrder.state !== "DELIVERED") throw EzWhException.EntryNotAllowed;
+        const products = await this.getRestockOrderProducts(ID, restockOrder.supplierID);
         for (let skuItem of skuItems) {
-            if(skuItem.SKUId===undefined||skuItem.rfid===undefined)
+            if(skuItem.SKUId===undefined||skuItem.rfid===undefined||skuItem.itemId===undefined)
                 throw EzWhException.EntryNotAllowed;
+            if (!products.some(p => p.SKUId===skuItem.SKUId&&p.itemId===skuItem.itemId)) {
+                throw EzWhException.EntryNotAllowed;
+            }
             let getSkuItem = await SKUItem_dao.getSKUItemByRfid(skuItem.rfid);
             if (getSkuItem === undefined || getSkuItem.sku !== skuItem.SKUId) {
                 SKUItem_dao.createSKUItem(skuItem.rfid, skuItem.SKUId, restockOrder.issueDate) //modify date
@@ -128,7 +133,7 @@ class RestockOrderService {
             }
         }
         for (let skuItem of skuItems) {
-            await dao.addSkuItemToRestockOrder(ID, skuItem.rfid);
+            await dao.addSkuItemToRestockOrder(ID, skuItem.rfid, skuItem.SKUId, skuItem.itemId);
         }
     }
 
@@ -137,8 +142,8 @@ class RestockOrderService {
         if (restockOrder === undefined) throw EzWhException.NotFound;
         if (restockOrder.state !== "DELIVERY") throw EzWhException.EntryNotAllowed;
         if(transportNote.deliveryDate===undefined || !dayjs(transportNote.deliveryDate, ['YYYY/MM/DD', 'YYYY/MM/DD HH:mm'], true).isValid() ||
-             dayjs(transportNote.deliveryDate).isBefore(dayjs(restockOrder.issueDate)))
-             throw EzWhException.EntryNotAllowed;
+            dayjs(transportNote.deliveryDate).isBefore(dayjs(restockOrder.issueDate)))
+            throw EzWhException.EntryNotAllowed;
         await dao.addTransportNoteToRestockOrder(ID, JSON.stringify(transportNote));
     }
 
