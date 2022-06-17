@@ -175,10 +175,11 @@ class DatabaseConnection {
 
         `CREATE TABLE IF NOT EXISTS RestockOrderProduct (
             ItemID INTEGER NOT NULL,
+            SupplierID INTEGER NOT NULL,
             RestockOrderID INTEGER NOT NULL,
             QTY INTEGER NOT NULL,
-            PRIMARY KEY(ItemID, RestockOrderID),
-            FOREIGN KEY (ItemID) REFERENCES Item(ItemID)
+            PRIMARY KEY(ItemID, SupplierID, RestockOrderID),
+            FOREIGN KEY (ItemID, SupplierID) REFERENCES Item(ItemID, SupplierID)
             on delete cascade,
             FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
             on delete cascade
@@ -188,10 +189,11 @@ class DatabaseConnection {
             RFID VARCHAR(33) NOT NULL,
             SKUID INTEGER NOT NULL,
             ItemID INTEGER NOT NULL,
+            SupplierID INTEGER NOT NULL,
             RestockOrderID INTEGER NOT NULL,
             PRIMARY KEY(RFID, RestockOrderID),
             FOREIGN KEY (SKUID) REFERENCES SKU(SKUID) ON DELETE CASCADE,
-            FOREIGN KEY (ItemID) REFERENCES Item(ItemID) ON DELETE CASCADE,
+            FOREIGN KEY (ItemID, SupplierID) REFERENCES Item(ItemID, SupplierID) ON DELETE CASCADE,
             FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
             on delete cascade,
             FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
