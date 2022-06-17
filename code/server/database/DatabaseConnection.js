@@ -122,7 +122,7 @@ class DatabaseConnection {
             PRIMARY KEY(SupplierID,SKUID),
             UNIQUE (SupplierID, ItemID),
             FOREIGN KEY (SKUID) REFERENCES SKU(SKUID) ON DELETE CASCADE ,
-    		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
+    		FOREIGN KEY (SupplierID) REFERENCES User(UserID) ON DELETE CASCADE
             );`,
 
         
