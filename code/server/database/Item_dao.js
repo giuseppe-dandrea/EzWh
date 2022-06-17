@@ -12,16 +12,18 @@ exports.getItems = () => {
         });
     });
 }
-exports.getItemByID = (id, supplierId) => {
+exports.getItemByIDAndSupplierID = (id, supplierId) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `SELECT * FROM Item WHERE ItemID = ${id} AND SupplierID = ${supplierId};`;
-        dbConnection.all(sql, [], (err, rows) => {
+        dbConnection.get(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
             }
-            const i = rows.map((r) => new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID));
-            resolve(i);
+            if (rows === undefined)
+                resolve(rows);
+            else
+                resolve(new Item(rows.ItemID, rows.Description, rows.Price, rows.SKUID, rows.SupplierID));
         });
     });
 }

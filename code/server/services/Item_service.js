@@ -16,11 +16,11 @@ class ItemService {
         }
     }
 
-    async getItemByID(id, supplierId) {
+    async getItemByIDAndSupplierID(id, supplierId) {
         try {
-            let item = await dao.getItemByID(id, supplierId);
-            if (typeof item !== "undefined" && item.length === 0) throw EzWhException.NotFound;
-            else return item[0];
+            let item = await dao.getItemByIDAndSupplierID(id, supplierId);
+            if (item === undefined) throw EzWhException.NotFound;
+            else return item;
         } catch (err) {
             if (err === EzWhException.NotFound) throw EzWhException.NotFound;
             else throw EzWhException.InternalError;
@@ -45,7 +45,7 @@ class ItemService {
 
     async modifyItem(id,supplierId, newDescription, newPrice) {
         try {
-            await this.getItemByID(id,supplierId);
+            await this.getItemByIDAndSupplierID(id,supplierId);
             return await dao.modifyItem(id,supplierId, newDescription, newPrice);
         } catch (err) {
             if (err === EzWhException.NotFound) throw EzWhException.NotFound;

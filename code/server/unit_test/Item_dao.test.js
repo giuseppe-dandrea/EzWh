@@ -50,7 +50,7 @@ const items = [
 function testCreateItem(item){
     test(`Create Item ${item.id}` , async()=>{
         await itemDAO.createItem(item);
-        let getItems=await itemDAO.getItemByID(item.id);
+        let getItems=await itemDAO.getItemByIDAndSupplierID(item.id);
         let getItem=getItems[0];
         getItem.should.be.an('object');
         compareItem(getItem, item).should.be.true;
@@ -69,7 +69,7 @@ function testGetItems(expectedItems) {
 }
 function testGetItemByID(id,expectedItem) {
     test(`GET Item by ID ${id}`, async function () {
-        let items = [...await itemDAO.getItemByID(id)];
+        let items = [...await itemDAO.getItemByIDAndSupplierID(id)];
         let item = items[0];
         item.should.be.an('object');
         compareItem(item, expectedItem).should.be.true;
@@ -85,11 +85,11 @@ function testGetItemBySKUIDAndSupplierID(SKUId , supplierId ,expectedItem) {
 
 function testModifyItem(id, newDescription, newPrice ) {
     test(`Modify Item ${id}`, async function () {
-        let itemsBefore = [...await itemDAO.getItemByID(id)];
+        let itemsBefore = [...await itemDAO.getItemByIDAndSupplierID(id)];
         let beforeItem = itemsBefore[0];
         let expectedItem={id:beforeItem.id, description:newDescription , price : newPrice , skuId: beforeItem.skuId , supplierId:beforeItem.supplierId};
         await itemDAO.modifyItem(id,newDescription,newPrice);
-        let itemsAfter = [...await itemDAO.getItemByID(id)];
+        let itemsAfter = [...await itemDAO.getItemByIDAndSupplierID(id)];
         let afterItem = itemsAfter[0];
         afterItem.should.be.an('object');
         compareItem(afterItem, expectedItem).should.be.true;
@@ -98,7 +98,7 @@ function testModifyItem(id, newDescription, newPrice ) {
 function testDeleteItem(id){
     test(`Delete Item ${id}`, async() => {
         await itemDAO.deleteItem(id);
-        let deleted = (await itemDAO.getItemByID(id))[0];
+        let deleted = (await itemDAO.getItemByIDAndSupplierID(id))[0];
         expect(deleted).to.be.undefined;
 
 

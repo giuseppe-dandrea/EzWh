@@ -32,7 +32,7 @@ router.get("/items/:id/:supplierId", param("id").isInt({ min: 0 }), param("suppl
     return res.status(422).end();
   }
   try {
-    const item = await itemService.getItemByID(req.params.id, req.params.supplierId);
+    const item = await itemService.getItemByIDAndSupplierID(req.params.id, req.params.supplierId);
     return res.status(200).json({
         id: item.id,
         description: item.description,
