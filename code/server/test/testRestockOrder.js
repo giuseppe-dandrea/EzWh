@@ -388,80 +388,74 @@ function compareSKUItems(expectedRI, actualRI) {
         });
         if (!cmp_flag) {
             return false;
-        };
+        }
     }
     return true;
 }
 
 let restockOrderIssued1 = {
     "issueDate": "2021/11/29 09:33",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 30 },
-    { "SKUId": 2, "description": "second sku", "price": 10.99, "qty": 20 }],
+    "products": [{ "SKUId": 1, "itemId": 1, "description": "first sku", "price": 10.99, "qty": 30 },
+    { "SKUId": 2, "itemId": 2, "description": "second sku", "price": 10.99, "qty": 20 }],
     "supplierId": 7
 };
 let restockOrderIssued2 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError1 = {
     "issueDate": "2021/11/23 99:70",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 }
 let restockOrderError2 = {
     "issueDate": "2021/11",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError3 = {
     "issueDate": "",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError4 = {
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
-    "supplierId": 8
-};
-let restockOrderError5 = {
-    "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 4, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError6 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": "abc", "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": "abc", "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError7 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError8 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": "abc"
 };
 let restockOrderError9 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": ""
 };
 let restockOrderError10 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 15
 };
 let restockOrder1 = {
@@ -820,9 +814,9 @@ describe('TEST RestockOrder API', function () {
         deleteSKU(204, 1);
         deleteSKU(204, 2);
         deleteSKU(204, 3);
-        for (let i; i < testDescriptors.length; i++)
+        for (let i = 0; i < testDescriptors.length; i++)
             testDeleteTestDescriptor(i+1, 204)
-        for (let i; i < testResults.length; i++)
+        for (let i = 0; i < testResults.length; i++)
             testDeleteTestResult(i+1, 201);
     });
 

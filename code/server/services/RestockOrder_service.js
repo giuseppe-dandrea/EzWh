@@ -4,7 +4,6 @@ const User_dao = require("../database/User_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
 const EzWhException = require("../modules/EzWhException.js");
 const dayjs = require('dayjs');
-const Item = require("../modules/Item");
 
 class RestockOrderService {
     constructor() {
@@ -15,8 +14,7 @@ class RestockOrderService {
         let products = []
         for (let p of productsJson) {
             const itemID = p.ItemID;
-            let item = await Item_dao.getItemByID(itemID,supplierId);
-            item = item[0];
+            let item = await Item_dao.getItemByIDAndSupplierID(itemID,supplierId);
             const product = {
                 "SKUId": item.skuId,
                 "itemId": item.id,
@@ -93,15 +91,15 @@ class RestockOrderService {
                 await dao.deleteRestockOrder(restockOrderID);
                 throw EzWhException.EntryNotAllowed;
             }
-            const item = await Item_dao.getItemByID(product.itemId, supplierID);
+            const item = await Item_dao.getItemByIDAndSupplierID(product.itemId, supplierID);
             if (item === undefined) {
                 throw EzWhException.EntryNotAllowed;
             }
-            else if(item.SKUId !== product.SKUId){
+            else if(item.skuId !== product.SKUId){
                 throw EzWhException.EntryNotAllowed;
             }
             else{
-                await dao.createRestockOrderProduct(item.id, restockOrderID, product.qty);
+                await dao.createRestockOrderProduct(item.id, item.supplierId, restockOrderID, product.qty);
             }
         }
     }

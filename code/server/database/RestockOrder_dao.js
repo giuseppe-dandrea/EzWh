@@ -126,12 +126,12 @@ exports.createRestockOrder = (issueDate, supplierID) => {
         });
     });
 }
-exports.createRestockOrderProduct = (itemID, restockOrderID, QTY) => {
+exports.createRestockOrderProduct = (itemID, supplierId, restockOrderID, QTY) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `insert into RestockOrderProduct (ItemID, RestockOrderID, QTY)
-      values (${itemID}, ${restockOrderID}, ${QTY})`;
-        dbConnection.run(sql, function (err) {
+        const sql = `insert into RestockOrderProduct (ItemID, SupplierID, RestockOrderID, QTY)
+      values (?, ?, ?, ?)`;
+        dbConnection.run(sql, [itemID, supplierId, restockOrderID, QTY], function (err) {
             if (err) {
                 reject(err);
             } else {
