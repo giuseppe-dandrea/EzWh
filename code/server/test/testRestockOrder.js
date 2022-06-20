@@ -328,12 +328,13 @@ function newItem(expectedHTTPStatus, item) {
         }
     });
 }
-function deleteItem(expectedHTTPStatus, id) {
-    it('deleting an item', function (done) {
-        agent.delete(`/api/items/${id}`)
+function deleteItem(id, supplierId, expectedStatus) {
+    it(`delete /api/items/${id}/${supplierId}`, function (done) {
+        agent.delete(`/api/items/${id}/${supplierId}`)
             .end(function (err, res) {
-                if (err) done(err);
-                res.should.have.status(expectedHTTPStatus);
+                if (err)
+                    done(err);
+                res.should.have.status(expectedStatus);
                 done();
             });
     });
@@ -798,10 +799,10 @@ describe('TEST RestockOrder API', function () {
     })
 
     describe('cleaning environment', () => {
-        deleteItem(204, 1);
-        deleteItem(204, 2);
-        deleteItem(204, 3);
-        deleteItem(204, 4);
+        deleteItem(1, 7, 204);
+        deleteItem(2, 7, 204);
+        deleteItem(3, 8, 204);
+        deleteItem(4, 8, 204);
         deleteUser(204, supplier1.username, supplier1.type);
         deleteUser(204, supplier2.username, supplier2.type);
         deleteSKUItem(204, SKUItem1.RFID);
@@ -817,7 +818,7 @@ describe('TEST RestockOrder API', function () {
         for (let i = 0; i < testDescriptors.length; i++)
             testDeleteTestDescriptor(i+1, 204)
         for (let i = 0; i < testResults.length; i++)
-            testDeleteTestResult(i+1, 201);
+            testDeleteTestResult(i+1, testResults[i].rfid, 204);
     });
 
 });
