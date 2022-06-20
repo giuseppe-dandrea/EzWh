@@ -387,7 +387,7 @@ function compareSKUItems(expectedRI, actualRI) {
         cmp_flag = actualRI.some((p) => {
             return p.SKUId === exppr.SKUId &&
                 p.rfid === exppr.rfid &&
-                p.itemId === exppr.itemID;
+                p.itemId === exppr.itemId;
         });
         if (!cmp_flag) {
             return false;
