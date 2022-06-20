@@ -157,13 +157,13 @@ exports.modifyRestockOrderState = (id, newState) => {
     });
 }
 
-exports.addSkuItemToRestockOrder = (ID, RFID, SKUID, ItemID) => {
+exports.addSkuItemToRestockOrder = (ID, RFID, SKUID, ItemID, SupplierID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `INSERT INTO RestockOrderSkuItem
-      (RFID, RestockOrderID, SKUID, ItemID)
-      values (?, ?, ?, ?);`;
-        dbConnection.run(sql, [RFID, ID, SKUID, ItemID], function (err) {
+      (RFID, RestockOrderID, SKUID, ItemID, SupplierID)
+      values (?, ?, ?, ?, ?);`;
+        dbConnection.run(sql, [RFID, ID, SKUID, ItemID, SupplierID], function (err) {
             if (err) {
                 reject(err);
             } else {

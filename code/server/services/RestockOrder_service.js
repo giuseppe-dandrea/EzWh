@@ -114,14 +114,13 @@ class RestockOrderService {
     async addSkuItemsToRestockOrder(ID, skuItems) {
         // console.log("inside facade addSkuItemsToRestockOrder")
         const restockOrder = await dao.getRestockOrderByID(ID);
-        // console.log(restockOrder);
         if (restockOrder === undefined) throw EzWhException.NotFound;
         if (restockOrder.state !== "DELIVERED") throw EzWhException.EntryNotAllowed;
-        const products = await this.getRestockOrderProducts(ID, restockOrder.supplierID);
+        const products = await this.getRestockOrderProducts(ID, restockOrder.supplierId);
         for (let skuItem of skuItems) {
-            if(skuItem.SKUId===undefined||skuItem.rfid===undefined||skuItem.itemId===undefined)
+            if(skuItem.SKUId===undefined||skuItem.rfid===undefined||skuItem.itemID===undefined)
                 throw EzWhException.EntryNotAllowed;
-            if (!products.some(p => p.SKUId===skuItem.SKUId&&p.itemId===skuItem.itemId)) {
+            if (!products.some(p => p.SKUId===skuItem.SKUId&&p.itemId===skuItem.itemID)) {
                 throw EzWhException.EntryNotAllowed;
             }
             let getSkuItem = await SKUItem_dao.getSKUItemByRfid(skuItem.rfid);
@@ -131,7 +130,7 @@ class RestockOrderService {
             }
         }
         for (let skuItem of skuItems) {
-            await dao.addSkuItemToRestockOrder(ID, skuItem.rfid, skuItem.SKUId, skuItem.itemId);
+            await dao.addSkuItemToRestockOrder(ID, skuItem.rfid, skuItem.SKUId, skuItem.itemID, restockOrder.supplierId);
         }
     }
 
