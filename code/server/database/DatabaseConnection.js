@@ -212,9 +212,11 @@ class DatabaseConnection {
         `CREATE TABLE IF NOT EXISTS ReturnOrderProduct (
             RFID VARCHAR(33) NOT NULL,
             ReturnOrderID INTEGER NOT NULL,
+            ItemID INTEGER NOT NULL,
             PRIMARY KEY(RFID, ReturnOrderID),
             FOREIGN KEY (ReturnOrderID) REFERENCES ReturnOrder(ReturnOrderID)
             on delete cascade,
+            FOREIGN KEY (ItemID) REFERENCES Item(ItemID) ON DELETE CASCADE,
             FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
             on delete cascade
             );`

@@ -15,11 +15,11 @@ exports.createReturnOrder = (returnDate, restockOrderID) => {
     });
 }
 
-exports.createReturnOrderProducts = (ID, RFID) => {
+exports.createReturnOrderProducts = (ID, RFID, ItemID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `insert into ReturnOrderProduct (RFID, ReturnOrderID)
-      values ('${RFID}', ${ID});`;
+      values ('${RFID}', ${ID},${ItemID});`;
         dbConnection.run(sql, function (err) {
             if (err) {
                 reject(err);
