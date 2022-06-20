@@ -50,12 +50,12 @@ class ReturnOrderService {
     async getReturnOrderProducts(returnOrderID) {
         let returnProducts = [];
         const products = await dao.getReturnOrderProducts(returnOrderID);
-        console.log(`products: ${products}`)
+        // console.log(`products: ${products}`)
         for (let product of products) {
             const SKUItem = await SKUItem_dao.getSKUItemByRfid(product.RFID);
-            console.log(`SKUItem: ${SKUItem}`)
+            // console.log(`SKUItem: ${SKUItem}`)
             const SKU = await SKU_dao.getSKUById(SKUItem.sku)
-            console.log(`SKUs: ${SKU}`)
+            // console.log(`SKUs: ${SKU}`)
             const itemId = product.ItemID ;
             const returnProduct =
                 {
@@ -72,10 +72,10 @@ class ReturnOrderService {
 
     async getReturnOrders() {
         const returnOrders = await dao.getReturnOrders();
-        console.log(returnOrders);
+        // console.log(returnOrders);
         for (let returnOrder of returnOrders) {
             const products = await this.getReturnOrderProducts(returnOrder.id);
-            console.log(products);
+            // console.log(products);
             for (let p of products) {
                 returnOrder.addProduct(p);
             }

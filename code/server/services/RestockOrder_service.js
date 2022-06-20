@@ -118,9 +118,9 @@ class RestockOrderService {
         if (restockOrder.state !== "DELIVERED") throw EzWhException.EntryNotAllowed;
         const products = await this.getRestockOrderProducts(ID, restockOrder.supplierId);
         for (let skuItem of skuItems) {
-            if(skuItem.SKUId===undefined||skuItem.rfid===undefined||skuItem.itemID===undefined)
+            if(skuItem.SKUId===undefined||skuItem.rfid===undefined||skuItem.itemId===undefined)
                 throw EzWhException.EntryNotAllowed;
-            if (!products.some(p => p.SKUId===skuItem.SKUId&&p.itemId===skuItem.itemID)) {
+            if (!products.some(p => p.SKUId===skuItem.SKUId&&p.itemId===skuItem.itemId)) {
                 throw EzWhException.EntryNotAllowed;
             }
             let getSkuItem = await SKUItem_dao.getSKUItemByRfid(skuItem.rfid);
@@ -130,7 +130,7 @@ class RestockOrderService {
             }
         }
         for (let skuItem of skuItems) {
-            await dao.addSkuItemToRestockOrder(ID, skuItem.rfid, skuItem.SKUId, skuItem.itemID, restockOrder.supplierId);
+            await dao.addSkuItemToRestockOrder(ID, skuItem.rfid, skuItem.SKUId, skuItem.itemId, restockOrder.supplierId);
         }
     }
 

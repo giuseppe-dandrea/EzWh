@@ -576,8 +576,8 @@ let item4 = {
 };
 let transportNote1 = { "deliveryDate": "2021/12/29" };
 let transportNote2 = { "deliveryDate": "2021/12/28" };
-let skuItems1 = [{ "SKUId": 1, "itemID": 1, "rfid": "12345678901234567890123456789015" }, { "SKUId": 1, "itemID": 1, "rfid": "12345678901234567890123456789016" }]; //OK
-let skuItems2 = [{ "SKUId": 1, "itemID": 1, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "itemID": 1, "rfid": "12345678901234567890123456789018" }]; //OK
+let skuItems1 = [{ "SKUId": 1, "itemId": 1, "rfid": "12345678901234567890123456789015" }, { "SKUId": 1, "itemId": 1, "rfid": "12345678901234567890123456789016" }]; //OK
+let skuItems2 = [{ "SKUId": 1, "itemId": 1, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "itemId": 1, "rfid": "12345678901234567890123456789018" }]; //OK
 
 const testDescriptors = [
     {
