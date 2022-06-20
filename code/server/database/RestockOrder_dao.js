@@ -86,7 +86,7 @@ exports.getRestockOrderReturnItems = (ID) => {
         //         if (rows.length === 0) {
         //             resolve(undefined);
         //         }
-        const sql = `select rosi.SKUID, rosi.RFID from RestockOrderSKUItem as rosi
+        const sql = `select rosi.SKUID, rosi.RFID, rosi.ItemID from RestockOrderSKUItem as rosi
           inner join TestResult as t
           where t.RFID = rosi.RFID and
           rosi.RestockOrderID=${ID} and
@@ -100,7 +100,7 @@ exports.getRestockOrderReturnItems = (ID) => {
             }
             const tds = rows.map(
                 (r) =>
-                    ({"SKUId": r.SKUID, "rfid": r.RFID})
+                    ({"SKUId": r.SKUID, "rfid": r.RFID, "itemId": r.ItemID})
             );
             resolve(tds);
         });

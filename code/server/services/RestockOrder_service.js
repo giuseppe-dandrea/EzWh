@@ -51,7 +51,7 @@ class RestockOrderService {
             restockOrder.concatProducts(products);
             restockOrder.concatSKUItems(skuItems);
         }
-        console.log(JSON.stringify(restockOrders, null, "  "));
+        // console.log(JSON.stringify(restockOrders, null, "  "));
         return restockOrders;
     }
 

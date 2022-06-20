@@ -355,6 +355,7 @@ function compareRestockOrder(expectedRO, actualRO) {
             let exppr = expectedRO.products[i];
             cmp_flag = actualRO.products.some((p) => {
                 return p.SKUId === exppr.SKUId &&
+                    p.itemId === exppr.itemId &&
                     p.description === exppr.description &&
                     p.price === exppr.price &&
                     p.qty === exppr.qty;
@@ -385,7 +386,8 @@ function compareSKUItems(expectedRI, actualRI) {
         let exppr = expectedRI[i];
         cmp_flag = actualRI.some((p) => {
             return p.SKUId === exppr.SKUId &&
-                p.rfid === exppr.rfid;
+                p.rfid === exppr.rfid &&
+                p.itemId === exppr.itemID;
         });
         if (!cmp_flag) {
             return false;
