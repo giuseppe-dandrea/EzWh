@@ -50,8 +50,7 @@ const items = [
 function testCreateItem(item){
     test(`Create Item ${item.id}` , async()=>{
         await itemDAO.createItem(item);
-        let getItems=await itemDAO.getItemByIDAndSupplierID(item.id);
-        let getItem=getItems[0];
+        let getItem=await itemDAO.getItemByIDAndSupplierID(item.id, item.supplierId);
         getItem.should.be.an('object');
         compareItem(getItem, item).should.be.true;
     })
@@ -67,10 +66,9 @@ function testGetItems(expectedItems) {
             }).should.be.true;
     });
 }
-function testGetItemByID(id,expectedItem) {
-    test(`GET Item by ID ${id}`, async function () {
-        let items = [...await itemDAO.getItemByIDAndSupplierID(id)];
-        let item = items[0];
+function testGetItemByIDAndSupplierID(id, supplierID, expectedItem) {
+    test(`GET Item by ID ${id} and supplierID ${supplierID}`, async function () {
+        let item = await itemDAO.getItemByIDAndSupplierID(id, supplierID);
         item.should.be.an('object');
         compareItem(item, expectedItem).should.be.true;
     });
@@ -83,26 +81,21 @@ function testGetItemBySKUIDAndSupplierID(SKUId , supplierId ,expectedItem) {
     });
 }
 
-function testModifyItem(id, newDescription, newPrice ) {
+function testModifyItem(id, supplierID, newDescription, newPrice ) {
     test(`Modify Item ${id}`, async function () {
-        let itemsBefore = [...await itemDAO.getItemByIDAndSupplierID(id)];
-        let beforeItem = itemsBefore[0];
+        let beforeItem = await itemDAO.getItemByIDAndSupplierID(id, supplierID);
         let expectedItem={id:beforeItem.id, description:newDescription , price : newPrice , skuId: beforeItem.skuId , supplierId:beforeItem.supplierId};
-        await itemDAO.modifyItem(id,newDescription,newPrice);
-        let itemsAfter = [...await itemDAO.getItemByIDAndSupplierID(id)];
-        let afterItem = itemsAfter[0];
+        await itemDAO.modifyItem(id,supplierID,newDescription,newPrice);
+        let afterItem = await itemDAO.getItemByIDAndSupplierID(id, supplierID);
         afterItem.should.be.an('object');
         compareItem(afterItem, expectedItem).should.be.true;
     });
 }
-function testDeleteItem(id){
+function testDeleteItem(id, supplierID){
     test(`Delete Item ${id}`, async() => {
-        await itemDAO.deleteItem(id);
-        let deleted = (await itemDAO.getItemByIDAndSupplierID(id))[0];
+        await itemDAO.deleteItem(id, supplierID);
+        let deleted = await itemDAO.getItemByIDAndSupplierID(id, supplierID);
         expect(deleted).to.be.undefined;
-
-
-
     })
 }
 
@@ -132,11 +125,11 @@ describe('Test Item DAO', () => {
         testCreateItem(items[2]);
 
         testGetItems(items);
-        testGetItemByID(12,items[0]);
+        testGetItemByIDAndSupplierID(12, items[0].supplierId, items[0]);
         testGetItemBySKUIDAndSupplierID(1,8,items[2]);
 
-        testModifyItem(13,"A new Description",12,21);
-        testDeleteItem(12);
+        testModifyItem(13, items[1].supplierId, "A new Description",12,21);
+        testDeleteItem(12, items[0].supplierId);
 
 
 
