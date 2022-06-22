@@ -20,10 +20,10 @@ These figures will not be used to evaluate neither the project nor the team, the
 |   may 9 - 15   |                         |        |  120   |              |                     |                    |            |           | 
 |  may 16 - 22   |                         |        |   30   |      10      |         140         |                    |            |           | 
 |  may 23 - 29   |                         |   9    |   4    |      40      |         10          |                    |     2      |           | 
-| may 30 - jun 5 |                         |        |        |              |                     |                    |            |           | 
-|   jun 6 - 12   |                         |        |        |              |                     |                    |            |           | 
-|   jun 13 -19   |                         |        |        |              |                     |                    |            |           | 
-|  jun 20 - 26   |                         |        |        |              |                     |                    |            |           | 
+| may 30 - jun 5 |                         |        |        |              |                     |         10         |            |           | 
+|   jun 6 - 12   |                         |        |        |              |                     |         5          |            |           | 
+|   jun 13 -19   |                         |        |   5    |              |          2          |                    |            |           | 
+|  jun 20 - 26   |                         |   1    |        |      2       |                     |                    |     2      |           | 
 |   jun 27 - 3   |                         |        |        |              |                     |                    |            |           | 
 |   jul 4 - 10   |                         |        |        |              |                     |                    |            |           | 
 |   jul 11 -17   |                         |        |        |              |                     |                    |            |           |
