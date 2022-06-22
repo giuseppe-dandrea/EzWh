@@ -112,10 +112,4 @@ N.B : Tests should be run using `--runInBand` in the `npm test` to avoid paralle
 
 ### Code coverage report
 
-![Image](Diagrams/Coverage.JPG "Coverage Report")
-
-
-
-
-
-
+![Image](Diagrams/Coverage.png "Coverage Report")
