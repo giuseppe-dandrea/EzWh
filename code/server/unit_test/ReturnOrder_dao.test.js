@@ -7,6 +7,7 @@ const UserDAO = require("../database/User_dao");
 const SKUItemDAO = require("../database/SKUItem_dao");
 const dbConnection = require("../database/DatabaseConnection");
 const { expect } = require('chai');
+const ItemDAO = require("../database/Item_dao");
 
 function testCreateReturnOrder(expectedRO) {
     test('create returnOrder', async function () {
@@ -27,13 +28,13 @@ function testCreateReturnOrderError(expectedRO) {
     });
 }
 
-function testCreateReturnOrderProducts(id, products) {
+function testCreateReturnOrderProducts(restockOrderId, restockOrder, products) {
     test('create returnOrder product', async function () {
         for (let i = 0; i < products.length; i++) {
             await RetODAO.createReturnOrderProducts(products[i].ReturnOrderID,
-                products[i].RFID);
+                products[i].RFID, products[i].itemId, restockOrder.supplierId);
         }
-        let actualProducts = await RetODAO.getReturnOrderProducts(id);
+        let actualProducts = await RetODAO.getReturnOrderProducts(restockOrderId);
         for (let i = 0; i < products.length; i++)
             (products.some((p) => {
                 return p.RFID === actualProducts[i].RFID &&
@@ -42,12 +43,12 @@ function testCreateReturnOrderProducts(id, products) {
     });
 }
 
-function testCreateReturnOrderProductsError(products) {
+function testCreateReturnOrderProductsError(restockOrder, products) {
     test('create returnOrder product', async function () {
         try {
             for (let i = 0; i < products.length; i++) {
                 await RetODAO.createReturnOrderProducts(products[i].ReturnOrderID,
-                    products[i].RFID);
+                    products[i].RFID, products[i].itemId, restockOrder.supplierId);
             }
             false.should.be.true;
         } catch (err) {
@@ -100,14 +101,14 @@ function compareRO(actualRO, expectedRO) {
 
 let restockOrderIssued1 = {
     "issueDate": "2021/11/29 09:33",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 30 },
-    { "SKUId": 2, "description": "second sku", "price": 10.99, "qty": 20 }],
+    "products": [{ "SKUId": 1, "itemId": 1, "description": "first sku", "price": 10.99, "qty": 30 },
+    { "SKUId": 2, "itemId": 2, "description": "second sku", "price": 10.99, "qty": 20 }],
     "supplierId": 7
 };
 let restockOrderIssued2 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let supplier1 = {
@@ -149,6 +150,39 @@ let SKU3 = {
     "price": 10.99,
     "availableQuantity": 30
 };
+
+const itemSample1 = {
+    "id": 1,
+    "description": "sample description for Item",
+    "price": 10,
+    "skuId": 1,
+    "supplierId": 7
+};
+
+const itemSample2 = {
+    "id": 2,
+    "description": "sample description for Item",
+    "price": 10,
+    "skuId": 2,
+    "supplierId": 7
+};
+
+const itemSample3 = {
+    "id": 3,
+    "description": "sample description for Item",
+    "price": 10,
+    "skuId": 1,
+    "supplierId": 8
+};
+
+const itemSample4 = {
+    "id": 4,
+    "description": "sample description for Item",
+    "price": 10,
+    "skuId": 3,
+    "supplierId": 8
+};
+
 let SKUItem1 = {
     "RFID": "12345678901234567890123456789015",
     "SKUId": 1,
@@ -202,26 +236,26 @@ let returnOrder2 = {
 let returnOrder3 = {
     "id": 2,
     "returnDate": "2021/12/29 09:33",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
-    { "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
+    "products": [{ "SKUId": 1, "itemId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789016" },
+    { "SKUId": 1, "itemId": 1, "description": "first sku", "price": 10.99, "qty": 20, "RFID": "12345678901234567890123456789017" }],
     "restockOrderId": 3
 };
 
 let products1 = [
-    { "RFID": "12345678901234567890123456789015", "ReturnOrderID": 1 },
-    { "RFID": "12345678901234567890123456789016", "ReturnOrderID": 1 },
-    { "RFID": "12345678901234567890123456789025", "ReturnOrderID": 1 }
+    { "RFID": "12345678901234567890123456789015", "itemId": 1, "ReturnOrderID": 1 },
+    { "RFID": "12345678901234567890123456789016", "itemId": 1, "ReturnOrderID": 1 },
+    { "RFID": "12345678901234567890123456789025", "itemId": 2, "ReturnOrderID": 1 }
 ];
 let products2 = [
-    { "RFID": "12345678901234567890123456789017", "ReturnOrderID": 2 },
-    { "RFID": "12345678901234567890123456789018", "ReturnOrderID": 2 },
-    { "RFID": "12345678901234567890123456789026", "ReturnOrderID": 2 },
-    { "RFID": "12345678901234567890123456789027", "ReturnOrderID": 2 }
+    { "RFID": "12345678901234567890123456789017", "itemId": 3, "ReturnOrderID": 2 },
+    { "RFID": "12345678901234567890123456789018", "itemId": 3, "ReturnOrderID": 2 },
+    { "RFID": "12345678901234567890123456789026", "itemId": 4, "ReturnOrderID": 2 },
+    { "RFID": "12345678901234567890123456789027", "itemId": 4, "ReturnOrderID": 2 }
 ];
 let products3 = [
-    { "RFID": "12345678901234567890123456789015", "ReturnOrderID": 2 },
-    { "RFID": "12345678901234567890123456789016", "ReturnOrderID": 2 },
-    { "RFID": "12345678901234567890123456789025", "ReturnOrderID": 2 }
+    { "RFID": "12345678901234567890123456789015", "itemId": 3, "ReturnOrderID": 2 },
+    { "RFID": "12345678901234567890123456789016", "itemId": 3, "ReturnOrderID": 2 },
+    { "RFID": "12345678901234567890123456789025", "itemId": 4, "ReturnOrderID": 2 }
 ];
 
 describe("Test ReturnOrder DAO", () => {
@@ -248,6 +282,11 @@ describe("Test ReturnOrder DAO", () => {
         await SKUItemDAO.createSKUItem(SKUItem5.RFID, SKUItem5.SKUId, SKUItem5.DateOfStock);
         await SKUItemDAO.createSKUItem(SKUItem6.RFID, SKUItem6.SKUId, SKUItem6.DateOfStock);
         await SKUItemDAO.createSKUItem(SKUItem7.RFID, SKUItem7.SKUId, SKUItem7.DateOfStock);
+        await ItemDAO.createItem(itemSample1);
+        await ItemDAO.createItem(itemSample2);
+        await ItemDAO.createItem(itemSample3);
+        await ItemDAO.createItem(itemSample4);
+
     });
 
     describe('test CRUD operations', () => {
@@ -258,11 +297,11 @@ describe("Test ReturnOrder DAO", () => {
         testGetReturnOrderByID(returnOrder2);
         testCreateReturnOrderError(returnOrder3);
         testGetReturnOrders([returnOrder1, returnOrder2]);
-        testCreateReturnOrderProducts(1, products1);
-        testCreateReturnOrderProducts(2, products2);
+        testCreateReturnOrderProducts(1, restockOrderIssued1, products1);
+        testCreateReturnOrderProducts(2, restockOrderIssued2, products2);
         testGetReturnOrderProduct(1, products1);
         testGetReturnOrderProduct(2, products2);
-        testCreateReturnOrderProductsError(products3);
+        testCreateReturnOrderProductsError(restockOrderIssued2, products3);
         testDeleteReturnOrder(1);
         testDeleteReturnOrder(2);
         testGetReturnOrders([]);

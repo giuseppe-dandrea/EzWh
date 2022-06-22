@@ -4,6 +4,7 @@ const User_dao = require("../database/User_dao");
 const SKUItem_dao = require("../database/SKUItem_dao");
 const EzWhException = require("../modules/EzWhException.js");
 const dayjs = require('dayjs');
+const Item = require("../modules/Item");
 
 class RestockOrderService {
     constructor() {
@@ -93,7 +94,8 @@ class RestockOrderService {
             }
             const item = await Item_dao.getItemByIDAndSupplierID(product.itemId, supplierID);
             if (item === undefined) {
-                throw EzWhException.EntryNotAllowed;
+                const id = await Item_dao.createItem(new Item(`${product.SKUId}${supplierID}`, product.description, product.price, product.SKUId, supplierID));
+                await dao.createRestockOrderProduct(id, restockOrderID, product.qty);
             }
             else if(item.skuId !== product.SKUId){
                 throw EzWhException.EntryNotAllowed;

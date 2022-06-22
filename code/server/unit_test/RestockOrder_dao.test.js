@@ -37,13 +37,15 @@ const itemSample1 = {
 };
 const productSample1 = {
     "SKUId": itemSample1.skuId,
+    "itemId": itemSample1.id,
     "description": itemSample1.description,
     "price": itemSample1.price,
     "qty": 20,
 };
 const SKUItemSampel1 = {
     "SKUId": SKUSample1.id,
-    "RFID": "123456789",
+    "RFID": "12345678901234567890123456789015",
+    "itemId": itemSample1.id,
     "dateOfStock": "2021-01-01 09:00"
 }
 // const products = [productSample];
@@ -77,7 +79,7 @@ function testDeleteRestockOrder(restockOrder) {
 
 function testCreateRestockOrderProduct(restockOrder, product, itemID) {
     test(`Restock Order Product, Create and Get By ID { SKUId: ${product.SKUId} }`, async function () {
-        await dao.createRestockOrderProduct(product.SKUId, restockOrder.id, product.qty);
+        await dao.createRestockOrderProduct(product.itemId, restockOrder.supplierId, restockOrder.id, product.qty);
         const getProducts = await dao.getRestockOrderProductsByRestockOrderID(restockOrder.id);
         const getProduct = getProducts[0];
         (getProducts.length === 1).should.be.true;
@@ -91,12 +93,13 @@ function testCreateRestockOrderProduct(restockOrder, product, itemID) {
 
 function testAddSkuItemToRestockOrder(restockOrder, skuItem){
     test(`Restock Order SKUItem, Create and Get By ID { RFID: ${skuItem.RFID} }`, async function () {
-        await dao.addSkuItemToRestockOrder(restockOrder.id, skuItem.RFID);
+        await dao.addSkuItemToRestockOrder(restockOrder.id, skuItem.RFID, skuItem.SKUId, skuItem.itemId, restockOrder.supplierId);
         const getSKUItems = await dao.getRestockOrderSKUItemsByRestockOrderID(restockOrder.id);
         const getSKUItem = getSKUItems[0];
         (getSKUItems.length === 1).should.be.true;
         (
             getSKUItem.RFID === skuItem.RFID &&
+            getSKUItem.ItemID === skuItem.itemId &&
             getSKUItem.RestockOrderID === restockOrder.id
         ).should.be.true;
     });
@@ -121,12 +124,13 @@ function testAddTransportNoteToRestockOrder(restockOrder, transportNote){
 function testGetRestockOrderReturnItems(restockOrder, returnItem){
     test(`Get Restock Order return Items { restockOrderID : ${restockOrder.id} }`, async function () {
         await ReturnOrder_dao.createReturnOrder("2020-01-01", restockOrder.id);
-        await ReturnOrder_dao.createReturnOrderProducts(1, SKUItemSampel1.RFID);  //1 is returnorderid
+        await ReturnOrder_dao.createReturnOrderProducts(1, SKUItemSampel1.RFID, itemSample1.id, itemSample1.supplierId);  //1 is returnorderid
         await TestDescriptor_dao.createTestDescriptor("", "", SKUItemSampel1.SKUId);
         await TestResult_dao.addTestResult(SKUItemSampel1.RFID, 1, "", false);  //1 is testdescriptorid
         const getReturnItems = await dao.getRestockOrderReturnItems(restockOrder.id);
         const getReturnItem = getReturnItems[0];
         (getReturnItem.rfid === returnItem.rfid &&
+            getReturnItem.itemId === returnItem.itemId &&
             getReturnItem.SKUId === returnItem.SKUId).should.be.true;
     });
 }
@@ -142,6 +146,7 @@ function compareRestockOrder(actualRestockOrder, expectedRestockOrder) {
             let a_product = actualRestockOrder.products[i];
             let e_product = expectedRestockOrder.products[i];
             if (a_product.SKUId !== e_product.SKUId ||
+                a_product.ItemId !== e_product.ItemId ||
                 a_product.description !== e_product.description ||
                 a_product.price !== e_product.price ||
                 a_product.qty !== e_product.qty)
@@ -168,7 +173,7 @@ describe('Unit test RestockOrder_dao', () => {
     testAddSkuItemToRestockOrder(restockOrderSample1, SKUItemSampel1);
     testModifyRestockOrderState(restockOrderSample1, "DELIVERED");
     testAddTransportNoteToRestockOrder(restockOrderSample1, " { delivered : 2020/02/02 } ");
-    testGetRestockOrderReturnItems(restockOrderSample1, { "SKUId": SKUItemSampel1.SKUId, "rfid": SKUItemSampel1.RFID})
+    testGetRestockOrderReturnItems(restockOrderSample1, { "SKUId": SKUItemSampel1.SKUId, "itemId": SKUItemSampel1.itemId, "rfid": SKUItemSampel1.RFID})
     testDeleteRestockOrder(restockOrderSample1);
     afterAll(async () => {
         await TestResult_dao.deleteTestResult(SKUItemSampel1.RFID, 1);
