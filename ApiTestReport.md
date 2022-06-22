@@ -94,6 +94,8 @@ InternalOrder_service <-- User_dao
 Item_service <-- Item_dao
 Item_service <-- SKU_dao
 Item_service <-- User_dao
+Item_service <-- RestockOrder_dao
+Item_service <-- ReturnOrder_dao
 Position_service <-- Position_dao
 RestockOrder_service <-- RestockOrder_dao
 RestockOrder_service <-- Item_dao

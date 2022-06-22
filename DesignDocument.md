@@ -193,11 +193,11 @@ package database {
     }
     class Item_dao {
         + getItems() : List<Item>
-        + getItemByID(id) : Item
+        + getItemByIDAndSupplierID(id, supplierID) : Item
         + getItemBySKUIDAndSupplierID(SKUID, supplierID) : Item
         + createItem(item) : ID
-        + modifyItem(id, newDescription, newPrice) : void
-        + deleteItem(id) : void
+        + modifyItem(id, supplierID, newDescription, newPrice) : void
+        + deleteItem(id supplierID) : void
         + deleteAllItems() : void
     }
     class Position_dao {
@@ -216,7 +216,7 @@ package database {
         + getRestockOrderSKUItemsByRestockOrderID(ID) : List<SKUItem>
         + getRestockOrderReturnItems(ID) : List<SKUItem>
         + createRestockOrder(issueDate, supplierID) : ID
-        + createRestockOrderProduct(itemID, restockOrderID, QTY) : void
+        + createRestockOrderProduct(itemID, supplierID, restockOrderID, QTY) : void
         + modifyRestockOrderState(id, newState) : void
         + addSkuItemToRestockOrder(ID, RFID) : void
         + addTransportNoteToRestockOrder(ID, transportNote) : void
@@ -224,7 +224,7 @@ package database {
     }
     class ReturnOrder_dao {
         + createReturnOrder(returnDate, restockOrderID) : ID
-        + createReturnOrderProducts(ID, RFID) : void
+        + createReturnOrderProducts(ID, ItemID, RFID) : void
         + getReturnOrderProducts(ID) : List<Object{Item, qty}>
         + getReturnOrders() : List<ReturnOrder>
         + getReturnOrderByID(ID) : ReturnOrder
@@ -380,10 +380,10 @@ package services {
     }
     class Item_service {
         + getItems() : List<Item>
-        + getItemByID(id) : Item
+        + getItemByIDAndSupplierID(id, supplierID) : Item
         + createItem(ItemID, Description, Price, SKUID, SupplierID) : void
-        + modifyItem(id, newDescription, newPrice) : void
-        + deleteItem(id) : void
+        + modifyItem(id, supplierID, newDescription, newPrice) : void
+        + deleteItem(id, supplierID) : void
     }
     class Position_service {
         + getPositions() : List<Position>
@@ -394,7 +394,7 @@ package services {
         + deleteAllPositions() : void
     }
     class RestockOrder_service {
-        + getRestockOrderProducts(ID) : List<Object{Item, qty}>
+        + getRestockOrderProducts(ID, supplierID) : List<Object{Item, qty}>
         + getRestockOrderSKUItems(ID) : List<SKUItem>
         + getRestockOrders(state) : List<RestockOrder>
         + getRestockOrderByID(id) : RestockOrder
@@ -852,9 +852,9 @@ participant Database
 
 Supplier -> EzWh: Search Item I
 activate EzWh
-EzWh -> Service: Item_service.getItembyId(id)
+EzWh -> Service: Item_service.getItemByIDAndSupplierID(id, supplierID)
 activate Service
-Service -> Database : Item_dao.getItembyId(id)
+Service -> Database : Item_dao.getItemByIDAndSupplierID(id, supplierID)
 activate Database
 Database --> Service : Item
 deactivate Database
@@ -863,11 +863,11 @@ deactivate Service
 EzWh --> Supplier : Item
 deactivate EzWh
 
-Supplier -> EzWh :Selects fot ID newDescription nD, newPrice P
+Supplier -> EzWh :Selects ID newDescription nD, newPrice P
 activate EzWh
-EzWh ->Service : Item_service.modifyItem(ID,nD,nP)
+EzWh ->Service : Item_service.modifyItem(ID,supplierID,nD,nP)
 activate Service
-Service ->Database : Item_dao.modifyItem(ID,nD,nP)
+Service ->Database : Item_dao.modifyItem(ID,supplierID,nD,nP)
 activate Database
 Database --> Service : Done
 deactivate Database
