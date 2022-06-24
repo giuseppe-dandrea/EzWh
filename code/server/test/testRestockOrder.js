@@ -328,12 +328,13 @@ function newItem(expectedHTTPStatus, item) {
         }
     });
 }
-function deleteItem(expectedHTTPStatus, id) {
-    it('deleting an item', function (done) {
-        agent.delete(`/api/items/${id}`)
+function deleteItem(id, supplierId, expectedStatus) {
+    it(`delete /api/items/${id}/${supplierId}`, function (done) {
+        agent.delete(`/api/items/${id}/${supplierId}`)
             .end(function (err, res) {
-                if (err) done(err);
-                res.should.have.status(expectedHTTPStatus);
+                if (err)
+                    done(err);
+                res.should.have.status(expectedStatus);
                 done();
             });
     });
@@ -354,6 +355,7 @@ function compareRestockOrder(expectedRO, actualRO) {
             let exppr = expectedRO.products[i];
             cmp_flag = actualRO.products.some((p) => {
                 return p.SKUId === exppr.SKUId &&
+                    p.itemId === exppr.itemId &&
                     p.description === exppr.description &&
                     p.price === exppr.price &&
                     p.qty === exppr.qty;
@@ -384,84 +386,79 @@ function compareSKUItems(expectedRI, actualRI) {
         let exppr = expectedRI[i];
         cmp_flag = actualRI.some((p) => {
             return p.SKUId === exppr.SKUId &&
-                p.rfid === exppr.rfid;
+                p.rfid === exppr.rfid &&
+                p.itemId === exppr.itemId;
         });
         if (!cmp_flag) {
             return false;
-        };
+        }
     }
     return true;
 }
 
 let restockOrderIssued1 = {
     "issueDate": "2021/11/29 09:33",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 30 },
-    { "SKUId": 2, "description": "second sku", "price": 10.99, "qty": 20 }],
+    "products": [{ "SKUId": 1, "itemId": 1, "description": "first sku", "price": 10.99, "qty": 30 },
+    { "SKUId": 2, "itemId": 2, "description": "second sku", "price": 10.99, "qty": 20 }],
     "supplierId": 7
 };
 let restockOrderIssued2 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError1 = {
     "issueDate": "2021/11/23 99:70",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 }
 let restockOrderError2 = {
     "issueDate": "2021/11",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError3 = {
     "issueDate": "",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError4 = {
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
-    "supplierId": 8
-};
-let restockOrderError5 = {
-    "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 4, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError6 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": "abc", "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": "abc", "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError7 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 8
 };
 let restockOrderError8 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": "abc"
 };
 let restockOrderError9 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": ""
 };
 let restockOrderError10 = {
     "issueDate": "2021/11/23",
-    "products": [{ "SKUId": 1, "description": "first sku", "price": 10.99, "qty": 20 },
-    { "SKUId": 3, "description": "third sku", "price": 10.99, "qty": 30 }],
+    "products": [{ "SKUId": 1, "itemId": 3, "description": "first sku", "price": 10.99, "qty": 20 },
+    { "SKUId": 3, "itemId": 4, "description": "third sku", "price": 10.99, "qty": 30 }],
     "supplierId": 15
 };
 let restockOrder1 = {
@@ -579,8 +576,8 @@ let item4 = {
 };
 let transportNote1 = { "deliveryDate": "2021/12/29" };
 let transportNote2 = { "deliveryDate": "2021/12/28" };
-let skuItems1 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789015" }, { "SKUId": 1, "rfid": "12345678901234567890123456789016" }]; //OK
-let skuItems2 = [{ "SKUId": 1, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "rfid": "12345678901234567890123456789018" }]; //OK
+let skuItems1 = [{ "SKUId": 1, "itemId": 1, "rfid": "12345678901234567890123456789015" }, { "SKUId": 1, "itemId": 1, "rfid": "12345678901234567890123456789016" }]; //OK
+let skuItems2 = [{ "SKUId": 1, "itemId": 1, "rfid": "12345678901234567890123456789017" }, { "SKUId": 1, "itemId": 1, "rfid": "12345678901234567890123456789018" }]; //OK
 
 const testDescriptors = [
     {
@@ -804,10 +801,10 @@ describe('TEST RestockOrder API', function () {
     })
 
     describe('cleaning environment', () => {
-        deleteItem(204, 1);
-        deleteItem(204, 2);
-        deleteItem(204, 3);
-        deleteItem(204, 4);
+        deleteItem(1, 7, 204);
+        deleteItem(2, 7, 204);
+        deleteItem(3, 8, 204);
+        deleteItem(4, 8, 204);
         deleteUser(204, supplier1.username, supplier1.type);
         deleteUser(204, supplier2.username, supplier2.type);
         deleteSKUItem(204, SKUItem1.RFID);
@@ -820,10 +817,10 @@ describe('TEST RestockOrder API', function () {
         deleteSKU(204, 1);
         deleteSKU(204, 2);
         deleteSKU(204, 3);
-        for (let i; i < testDescriptors.length; i++)
+        for (let i = 0; i < testDescriptors.length; i++)
             testDeleteTestDescriptor(i+1, 204)
-        for (let i; i < testResults.length; i++)
-            testDeleteTestResult(i+1, 201);
+        for (let i = 0; i < testResults.length; i++)
+            testDeleteTestResult(i+1, testResults[i].rfid, 204);
     });
 
 });

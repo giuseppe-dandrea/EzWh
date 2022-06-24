@@ -60,62 +60,56 @@ N.B : Tests should be run using `--runInBand` in the `npm test` to avoid paralle
 |                    | deleteUser                               | User_dao           | Delete User :type :email                                                 |
 |                    |                                          |                    |                                                                          |
 | Item_dao           | getItems                                 | Item_dao           | Get All Items                                                            |
-|                    | getItemByID                              | Item_dao           | GET Item by ID :id                                                       |
+|                    | getItemByIDAndSupplierID                 | Item_dao           | GET Item by ID :id                                                       |
 |                    | getItemBySKUIDAndSupplierID              | Item_dao           | Get Item by supplier :supplierid and SKUID :skuid                        |
 |                    | createItem                               | Item_dao           | Create Item :itemid                                                      |
 |                    | modifyItem                               | Item_dao           | Modify Item :id                                                          |
 |                    | deleteItem                               | Item_dao           | Delete Item :id                                                          |
 |                    |                                          |                    |                                                                          |
-| RestockOrder_dao   | getRestockOrders 						| RestockOrder_dao 	 | Get all Restock Orders                                                   |
-| 					 | getRestockOrderByID					    | RestockOrder_dao   | Create and Get By ID  { issueDate: :issueDate, supplierId: :supplierId } |
-| 					 | getRestockOrderByID					    | RestockOrder_dao   | Delete and Get By ID { restockOrderID: :id }                             |
+| RestockOrder_dao   | getRestockOrders 						                  | RestockOrder_dao 	 | Get all Restock Orders                                                   |
+| 					 | getRestockOrderByID					                 | RestockOrder_dao   | Create and Get By ID  { issueDate: :issueDate, supplierId: :supplierId } |
+| 					 | getRestockOrderByID					                 | RestockOrder_dao   | Delete and Get By ID { restockOrderID: :id }                             |
 | 					 | getRestockOrderByID                      | RestockOrder_dao   | Modify State { restockOrderID: :id }                                     |
 | 					 | getRestockOrderByID                      | RestockOrder_dao   | Add transport note { restockOrderID : :id }                              |
 | 					 | getRestockOrderProductsByRestockOrderID  | RestockOrder_dao   | Restock Order Product, Create and Get By ID { SKUId: :SKUId }            |
 | 					 | getRestockOrderSKUItemsByRestockOrderID  | RestockOrder_dao   | Restock Order SKUItem, Create and Get By ID { RFID:  :RFID }             |
-| 					 | getRestockOrderReturnItems			    | RestockOrder_dao   | Get Restock Order return Items  { restockOrderID : ${restockOrder.id} }  |
-| 					 | createRestockOrder    	                | RestockOrder_dao   | Create and Get By ID  { issueDate: :issueDate, supplierId: :supplierId } |
-| 					 | createRestockOrderProduct	            | RestockOrder_dao   | Restock Order Product, Create and Get By ID { SKUId: :SKUId }            |
+| 					 | getRestockOrderReturnItems			            | RestockOrder_dao   | Get Restock Order return Items  { restockOrderID : ${restockOrder.id} }  |
+| 					 | createRestockOrder    	                  | RestockOrder_dao   | Create and Get By ID  { issueDate: :issueDate, supplierId: :supplierId } |
+| 					 | createRestockOrderProduct	               | RestockOrder_dao   | Restock Order Product, Create and Get By ID { SKUId: :SKUId }            |
 | 					 | modifyRestockOrderState                  | RestockOrder_dao   | Modify State { restockOrderID : :id }                                    |
-| 					 | addSkuItemToRestockOrder  	            | RestockOrder_dao   | Restock Order SKUItem, Create and Get By ID { RFID:  :RFID }             |
-| 					 | addTransportNoteToRestockOrder	        | RestockOrder_dao   | Add transport note { restockOrderID: :id }                               |
+| 					 | addSkuItemToRestockOrder  	              | RestockOrder_dao   | Restock Order SKUItem, Create and Get By ID { RFID:  :RFID }             |
+| 					 | addTransportNoteToRestockOrder	          | RestockOrder_dao   | Add transport note { restockOrderID: :id }                               |
 | 					 | deleteRestockOrder  	                    | RestockOrder_dao   | Delete and Get By ID { restockOrderID: :id }                             |
-| 					 | 									        | 			         | 				                                                            |
-| ReturnOrder_dao	 | createReturnOrder		                | ReturnOrder_dao    | create returnOrder                                                       |
-| 					 | createReturnOrder					    | ReturnOrder_dao    | create returnOrder with error                                            |
-| 					 | createReturnOrderProducts			    | ReturnOrder_dao    | create returnOrder product                                               |
-| 					 | createReturnOrderProducts			    | ReturnOrder_dao    | create returnOrder product with error                                    |
-| 					 | getReturnOrderProducts				    | ReturnOrder_dao    | create returnOrder product                                               |
-| 					 | getReturnOrderProducts			        | ReturnOrder_dao    | get returnOrder products of retOrd :id                                   |
-| 					 | getReturnOrders		                    | ReturnOrder_dao    | get all return orders                                                    |
-| 					 | getReturnOrderByID				        | ReturnOrder_dao    | create returnOrder                                                       |
-| 					 | getReturnOrderByID					    | ReturnOrder_dao	 | get return order with id=:id                                             |
-| 					 | getReturnOrderByID					    | ReturnOrder_dao    | delete return order with id=:id                                          |
-| 					 | deleteReturnOrder						| ReturnOrder_dao    | delete return order with id=:id                                          |
+| 					 | 									                                | 			         | 				                                                            |
+| ReturnOrder_dao	 | createReturnOrder		                      | ReturnOrder_dao    | create returnOrder                                                       |
+| 					 | createReturnOrder					                   | ReturnOrder_dao    | create returnOrder with error                                            |
+| 					 | createReturnOrderProducts			             | ReturnOrder_dao    | create returnOrder product                                               |
+| 					 | createReturnOrderProducts			             | ReturnOrder_dao    | create returnOrder product with error                                    |
+| 					 | getReturnOrderProducts				               | ReturnOrder_dao    | create returnOrder product                                               |
+| 					 | getReturnOrderProducts			                | ReturnOrder_dao    | get returnOrder products of retOrd :id                                   |
+| 					 | getReturnOrders		                        | ReturnOrder_dao    | get all return orders                                                    |
+| 					 | getReturnOrderByID				                   | ReturnOrder_dao    | create returnOrder                                                       |
+| 					 | getReturnOrderByID					                  | ReturnOrder_dao	 | get return order with id=:id                                             |
+| 					 | getReturnOrderByID					                  | ReturnOrder_dao    | delete return order with id=:id                                          |
+| 					 | deleteReturnOrder						                  | ReturnOrder_dao    | delete return order with id=:id                                          |
 |                    |                                          |                    |                                                                          |
-| TestDescriptor_dao | getTestDescriptors					   	| TestDescriptor_dao | Get all testDescriptors                                                  |
-|					 | getTestDescriptorByID					| TestDescriptor_dao | Create testDescriptor :id :error                                         |
-|					 | getTestDescriptorByID					| TestDescriptor_dao | Delete testDescriptor :id                                                |
-|					 | getTestDescriptorByID				    | TestDescriptor_dao | Modify testDescriptor :id :error                                         |
-|					 | createTestDescriptor					    | TestDescriptor_dao | Create testDescriptor :id :error                                         |
-|					 | modifyTestDescriptor					    | TestDescriptor_dao | Modify testDescriptor :id :error                                         |
-|					 | deleteTestDescriptor					    | TestDescriptor_dao | Delete testDescriptor :id                                                |
-|					 |										    |                    |				                                                            |
-| TestResult_dao	 | getTestResultsByRFID					    | TestResult_dao     | Get testResult for RFID :rfid                                            |
-|				     | getTestResultByIDAndRFID				    | TestResult_dao     | Create testResult :id                                                    |
-|					 | getTestResultByIDAndRFID				    | TestResult_dao     | Delete testResult :id                                                    |
-|					 | getTestResultByIDAndRFID				    | TestResult_dao     | Modify testResult :id :error                                             |
-|					 | addTestResult							| TestResult_dao 	 | Create testResult :id                                                    |
-|					 | modifyTestResult						    | TestResult_dao 	 | Modify testResult :id :error                                             |
-|					 | deleteTestResult						    | TestResult_dao     | Delete testResult :id                                                    |
+| TestDescriptor_dao | getTestDescriptors					   	              | TestDescriptor_dao | Get all testDescriptors                                                  |
+|					 | getTestDescriptorByID					               | TestDescriptor_dao | Create testDescriptor :id :error                                         |
+|					 | getTestDescriptorByID					               | TestDescriptor_dao | Delete testDescriptor :id                                                |
+|					 | getTestDescriptorByID				                | TestDescriptor_dao | Modify testDescriptor :id :error                                         |
+|					 | createTestDescriptor					                | TestDescriptor_dao | Create testDescriptor :id :error                                         |
+|					 | modifyTestDescriptor					                | TestDescriptor_dao | Modify testDescriptor :id :error                                         |
+|					 | deleteTestDescriptor					                | TestDescriptor_dao | Delete testDescriptor :id                                                |
+|					 | 										                               |                    |				                                                            |
+| TestResult_dao	 | getTestResultsByRFID					                | TestResult_dao     | Get testResult for RFID :rfid                                            |
+|				     | getTestResultByIDAndRFID				             | TestResult_dao     | Create testResult :id                                                    |
+|					 | getTestResultByIDAndRFID				             | TestResult_dao     | Delete testResult :id                                                    |
+|					 | getTestResultByIDAndRFID				             | TestResult_dao     | Modify testResult :id :error                                             |
+|					 | addTestResult							                     | TestResult_dao 	 | Create testResult :id                                                    |
+|					 | modifyTestResult						                   | TestResult_dao 	 | Modify testResult :id :error                                             |
+|					 | deleteTestResult						                   | TestResult_dao     | Delete testResult :id                                                    |
  ** Implicitly invoked and tested wihtin another test function
 
 ### Code coverage report
 
-![Image](Diagrams/Coverage.JPG "Coverage Report")
-
-
-
-
-
-
+![Image](Diagrams/Coverage.png "Coverage Report")

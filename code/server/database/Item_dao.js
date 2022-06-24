@@ -12,16 +12,18 @@ exports.getItems = () => {
         });
     });
 }
-exports.getItemByID = (id) => {
+exports.getItemByIDAndSupplierID = (id, supplierId) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `SELECT * FROM Item WHERE ItemID = ${id};`;
-        dbConnection.all(sql, [], (err, rows) => {
+        const sql = `SELECT * FROM Item WHERE ItemID = ${id} AND SupplierID = ${supplierId};`;
+        dbConnection.get(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
             }
-            const i = rows.map((r) => new Item(r.ItemID, r.Description, r.Price, r.SKUID, r.SupplierID));
-            resolve(i);
+            if (rows === undefined)
+                resolve(rows);
+            else
+                resolve(new Item(rows.ItemID, rows.Description, rows.Price, rows.SKUID, rows.SupplierID));
         });
     });
 }
@@ -66,22 +68,22 @@ exports.createItem = (item) => {
     });
 }
 
-exports.modifyItem = (id, newDescription, newPrice) => {
+exports.modifyItem = (id,supplierId, newDescription, newPrice) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `UPDATE Item SET Description = ?, Price = ?  WHERE ItemID = ?;`;
-        dbConnection.run(sql, [newDescription, newPrice, id], (err) => {
+        const sql = `UPDATE Item SET Description = ?, Price = ?  WHERE ItemID = ? AND SupplierID=?;`;
+        dbConnection.run(sql, [newDescription, newPrice, id, supplierId], (err) => {
             if (err) reject(err);
             else resolve();
         });
     });
 }
 
-exports.deleteItem = (id) => {
+exports.deleteItem = (id,supplierId) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `DELETE FROM Item WHERE ItemID = ?;`;
-        dbConnection.run(sql, [id], (err) => {
+        const sql = `DELETE FROM Item WHERE ItemID = ? AND SupplierID=?;`;
+        dbConnection.run(sql, [id,supplierId], (err) => {
             if (err) reject(err);
             else resolve();
         });

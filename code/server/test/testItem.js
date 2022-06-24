@@ -160,9 +160,9 @@ function testCreateItem(item, expectedStatus) {
     });
 }
 
-function testDeleteItem(id, expectedStatus) {
-    it(`delete /api/items/${id}`, function (done) {
-        agent.delete(`/api/items/${id}`)
+function testDeleteItem(id, supplierId, expectedStatus) {
+    it(`delete /api/items/${id}/${supplierId}`, function (done) {
+        agent.delete(`/api/items/${id}/${supplierId}`)
             .end(function (err, res) {
                 if (err)
                     done(err);
@@ -200,9 +200,9 @@ function testGetItems(expectedStatus, expectedNumber, expectedItems) {
     });
 }
 
-function testGetItemById(id, expectedStatus, expectedItem) {
-    it(`get /api/items/${id}`, function (done) {
-        agent.get(`/api/items/${id}`)
+function testGetItemByIdAndSupplierId(id, supplierId, expectedStatus, expectedItem) {
+    it(`get /api/items/${id}/${supplierId}`, function (done) {
+        agent.get(`/api/items/${id}/${supplierId}`)
             .end(function (err, res) {
                 if (err)
                     done(err);
@@ -221,9 +221,9 @@ function testGetItemById(id, expectedStatus, expectedItem) {
     });
 }
 
-function testEditItem(id, editItem, expectedStatus) {
-    it(`put /api/item/${id}`, function (done) {
-        agent.put(`/api/item/${id}`)
+function testEditItem(id, supplierId, editItem, expectedStatus) {
+    it(`put /api/item/${id}/${supplierId}`, function (done) {
+        agent.put(`/api/item/${id}/${supplierId}`)
             .set('content-type', 'application/json')
             .send(editItem)
             .end(function (err, res) {
@@ -257,22 +257,22 @@ describe("TEST Item API", function () {
         testCreateItem({...items[0], id: 10, SKUId: "asd"}, 422);
         testGetItems(200, items.length, items);
         for (let item of items) {
-            testGetItemById(item.id, 200, item);
+            testGetItemByIdAndSupplierId(item.id, item.supplierId,200, item);
         }
 
     });
 
     describe("Get items by id (Invalid input)", function () {
-        testGetItemById(50, 404);
-        testGetItemById(0, 404);
-        testGetItemById(-1, 422);
-        testGetItemById("asd", 422);
+        testGetItemByIdAndSupplierId(50, 0, 404);
+        testGetItemByIdAndSupplierId(0, 0, 404);
+        testGetItemByIdAndSupplierId(-1, -1, 422);
+        testGetItemByIdAndSupplierId("asd", 1, 422);
     });
 
     describe("Edit items", function () {
         for (let i = 0; i < items.length; i++) {
-            testEditItem(items[i].id, editItems[i], 200);
-            testGetItemById(items[i].id, 200, {
+            testEditItem(items[i].id, items[i].supplierId, editItems[i], 200);
+            testGetItemByIdAndSupplierId(items[i].id, items[i].supplierId,200, {
                 ...items[i],
                 description: editItems[i].newDescription,
                 price: editItems[i].newPrice
@@ -281,20 +281,20 @@ describe("TEST Item API", function () {
     });
 
     describe("Edit items (Invalid input)", function () {
-        testEditItem(50, editItems[0], 404);
-        testEditItem(0, editItems[0], 404);
-        testEditItem(-1, editItems[0], 422);
-        testEditItem("asd", editItems[0], 422);
+        testEditItem(50, 0, editItems[0], 404);
+        testEditItem(0, 0, editItems[0], 404);
+        testEditItem(-1, -1, editItems[0], 422);
+        testEditItem("asd", 0, editItems[0], 422);
 
     });
 
     describe("Delete inserted items", function () {
         for (let item of items) {
-            testDeleteItem(item.id, 204);
+            testDeleteItem(item.id, item.supplierId, 204);
         }
-        testDeleteItem(50, 204);
-        testDeleteItem(0, 204);
-        testDeleteItem(-1, 422);
+        testDeleteItem(50, 50, 204);
+        testDeleteItem(0, 0, 204);
+        testDeleteItem(-1, -1, 422);
 
         testGetItems(200, 0);
     });

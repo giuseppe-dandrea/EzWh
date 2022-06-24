@@ -86,14 +86,12 @@ exports.getRestockOrderReturnItems = (ID) => {
         //         if (rows.length === 0) {
         //             resolve(undefined);
         //         }
-        const sql = `select s.SKUID, s.RFID from RestockOrderSKUItem as rosi
-          inner join SKUItem as s
+        const sql = `select rosi.SKUID, rosi.RFID, rosi.ItemID from RestockOrderSKUItem as rosi
           inner join TestResult as t
-          where s.RFID = rosi.RFID and
-          t.RFID = rosi.RFID and
+          where t.RFID = rosi.RFID and
           rosi.RestockOrderID=${ID} and
           t.Result = false
-          group by s.SKUID, s.RFID
+          group by rosi.SKUID, rosi.RFID, rosi.ItemID
           having count(*)>0;`;
         dbConnection.all(sql, function (err, rows) {
             if (err) {
@@ -102,7 +100,7 @@ exports.getRestockOrderReturnItems = (ID) => {
             }
             const tds = rows.map(
                 (r) =>
-                    ({"SKUId": r.SKUID, "rfid": r.RFID})
+                    ({"SKUId": r.SKUID, "rfid": r.RFID, "itemId": r.ItemID})
             );
             resolve(tds);
         });
@@ -128,12 +126,12 @@ exports.createRestockOrder = (issueDate, supplierID) => {
         });
     });
 }
-exports.createRestockOrderProduct = (itemID, restockOrderID, QTY) => {
+exports.createRestockOrderProduct = (itemID, supplierId, restockOrderID, QTY) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
-        const sql = `insert into RestockOrderProduct (ItemID, RestockOrderID, QTY)
-      values (${itemID}, ${restockOrderID}, ${QTY})`;
-        dbConnection.run(sql, function (err) {
+        const sql = `insert into RestockOrderProduct (ItemID, SupplierID, RestockOrderID, QTY)
+      values (?, ?, ?, ?)`;
+        dbConnection.run(sql, [itemID, supplierId, restockOrderID, QTY], function (err) {
             if (err) {
                 reject(err);
             } else {
@@ -159,13 +157,13 @@ exports.modifyRestockOrderState = (id, newState) => {
     });
 }
 
-exports.addSkuItemToRestockOrder = (ID, RFID) => {
+exports.addSkuItemToRestockOrder = (ID, RFID, SKUID, ItemID, SupplierID) => {
     return new Promise((resolve, reject) => {
         const dbConnection = require("./DatabaseConnection").db;
         const sql = `INSERT INTO RestockOrderSkuItem
-      (RFID, RestockOrderID)
-      values (?, ?);`;
-        dbConnection.run(sql, [RFID, ID], function (err) {
+      (RFID, RestockOrderID, SKUID, ItemID, SupplierID)
+      values (?, ?, ?, ?, ?);`;
+        dbConnection.run(sql, [RFID, ID, SKUID, ItemID, SupplierID], function (err) {
             if (err) {
                 reject(err);
             } else {

@@ -119,10 +119,10 @@ class DatabaseConnection {
     		Price DOUBLE NOT NULL,
     		SKUID INTEGER NOT NULL,
     		SupplierID INTEGER NOT NULL,
-    		PRIMARY KEY (ItemID),
-            UNIQUE(SupplierID,SKUID),
+            PRIMARY KEY(SupplierID,SKUID),
+            UNIQUE (SupplierID, ItemID),
             FOREIGN KEY (SKUID) REFERENCES SKU(SKUID) ON DELETE CASCADE ,
-    		FOREIGN KEY (SupplierID) REFERENCES User(UserID)
+    		FOREIGN KEY (SupplierID) REFERENCES User(UserID) ON DELETE CASCADE
             );`,
 
         
@@ -175,10 +175,11 @@ class DatabaseConnection {
 
         `CREATE TABLE IF NOT EXISTS RestockOrderProduct (
             ItemID INTEGER NOT NULL,
+            SupplierID INTEGER NOT NULL,
             RestockOrderID INTEGER NOT NULL,
             QTY INTEGER NOT NULL,
-            PRIMARY KEY(ItemID, RestockOrderID),
-            FOREIGN KEY (ItemID) REFERENCES Item(ItemID)
+            PRIMARY KEY(ItemID, SupplierID, RestockOrderID),
+            FOREIGN KEY (ItemID, SupplierID) REFERENCES Item(ItemID, SupplierID)
             on delete cascade,
             FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
             on delete cascade
@@ -186,8 +187,13 @@ class DatabaseConnection {
 
         `CREATE TABLE IF NOT EXISTS RestockOrderSKUItem (
             RFID VARCHAR(33) NOT NULL,
+            SKUID INTEGER NOT NULL,
+            ItemID INTEGER NOT NULL,
+            SupplierID INTEGER NOT NULL,
             RestockOrderID INTEGER NOT NULL,
             PRIMARY KEY(RFID, RestockOrderID),
+            FOREIGN KEY (SKUID) REFERENCES SKU(SKUID) ON DELETE CASCADE,
+            FOREIGN KEY (ItemID, SupplierID) REFERENCES Item(ItemID, SupplierID) ON DELETE CASCADE,
             FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
             on delete cascade,
             FOREIGN KEY (RestockOrderID) REFERENCES RestockOrder(RestockOrderID)
@@ -206,9 +212,12 @@ class DatabaseConnection {
         `CREATE TABLE IF NOT EXISTS ReturnOrderProduct (
             RFID VARCHAR(33) NOT NULL,
             ReturnOrderID INTEGER NOT NULL,
+            ItemID INTEGER NOT NULL,
+            SupplierID INTEGER NOT NULL,
             PRIMARY KEY(RFID, ReturnOrderID),
             FOREIGN KEY (ReturnOrderID) REFERENCES ReturnOrder(ReturnOrderID)
             on delete cascade,
+            FOREIGN KEY (ItemID, SupplierID) REFERENCES Item(ItemID, SupplierID) ON DELETE CASCADE,
             FOREIGN KEY (RFID) REFERENCES SKUItem(RFID)
             on delete cascade
             );`
